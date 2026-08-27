@@ -20,11 +20,11 @@ export default function Home() {
 
   const handleExplore = () => {
     setIsTransitioning(true);
-    // Smooth 1.1s transition into dashboard
+    // Smooth 1.8s dive sequence into the dashboard
     setTimeout(() => {
       setInDashboard(true);
       setIsTransitioning(false);
-    }, 1100);
+    }, 1800);
   };
 
   return (
