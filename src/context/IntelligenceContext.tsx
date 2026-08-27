@@ -167,8 +167,8 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const resetMapView = useCallback(() => {
     if (!mapInstance) return;
     mapInstance.flyTo({
-      center: [80.5, 22.5],
-      zoom: 4.8,
+      center: [80.5, 21.0],
+      zoom: 4.25,
       pitch: 0,
       bearing: 0,
       speed: 1.1,

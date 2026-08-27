@@ -35,6 +35,8 @@ body {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
   background:
     radial-gradient(
       circle at 15% 10%,
@@ -86,7 +88,7 @@ button {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   gap: 18px;
-  padding: 18px;
+  padding: 16px 18px 48px;
   max-width: 1800px;
   margin: 0 auto;
 }
@@ -586,7 +588,7 @@ button {
    ========================================================================== */
 
 .map-area {
-  height: clamp(460px, calc(100vh - 235px), 740px);
+  height: clamp(400px, calc(100vh - 290px), 640px);
   border-radius: 16px;
   overflow: hidden;
   position: relative;
@@ -697,6 +699,7 @@ button {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .incident-card::before {
@@ -754,15 +757,15 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .incident-flame {
   display: grid;
   place-items: center;
-  width: 47px;
-  height: 47px;
-  border-radius: 15px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   color: #ff5544;
   background: rgba(255, 75, 60, 0.14);
   border: 1px solid rgba(255, 85, 65, 0.28);
@@ -779,8 +782,8 @@ button {
 }
 
 .incident-title h2 {
-  margin: 3px 0 0;
-  font-size: 17px;
+  margin: 2px 0 0;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
   color: #ffffff;
@@ -792,19 +795,19 @@ button {
   gap: 6px;
   color: #d1b8af;
   font-size: 11px;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 .incident-primary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .incident-primary > div {
-  padding: 13px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: 13px;
   background: rgba(255, 90, 45, 0.04);
   border: 1px solid rgba(255, 106, 61, 0.12);
 }
@@ -815,11 +818,11 @@ button {
   font-size: 8.5px;
   letter-spacing: 1px;
   font-weight: 700;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .incident-primary strong {
-  font-size: 23px;
+  font-size: 21px;
   font-weight: 800;
   font-mono: monospace;
 }
@@ -834,7 +837,7 @@ button {
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  margin: 12px 0 16px;
+  margin: 10px 0 12px;
 }
 
 .confidence-bar div {
@@ -854,7 +857,7 @@ button {
   display: grid;
   grid-template-columns: 24px 1fr auto;
   align-items: center;
-  padding: 8.5px 4px;
+  padding: 7px 4px;
   border-bottom: 1px solid rgba(255, 106, 61, 0.08);
   color: #8c766e;
   font-size: 10.5px;
@@ -871,8 +874,8 @@ button {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 8px;
-  margin-top: auto;
-  padding-top: 14px;
+  margin-top: 12px;
+  padding-top: 8px;
 }
 
 .primary-action,
