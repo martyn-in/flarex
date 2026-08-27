@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type * as maplibregl from 'maplibre-gl';
 import { HOTSPOTS_DATA, Hotspot } from '../data/mockData';
+import { mapThermalEventToHotspot } from '../lib/adapters';
 
 export interface Toast {
   id: string;
@@ -57,12 +58,14 @@ interface IntelligenceContextType {
   zoomIn: () => void;
   zoomOut: () => void;
   resetMapView: () => void;
+  refreshHotspots: () => Promise<void>;
+  dataSourceMode: 'LIVE' | 'CACHED' | 'SYNCING';
 }
 
 const IntelligenceContext = createContext<IntelligenceContextType | undefined>(undefined);
 
 export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [hotspots] = useState<Hotspot[]>(HOTSPOTS_DATA);
+  const [hotspots, setHotspots] = useState<Hotspot[]>(HOTSPOTS_DATA);
   const [selectedHotspot, setSelectedHotspotState] = useState<Hotspot | null>(HOTSPOTS_DATA[0]);
   const [activeFilter, setActiveFilter] = useState<'all' | 'critical' | 'persistent' | 'high' | null>(null);
   const [activeDrawer, setActiveDrawer] = useState<ActiveDrawerType>(null);
@@ -70,6 +73,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
   const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
   const [isLiveMode, setIsLiveMode] = useState<boolean>(true);
+  const [dataSourceMode, setDataSourceMode] = useState<'LIVE' | 'CACHED' | 'SYNCING'>('CACHED');
   const [activeLayers, setActiveLayers] = useState<MapLayersState>({
     satellite: true,
     heatmap: false,
@@ -78,6 +82,49 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   });
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
+
+  // Toast feedback
+  const addToast = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3500);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  // Fetch real thermal records from /api/firms/latest
+  const refreshHotspots = useCallback(async () => {
+    try {
+      setDataSourceMode('SYNCING');
+      const res = await fetch('/api/firms/latest?limit=60');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.events) && json.events.length > 0) {
+          const adapted = json.events.map(mapThermalEventToHotspot);
+          setHotspots(adapted);
+          setDataSourceMode(json.source === 'NASA_FIRMS_LIVE' ? 'LIVE' : 'CACHED');
+
+          // Keep selected hotspot or set to most severe
+          setSelectedHotspotState((prev) => {
+            if (!prev) return adapted[0];
+            const match = adapted.find((h: Hotspot) => h.id === prev.id);
+            return match || adapted[0];
+          });
+        }
+      }
+    } catch {
+      setDataSourceMode('CACHED');
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    refreshHotspots();
+  }, [refreshHotspots]);
 
   // Compute filtered hotspots
   const filteredHotspots = React.useMemo(() => {
@@ -93,19 +140,6 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return hotspots;
   }, [hotspots, activeFilter]);
 
-  // Toast feedback
-  const addToast = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
   // Map camera controls with fluid kinetic transitions
   const flyToCoords = useCallback((coords: [number, number], zoom = 7.5, pitch = 25) => {
     if (!mapInstance) return;
@@ -116,7 +150,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
       speed: 1.25,
       curve: 1.3,
       essential: true,
-      easing: (t) => t * (2 - t), // smooth ease-out quadratic
+      easing: (t) => t * (2 - t),
     });
   }, [mapInstance]);
 
@@ -158,30 +192,27 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const focusActiveIncident = useCallback(() => {
     if (selectedHotspot) {
       flyToCoords(selectedHotspot.coordinates, 8.2, 30);
-      addToast(`Target locked: ${selectedHotspot.name}`, 'info');
-    } else if (hotspots.length > 0) {
-      selectHotspot(hotspots[0], true);
+      addToast(`Target locked: ${selectedHotspot.name} (${selectedHotspot.frp} MW)`, 'info');
     }
-  }, [selectedHotspot, hotspots, flyToCoords, selectHotspot, addToast]);
+  }, [selectedHotspot, flyToCoords, addToast]);
 
-  // Filter selection
+  // Quick scenario triggers
   const setFilter = useCallback((filter: 'all' | 'critical' | 'persistent' | 'high' | null) => {
-    setActiveFilter((current) => {
-      const next = current === filter ? null : filter;
-      if (next === 'critical') {
-        addToast('Filter: 12 Critical Industrial Incidents', 'warning');
-        const firstCrit = hotspots.find((h) => h.severity === 'critical');
-        if (firstCrit) selectHotspot(firstCrit, true);
-      } else if (next === 'persistent') {
-        addToast('Filter: 892 Persistent Industrial Sources', 'info');
-      } else if (next === 'high') {
-        addToast('Filter: High Severity Incidents', 'warning');
-      } else {
-        addToast('Filter Reset: Displaying all active thermal detections', 'info');
-        resetMapView();
-      }
-      return next;
-    });
+    setActiveFilter(filter);
+    if (filter === 'critical') {
+      const crit = hotspots.find((h) => h.severity === 'critical');
+      if (crit) selectHotspot(crit, true);
+      addToast('Filter: Showing Critical Fire Alerts', 'warning');
+    } else if (filter === 'high') {
+      addToast('Filter: Showing High Severity Incidents', 'warning');
+    } else if (filter === 'persistent') {
+      const pers = hotspots.find((h) => h.classification === 'Persistent Thermal Source' || h.persistenceScore > 50);
+      if (pers) selectHotspot(pers, true);
+      addToast('Filter: Showing Persistent Industrial Heat Flares', 'info');
+    } else {
+      resetMapView();
+      addToast('Showing all thermal detections', 'info');
+    }
   }, [hotspots, selectHotspot, resetMapView, addToast]);
 
   // Drawer management
@@ -199,41 +230,26 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const toggleLayer = useCallback((layerKey: keyof MapLayersState) => {
     setActiveLayers((prev) => {
       const next = { ...prev, [layerKey]: !prev[layerKey] };
-      addToast(`Layer ${layerKey.toUpperCase()}: ${next[layerKey] ? 'ENABLED' : 'DISABLED'}`, 'info');
+      const label =
+        layerKey === 'satellite' ? 'High-Res Satellite Imagery' :
+        layerKey === 'heatmap' ? 'Thermal Density Heatmap' :
+        layerKey === 'industrial' ? 'Industrial Facility Clusters' : 'Administrative GIS Boundaries';
+      addToast(`${label}: ${next[layerKey] ? 'ENABLED' : 'DISABLED'}`, 'info');
       return next;
     });
   }, [addToast]);
 
-  // Presentation Mode Toggle
   const togglePresentationMode = useCallback(() => {
-    setIsPresentationMode((prev) => {
-      const next = !prev;
-      addToast(next ? 'Presentation Mode enabled (Clean Hero View)' : 'Presentation Mode exited', 'info');
-      return next;
-    });
-  }, [addToast]);
+    setIsPresentationMode((prev) => !prev);
+  }, []);
 
-  // Live Mode Toggle
   const toggleLiveMode = useCallback(() => {
     setIsLiveMode((prev) => {
       const next = !prev;
-      addToast(next ? 'Live FlareX Telemetry Stream Active' : 'Live Telemetry Stream Paused', 'success');
+      addToast(`Live Ingestion Mode: ${next ? 'STREAMING ACTIVE' : 'PAUSED'}`, next ? 'success' : 'warning');
       return next;
     });
   }, [addToast]);
-
-  // Keyboard shortcut handler (Escape)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isSettingsOpen) setIsSettingsOpen(false);
-        else if (isNotificationsOpen) setIsNotificationsOpen(false);
-        else if (activeDrawer) closeDrawer();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSettingsOpen, isNotificationsOpen, activeDrawer, closeDrawer]);
 
   return (
     <IntelligenceContext.Provider
@@ -267,6 +283,8 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         zoomIn,
         zoomOut,
         resetMapView,
+        refreshHotspots,
+        dataSourceMode,
       }}
     >
       {children}
@@ -274,7 +292,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 };
 
-export const useIntelligence = (): IntelligenceContextType => {
+export const useIntelligence = () => {
   const context = useContext(IntelligenceContext);
   if (!context) {
     throw new Error('useIntelligence must be used within an IntelligenceProvider');
