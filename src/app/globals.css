@@ -586,7 +586,7 @@ button {
    ========================================================================== */
 
 .map-area {
-  height: clamp(420px, 58vh, 640px);
+  height: clamp(460px, calc(100vh - 235px), 740px);
   border-radius: 16px;
   overflow: hidden;
   position: relative;
