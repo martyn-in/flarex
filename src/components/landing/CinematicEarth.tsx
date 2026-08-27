@@ -6,6 +6,7 @@ import gsap from 'gsap';
 
 interface CinematicEarthProps {
   isTransitioning: boolean;
+  onTransitionReady?: () => void;
 }
 
 export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning }) => {
@@ -18,11 +19,11 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
 
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  // Perfect orientation: India facing camera
-  const targetRotationRef = useRef({ x: 0.12, y: 3.86 });
-  const currentRotationRef = useRef({ x: 0.12, y: 3.86 });
-  const isIdleRef = useRef(true);
+  // Set default rotation so India is centered directly under the FLAREX logo
+  const targetRotationRef = useRef({ x: 0.28, y: 4.22 });
+  const currentRotationRef = useRef({ x: 0.28, y: 4.22 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isIdleRef = useRef(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -34,8 +35,8 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-    camera.position.set(0, 0, 3.85);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    camera.position.set(0, 0, 4.4);
     cameraRef.current = camera;
 
     // 2. RENDERER
@@ -46,35 +47,33 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    renderer.toneMappingExposure = 1.25;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 3. EARTH GROUP (PERFECT PROPORTIONS & CENTERED COMPOSITION)
+    // 3. EARTH GROUP (Positioned in center-bottom with golden proportion)
     const earthGroup = new THREE.Group();
-    earthGroup.position.set(0, -0.16, 0);
+    earthGroup.position.set(0, -0.45, 0);
     scene.add(earthGroup);
     earthGroupRef.current = earthGroup;
 
-    // 4. TEXTURE LOADING
+    // 4. TEXTURES
     const textureLoader = new THREE.TextureLoader();
-    const nightMap = textureLoader.load('/cinematic/earth_night_map.jpg', (tex) => {
+    const nightTexture = textureLoader.load('/cinematic/earth_night_map.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.ClampToEdgeWrapping;
     });
 
-    // 5. EARTH SPHERE
-    const earthRadius = 1.18; // Perfect balanced size
+    // 5. EARTH SPHERE MESH
+    const earthRadius = 1.58;
     const earthGeometry = new THREE.SphereGeometry(earthRadius, 64, 64);
 
     const earthMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        nightMap: { value: nightMap },
-        sunDirection: { value: new THREE.Vector3(-0.76, 0.64, 0.42).normalize() },
-        thermalColor: { value: new THREE.Color(0xff6015) },
+        map: { value: nightTexture },
+        sunDirection: { value: new THREE.Vector3(-0.85, 0.65, 0.45).normalize() },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -88,9 +87,8 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
         }
       `,
       fragmentShader: `
-        uniform sampler2D nightMap;
+        uniform sampler2D map;
         uniform vec3 sunDirection;
-        uniform vec3 thermalColor;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vPosition;
@@ -99,24 +97,23 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           vec3 normal = normalize(vNormal);
           vec3 viewDir = normalize(-vPosition);
           
-          vec4 nightTex = texture2D(nightMap, vUv);
-          float nightLuma = dot(nightTex.rgb, vec3(0.299, 0.587, 0.114));
+          vec4 tex = texture2D(map, vUv);
           
-          // Glowing city lights & industrial thermal nodes in India & Asia
-          vec3 cityLights = nightTex.rgb * 1.6;
-          vec3 hotThermal = thermalColor * pow(nightLuma, 1.35) * 2.4;
+          // Night city lights & thermal hotspots
+          vec3 nightLights = tex.rgb * 1.6;
           
-          // Deep oceanic base tone
-          vec3 basePlanet = vec3(0.025, 0.035, 0.06);
+          // Gentle ambient dark side tone
+          vec3 darkTone = vec3(0.015, 0.01, 0.012);
           
-          // Horizon atmospheric rim glow (Fresnel)
-          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.6);
-          float sunBias = max(0.0, dot(normal, sunDirection));
+          // Solar rim on the upper-left horizon
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.8);
+          float sunLimb = max(0.0, dot(normal, sunDirection));
           
-          // Radiant orange atmospheric edge concentrated on upper-left
-          vec3 rimGlow = mix(vec3(0.85, 0.15, 0.02), vec3(1.0, 0.72, 0.22), pow(sunBias, 1.25)) * fresnel * 2.8;
+          // Fiery rim gradient (molten gold to deep ember)
+          vec3 rimGlow = mix(vec3(0.9, 0.18, 0.02), vec3(1.0, 0.75, 0.25), pow(sunLimb, 1.4)) * fresnel * (0.25 + 3.2 * pow(sunLimb, 1.6));
           
-          gl_FragColor = vec4(basePlanet + cityLights + hotThermal + rimGlow, 1.0);
+          vec3 surfaceColor = nightLights + darkTone + rimGlow;
+          gl_FragColor = vec4(surfaceColor, 1.0);
         }
       `,
     });
@@ -124,12 +121,11 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
     earthGroup.add(earthMesh);
 
-    // 6. RAZOR-SHARP ATMOSPHERIC FIRE RIM
-    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.016, 64, 64);
+    // 6. TIGHT GLOWING HORIZON ATMOSPHERE (Flush with surface)
+    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.008, 64, 64);
     const atmosphereMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        glowColor: { value: new THREE.Color(0xff4514) },
-        sunDirection: { value: new THREE.Vector3(-0.76, 0.64, 0.42).normalize() },
+        sunDirection: { value: new THREE.Vector3(-0.85, 0.65, 0.45).normalize() },
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -141,7 +137,6 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
         }
       `,
       fragmentShader: `
-        uniform vec3 glowColor;
         uniform vec3 sunDirection;
         varying vec3 vNormal;
         varying vec3 vPosition;
@@ -150,13 +145,14 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           vec3 normal = normalize(vNormal);
           vec3 viewDir = normalize(-vPosition);
           
-          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.6);
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
           float sunBias = max(0.0, dot(normal, sunDirection));
           
-          float intensity = fresnel * (0.05 + 3.9 * pow(sunBias, 2.2));
-          vec3 fieryColor = mix(vec3(1.0, 0.2, 0.03), vec3(1.0, 0.88, 0.38), pow(sunBias, 1.5));
+          // Radiant orange-red corona concentrated on the upper-left horizon
+          float intensity = fresnel * (0.1 + 3.4 * pow(sunBias, 2.0));
+          vec3 fieryColor = mix(vec3(1.0, 0.18, 0.02), vec3(1.0, 0.85, 0.35), pow(sunBias, 1.4));
           
-          gl_FragColor = vec4(fieryColor, intensity * 0.95);
+          gl_FragColor = vec4(fieryColor, intensity * 0.9);
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -169,60 +165,63 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     earthGroup.add(atmosphereMesh);
 
     // 7. FLOATING 3D THERMAL EMBER PARTICLES
-    const particleCount = 140;
+    const particleCount = 200;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
-    const particleSizes = new Float32Array(particleCount);
     const particleSpeeds = new Float32Array(particleCount * 3);
 
     const baseColors = [
       new THREE.Color(0xff3315),
-      new THREE.Color(0xff7a22),
-      new THREE.Color(0xffb545),
+      new THREE.Color(0xff6a1a),
+      new THREE.Color(0xffaa33),
+      new THREE.Color(0xffe082),
     ];
 
     for (let i = 0; i < particleCount; i++) {
-      const radius = earthRadius + 0.08 + Math.random() * 1.2;
+      const radius = earthRadius + 0.1 + Math.random() * 1.5;
       const theta = (Math.PI * 0.3) + (Math.random() * Math.PI * 1.4);
-      const phi = (Math.random() - 0.45) * Math.PI * 0.85;
+      const phi = (Math.random() - 0.45) * Math.PI * 0.9;
 
-      particlePositions[i * 3] = radius * Math.cos(phi) * Math.sin(theta);
-      particlePositions[i * 3 + 1] = radius * Math.sin(phi) + 0.1;
-      particlePositions[i * 3 + 2] = radius * Math.cos(phi) * Math.cos(theta);
+      const x = radius * Math.cos(phi) * Math.sin(theta);
+      const y = radius * Math.sin(phi) + 0.2;
+      const z = radius * Math.cos(phi) * Math.cos(theta);
+
+      particlePositions[i * 3] = x;
+      particlePositions[i * 3 + 1] = y;
+      particlePositions[i * 3 + 2] = z;
 
       const c = baseColors[Math.floor(Math.random() * baseColors.length)];
       particleColors[i * 3] = c.r;
       particleColors[i * 3 + 1] = c.g;
       particleColors[i * 3 + 2] = c.b;
 
-      particleSizes[i] = Math.random() * 12 + 4;
-      particleSpeeds[i * 3] = (Math.random() - 0.5) * 0.0015;
-      particleSpeeds[i * 3 + 1] = Math.random() * 0.0035 + 0.001;
-      particleSpeeds[i * 3 + 2] = (Math.random() - 0.5) * 0.0015;
+      particleSpeeds[i * 3] = (Math.random() - 0.5) * 0.002;
+      particleSpeeds[i * 3 + 1] = Math.random() * 0.004 + 0.0015;
+      particleSpeeds[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
     }
 
     const particleGeometry = new THREE.BufferGeometry();
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
-    particleGeometry.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
 
+    // Circular particle texture
     const particleCanvas = document.createElement('canvas');
-    particleCanvas.width = 64;
-    particleCanvas.height = 64;
+    particleCanvas.width = 32;
+    particleCanvas.height = 32;
     const pctx = particleCanvas.getContext('2d');
     if (pctx) {
-      const grad = pctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      const grad = pctx.createRadialGradient(16, 16, 0, 16, 16, 16);
       grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      grad.addColorStop(0.25, 'rgba(255, 165, 45, 0.85)');
-      grad.addColorStop(0.6, 'rgba(255, 55, 15, 0.3)');
+      grad.addColorStop(0.3, 'rgba(255, 160, 45, 0.85)');
+      grad.addColorStop(0.7, 'rgba(255, 55, 15, 0.3)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       pctx.fillStyle = grad;
-      pctx.fillRect(0, 0, 64, 64);
+      pctx.fillRect(0, 0, 32, 32);
     }
     const particleTexture = new THREE.CanvasTexture(particleCanvas);
 
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.06,
+      size: 0.05,
       vertexColors: true,
       map: particleTexture,
       transparent: true,
@@ -234,11 +233,11 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     scene.add(particles);
     particlesRef.current = particles;
 
-    // INITIAL ROTATION
+    // SET INITIAL ROTATION SO INDIA IS PERFECTLY CENTERED
     earthGroup.rotation.x = currentRotationRef.current.x;
     earthGroup.rotation.y = currentRotationRef.current.y;
 
-    // RESIZE
+    // RESIZE LISTENER
     const handleResize = () => {
       if (!containerRef.current || !renderer || !camera) return;
       const w = containerRef.current.clientWidth;
@@ -250,7 +249,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     };
     window.addEventListener('resize', handleResize);
 
-    // MOUSE INTERACTION
+    // MOUSE INTERACTION (Gentle Damping)
     const handleMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true;
       isIdleRef.current = false;
@@ -263,10 +262,10 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       const deltaX = e.clientX - previousMousePositionRef.current.x;
       const deltaY = e.clientY - previousMousePositionRef.current.y;
 
-      targetRotationRef.current.y += deltaX * 0.0025;
+      targetRotationRef.current.y += deltaX * 0.003;
       targetRotationRef.current.x = Math.max(
-        -0.2,
-        Math.min(0.3, targetRotationRef.current.x + deltaY * 0.0018)
+        -0.25,
+        Math.min(0.35, targetRotationRef.current.x + deltaY * 0.002)
       );
 
       previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
@@ -277,10 +276,10 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       idleTimerRef.current = setTimeout(() => {
         isIdleRef.current = true;
-      }, 2500);
+      }, 3000);
     };
 
-    // TOUCH SUPPORT
+    // Touch Handlers
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         isDraggingRef.current = true;
@@ -294,10 +293,10 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       const deltaX = e.touches[0].clientX - previousMousePositionRef.current.x;
       const deltaY = e.touches[0].clientY - previousMousePositionRef.current.y;
 
-      targetRotationRef.current.y += deltaX * 0.003;
+      targetRotationRef.current.y += deltaX * 0.0035;
       targetRotationRef.current.x = Math.max(
-        -0.2,
-        Math.min(0.3, targetRotationRef.current.x + deltaY * 0.002)
+        -0.25,
+        Math.min(0.35, targetRotationRef.current.x + deltaY * 0.0025)
       );
 
       previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -308,7 +307,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       idleTimerRef.current = setTimeout(() => {
         isIdleRef.current = true;
-      }, 2500);
+      }, 3000);
     };
 
     const domElement = renderer.domElement;
@@ -327,11 +326,12 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Gentle auto-rotation
+      // Subtle Idle auto-rotation keeping India in center
       if (isIdleRef.current) {
-        targetRotationRef.current.y += 0.00035;
+        targetRotationRef.current.y += 0.0004;
       }
 
+      // Smooth inertia damping
       currentRotationRef.current.x += (targetRotationRef.current.x - currentRotationRef.current.x) * 0.06;
       currentRotationRef.current.y += (targetRotationRef.current.y - currentRotationRef.current.y) * 0.06;
 
@@ -340,16 +340,16 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
         earthGroup.rotation.y = currentRotationRef.current.y;
       }
 
-      // Particle subtle turbulence
+      // Particles drift
       if (particlesRef.current) {
         const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
         for (let i = 0; i < particleCount; i++) {
           positions[i * 3 + 1] += particleSpeeds[i * 3 + 1];
           positions[i * 3] += particleSpeeds[i * 3] + Math.sin(elapsedTime + i) * 0.0005;
 
-          if (positions[i * 3 + 1] > 2.2) {
-            positions[i * 3 + 1] = -1.0;
-            positions[i * 3] = (Math.random() - 0.5) * 2.8;
+          if (positions[i * 3 + 1] > 2.8) {
+            positions[i * 3 + 1] = -1.2;
+            positions[i * 3] = (Math.random() - 0.5) * 3.2;
           }
         }
         particlesRef.current.geometry.attributes.position.needsUpdate = true;
@@ -377,7 +377,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     };
   }, []);
 
-  // GLITCH-FREE SMOOTH CAMERA DIVE
+  // SMOOTH CINEMATIC TRANSITION WHEN EXPLORE IS CLICKED (No Camera Penetration)
   useEffect(() => {
     if (!isTransitioning || !cameraRef.current || !earthGroupRef.current) return;
 
@@ -386,18 +386,18 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
 
     const tl = gsap.timeline();
 
-    // Camera zooms smoothly from 3.85 to 2.8 (SAFELY OUTSIDE sphere radius 1.18)
+    // Gentle camera push towards India (Safe distance: 4.2 -> 3.4, staying outside the 1.62 sphere!)
     tl.to(camera.position, {
-      z: 2.8,
-      duration: 1.1,
+      z: 3.4,
+      duration: 1.3,
       ease: 'power2.inOut',
     });
 
     tl.to(
       earthGroup.position,
       {
-        y: -0.05,
-        duration: 1.1,
+        y: -0.2,
+        duration: 1.3,
         ease: 'power2.inOut',
       },
       0
@@ -408,6 +408,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     <div
       ref={containerRef}
       className="absolute inset-0 w-full h-full pointer-events-auto cursor-grab active:cursor-grabbing z-0"
+      style={{
+        background: `radial-gradient(circle at 50% 50%, rgba(255, 75, 20, 0.05) 0%, rgba(8, 3, 2, 0.4) 50%, #020101 100%)`,
+      }}
     />
   );
 };
