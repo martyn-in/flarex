@@ -5,18 +5,23 @@ import { Menu, Flame } from 'lucide-react';
 
 interface LandingHeaderProps {
   onMenuClick?: () => void;
+  fadeBranding?: boolean;
 }
 
-export const LandingHeader: React.FC<LandingHeaderProps> = ({ onMenuClick }) => {
+export const LandingHeader: React.FC<LandingHeaderProps> = ({ onMenuClick, fadeBranding = false }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-7 py-5 select-none bg-transparent border-b border-white/[0.03]">
-      {/* Brand Logo & Title */}
-      <div className="flex items-center gap-3">
+    <header className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-7 py-5 select-none bg-transparent border-b border-white/[0.02] pointer-events-none">
+      {/* Brand Logo & Title (Fades out when central cinematic wordmark reveals to prevent any duplicate) */}
+      <div
+        className={`flex items-center gap-3 transition-all duration-400 ease-out ${
+          fadeBranding ? 'opacity-0 pointer-events-none -translate-y-2' : 'opacity-100 pointer-events-auto'
+        }`}
+      >
         <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#ff5a36]/20 to-[#b32400]/10 border border-[#ff6a1a]/30 shadow-[0_0_15px_rgba(255,85,45,0.25)]">
           <Flame size={18} className="text-[#ff5533] fill-[#ff5533]/80 animate-pulse" />
         </div>
         <div className="flex flex-col">
-          <div className="flex items-center text-lg font-black tracking-[0.22em]">
+          <div className="flex items-center text-lg font-black tracking-[0.22em] font-[family-name:var(--font-oxanium),sans-serif]">
             <span className="text-white">FLARE</span>
             <span className="text-[#ff5533] drop-shadow-[0_0_10px_rgba(255,85,51,0.8)]">X</span>
           </div>
@@ -30,7 +35,9 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onMenuClick }) => 
       <button
         type="button"
         onClick={onMenuClick}
-        className="flex items-center justify-center w-10 h-10 rounded-lg text-[#d1b8af] hover:text-white hover:bg-white/[0.04] transition-colors border border-transparent hover:border-white/10"
+        className={`pointer-events-auto flex items-center justify-center w-10 h-10 rounded-lg text-[#d1b8af] hover:text-white hover:bg-white/[0.04] transition-all duration-300 border border-transparent hover:border-white/10 ${
+          fadeBranding ? 'opacity-30' : 'opacity-100'
+        }`}
         aria-label="Menu"
       >
         <Menu size={20} strokeWidth={1.75} />

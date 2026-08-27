@@ -1810,3 +1810,91 @@ button {
     min-height: 88px;
   }
 }
+
+/* ==========================================================================
+   CINEMATIC FIERY FLAREX WORDMARK (FORGED METALLIC THERMAL TREATMENT)
+   ========================================================================== */
+
+@keyframes thermalMagmaFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes thermalEmberRise {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.fiery-wordmark {
+  font-family: var(--font-oxanium), 'Orbitron', 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fiery-letter-body {
+  background-image: linear-gradient(
+    180deg,
+    #ffd08a 0%,
+    #ff8a38 18%,
+    #ff4b22 45%,
+    #b51f12 72%,
+    #61100c 100%
+  );
+  background-size: 100% 200%;
+  animation: thermalMagmaFlow 6s ease-in-out infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 106, 40, 0.95);
+  text-shadow:
+    0 0 2px rgba(255, 220, 170, 0.95),
+    0 0 6px rgba(255, 110, 45, 0.70),
+    0 0 16px rgba(255, 65, 25, 0.42),
+    0 0 34px rgba(150, 20, 8, 0.25);
+  display: inline-block;
+  transform: translateZ(0);
+}
+
+.fiery-letter-x {
+  background-image: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ffe8b8 14%,
+    #ffa333 36%,
+    #ff3300 68%,
+    #940e05 100%
+  );
+  background-size: 100% 200%;
+  animation: thermalMagmaFlow 4.5s ease-in-out infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.2px rgba(255, 140, 60, 1);
+  text-shadow:
+    0 0 3px rgba(255, 240, 200, 1),
+    0 0 8px rgba(255, 130, 50, 0.85),
+    0 0 22px rgba(255, 80, 30, 0.55),
+    0 0 45px rgba(200, 30, 10, 0.35);
+  display: inline-block;
+  transform: translateZ(0);
+}
+

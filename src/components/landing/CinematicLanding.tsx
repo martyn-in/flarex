@@ -22,21 +22,20 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
   onExplore,
 }) => {
   const [hasStartedExplore, setHasStartedExplore] = useState(false);
-  const [revealState, setRevealState] = useState<'idle' | 'forming' | 'revealed' | 'diving'>('idle');
+  const [showForgedWordmark, setShowForgedWordmark] = useState(false);
 
   const flameEmblemRef = useRef<HTMLDivElement>(null);
-  const wordmarkContainerRef = useRef<HTMLDivElement>(null);
-  const wordmarkRef = useRef<HTMLHeadingElement>(null);
+  const wordmarkRef = useRef<HTMLDivElement>(null);
+  const letterSpanRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const taglineRef = useRef<HTMLDivElement>(null);
   const exploreBtnRef = useRef<HTMLButtonElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const darkTransitionOverlayRef = useRef<HTMLDivElement>(null);
-  const emberParticlesRef = useRef<HTMLDivElement>(null);
+  const sparksContainerRef = useRef<HTMLDivElement>(null);
 
   const handleExploreClick = () => {
     if (hasStartedExplore) return;
     setHasStartedExplore(true);
-    setRevealState('forming');
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -47,30 +46,30 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
     // 0.0 - 0.35s: Explore button compresses slightly
     if (exploreBtnRef.current) {
       tl.to(exploreBtnRef.current, {
-        scale: 0.95,
+        scale: 0.94,
         duration: 0.3,
         ease: 'power2.out',
       });
 
-      // 0.25 - 0.8s: Border brightens with fiery glow
+      // 0.25 - 0.8s: Button border brightens with fiery glow
       tl.to(
         exploreBtnRef.current,
         {
           borderColor: '#ff8a32',
-          boxShadow: '0 0 40px rgba(255, 110, 30, 0.9)',
+          boxShadow: '0 0 35px rgba(255, 110, 30, 0.95)',
           duration: 0.45,
           ease: 'power2.inOut',
         },
         0.25
       );
 
-      // 0.5 - 1.1s: EXPLORE button dissolves into thermal particles
+      // 0.5 - 1.1s: EXPLORE button dissolves into thermal sparks
       tl.to(
         exploreBtnRef.current,
         {
           opacity: 0,
-          scale: 1.12,
-          filter: 'blur(10px)',
+          scale: 1.15,
+          filter: 'blur(12px)',
           duration: 0.6,
           ease: 'power2.in',
         },
@@ -78,115 +77,141 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
       );
     }
 
-    // Hide scroll indicator
+    // Hide scroll indicator immediately
     if (scrollIndicatorRef.current) {
       tl.to(
         scrollIndicatorRef.current,
         {
           opacity: 0,
           y: 15,
-          duration: 0.4,
+          duration: 0.35,
         },
         0.1
       );
     }
 
-    // 1.0 - 2.0s: Thermal particles gather, prepare wordmark container
-    if (wordmarkContainerRef.current) {
-      tl.to(
-        wordmarkContainerRef.current,
-        {
-          opacity: 1,
-          duration: 0.5,
-        },
-        1.0
-      );
-    }
+    // 1.0s: Mount ONLY ONE central cinematic wordmark in DOM
+    tl.add(() => {
+      setShowForgedWordmark(true);
+    }, 1.0);
 
-    // 1.5 - 2.7s: Particles assemble the letters F L A R E X
-    if (wordmarkRef.current) {
-      tl.fromTo(
-        wordmarkRef.current,
-        {
-          opacity: 0,
-          scale: 0.78,
-          letterSpacing: '0.45em',
-          filter: 'blur(22px) brightness(2.8)',
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          letterSpacing: '0.24em',
-          filter: 'blur(0px) brightness(1.1)',
-          duration: 1.3,
-          ease: 'power3.out',
-        },
-        1.4
-      );
-    }
+    // 1.4 - 2.7s: Forged FLAREX wordmark forms from heat and ember sparks
+    tl.add(() => {
+      if (wordmarkRef.current) {
+        gsap.fromTo(
+          wordmarkRef.current,
+          {
+            opacity: 0,
+            scale: 0.82,
+            filter: 'blur(20px) brightness(2.5)',
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px) brightness(1)',
+            duration: 1.3,
+            ease: 'power3.out',
+          }
+        );
+      }
 
-    // Flame emblem above wordmark
-    if (flameEmblemRef.current) {
-      tl.fromTo(
-        flameEmblemRef.current,
-        {
-          opacity: 0,
-          scale: 0.6,
-          filter: 'blur(15px)',
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          filter: 'blur(0px)',
-          duration: 1.0,
-          ease: 'power2.out',
-        },
-        1.6
-      );
-    }
+      // Staggered letter ignition (F-L-A-R-E-X)
+      const validLetters = letterSpanRefs.current.filter(Boolean);
+      if (validLetters.length > 0) {
+        gsap.fromTo(
+          validLetters,
+          {
+            opacity: 0,
+            y: 12,
+            scale: 0.9,
+            filter: 'drop-shadow(0 0 40px rgba(255, 140, 40, 1))',
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: 'drop-shadow(0 0 10px rgba(255, 90, 20, 0.6))',
+            duration: 1.0,
+            stagger: 0.08,
+            ease: 'back.out(1.4)',
+          }
+        );
+      }
 
-    // 2.5 - 3.1s: Letters become fully solid, glowing hot edges stabilize
-    // 2.9 - 3.5s: Reveal Tagline
-    if (taglineRef.current) {
-      tl.fromTo(
-        taglineRef.current,
-        {
-          opacity: 0,
-          y: 14,
-          filter: 'blur(8px)',
-        },
-        {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 0.8,
-          ease: 'power2.out',
-        },
-        2.8
-      );
-    }
+      if (flameEmblemRef.current) {
+        gsap.fromTo(
+          flameEmblemRef.current,
+          {
+            opacity: 0,
+            scale: 0.5,
+            filter: 'blur(15px)',
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 1.0,
+            ease: 'power2.out',
+          }
+        );
+      }
+    }, 1.35);
 
-    // 3.5 - 4.2s: Earth camera dives forward, screen darkens briefly (150-250ms), fades to dashboard
-    if (wordmarkContainerRef.current) {
-      tl.to(
-        wordmarkContainerRef.current,
-        {
-          scale: 1.4,
+    // 2.8 - 3.4s: Reveal single tagline
+    tl.add(() => {
+      if (taglineRef.current) {
+        gsap.fromTo(
+          taglineRef.current,
+          {
+            opacity: 0,
+            y: 12,
+            filter: 'blur(6px)',
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.7,
+            ease: 'power2.out',
+          }
+        );
+      }
+    }, 2.75);
+
+    // 3.4 - 4.1s: Wordmark surges and camera dives toward India
+    tl.add(() => {
+      if (wordmarkRef.current) {
+        gsap.to(wordmarkRef.current, {
+          scale: 1.45,
           opacity: 0,
-          filter: 'blur(12px)',
-          duration: 0.8,
+          filter: 'blur(14px)',
+          duration: 0.7,
           ease: 'power2.in',
-        },
-        3.4
-      );
-    }
+        });
+      }
+      if (flameEmblemRef.current) {
+        gsap.to(flameEmblemRef.current, {
+          scale: 1.5,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'power2.in',
+        });
+      }
+      if (taglineRef.current) {
+        gsap.to(taglineRef.current, {
+          opacity: 0,
+          duration: 0.5,
+        });
+      }
+    }, 3.35);
 
+    // 3.7 - 4.1s: Brief 200ms screen blackout before dashboard fade-in
     if (darkTransitionOverlayRef.current) {
       tl.to(
         darkTransitionOverlayRef.current,
         {
           opacity: 1,
-          duration: 0.5,
+          duration: 0.45,
           ease: 'power2.inOut',
         },
         3.65
@@ -207,7 +232,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#020202] text-white select-none">
-      {/* Deep Space Background (Almost pure black with subtle graphite undertone) */}
+      {/* Deep Space Background */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -217,8 +242,11 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
         }}
       />
 
-      {/* Minimal Transparent Header */}
-      <LandingHeader onMenuClick={handleExploreClick} />
+      {/* Minimal Header (Header title automatically fades out on Explore click to ensure zero duplicate text) */}
+      <LandingHeader
+        onMenuClick={handleExploreClick}
+        fadeBranding={hasStartedExplore}
+      />
 
       {/* 3D High-Clarity WebGL Earth */}
       <div className="absolute inset-0 z-10">
@@ -232,79 +260,94 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
       <div className="relative z-20 flex flex-col items-center justify-between w-full h-full px-6 pt-24 pb-8 pointer-events-none">
         <div className="flex-1" />
 
-        {/* Center Container: Revealed FLAREX Wordmark & Tagline */}
-        <div
-          ref={wordmarkContainerRef}
-          className="flex flex-col items-center justify-center text-center max-w-4xl w-full my-auto transition-all duration-300"
-          style={{ opacity: hasStartedExplore ? 1 : 0.85 }}
-        >
-          {/* Flame Icon */}
-          <div
-            ref={flameEmblemRef}
-            className="relative mb-2.5 flex items-center justify-center pointer-events-auto transition-transform duration-300"
-          >
-            <div className="absolute w-14 h-14 rounded-full bg-[#ff5533]/30 blur-xl animate-pulse" />
-            <Flame
-              size={34}
-              className="text-[#ff5533] fill-[#ff7a22] drop-shadow-[0_0_20px_rgba(255,95,30,1)] animate-pulse"
-            />
-          </div>
-
-          {/* Monumental FLAREX Fire Font Wordmark */}
-          <div className="flex items-center justify-center font-black tracking-[0.24em] select-none text-center">
-            <h1
-              ref={wordmarkRef}
-              className="text-5xl sm:text-7xl md:text-8xl font-black tracking-[0.22em] uppercase transition-all duration-300"
-            >
-              <span
-                className="bg-clip-text text-transparent"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(180deg, #ffffff 0%, #ffe4b8 15%, #ff8a00 38%, #ff3824 68%, #9e1a00 100%)',
-                  filter:
-                    'drop-shadow(0 0 25px rgba(255, 100, 20, 0.9)) drop-shadow(0 0 55px rgba(255, 50, 0, 0.55))',
-                }}
+        {/* Center Container: Before Explore, shows ONLY Explore button. After Explore, forms ONLY ONE central FLAREX wordmark. */}
+        <div className="flex flex-col items-center justify-center text-center max-w-4xl w-full my-auto">
+          {/* ONLY ONE Central Cinematic Forged Wordmark (Only renders when Explore is clicked) */}
+          {showForgedWordmark && (
+            <div className="flex flex-col items-center justify-center text-center w-full">
+              {/* Flame Icon */}
+              <div
+                ref={flameEmblemRef}
+                className="relative mb-2.5 flex items-center justify-center opacity-0"
               >
-                FLARE
-              </span>
-              <span
-                className="ml-1 bg-clip-text text-transparent"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(180deg, #ffffff 0%, #fff2cc 15%, #ff9d00 40%, #ff2200 70%, #b30000 100%)',
-                  filter:
-                    'drop-shadow(0 0 35px rgba(255, 120, 30, 1)) drop-shadow(0 0 70px rgba(255, 40, 0, 0.8))',
-                }}
+                <div className="absolute w-14 h-14 rounded-full bg-[#ff5533]/30 blur-xl animate-pulse" />
+                <Flame
+                  size={36}
+                  className="text-[#ff5533] fill-[#ff7a22] drop-shadow-[0_0_22px_rgba(255,95,30,1)] animate-pulse"
+                />
+              </div>
+
+              {/* Forged Metallic Fire Wordmark: FLAREX */}
+              <div
+                ref={wordmarkRef}
+                className="fiery-wordmark opacity-0 select-none text-center"
               >
-                X
-              </span>
-            </h1>
-          </div>
+                <h1 className="text-5xl sm:text-7xl md:text-8xl font-semibold tracking-[0.18em] uppercase flex items-center justify-center">
+                  <span
+                    ref={(el) => { letterSpanRefs.current[0] = el; }}
+                    className="fiery-letter-body"
+                  >
+                    F
+                  </span>
+                  <span
+                    ref={(el) => { letterSpanRefs.current[1] = el; }}
+                    className="fiery-letter-body"
+                  >
+                    L
+                  </span>
+                  <span
+                    ref={(el) => { letterSpanRefs.current[2] = el; }}
+                    className="fiery-letter-body"
+                  >
+                    A
+                  </span>
+                  <span
+                    ref={(el) => { letterSpanRefs.current[3] = el; }}
+                    className="fiery-letter-body"
+                  >
+                    R
+                  </span>
+                  <span
+                    ref={(el) => { letterSpanRefs.current[4] = el; }}
+                    className="fiery-letter-body"
+                  >
+                    E
+                  </span>
+                  <span
+                    ref={(el) => { letterSpanRefs.current[5] = el; }}
+                    className="fiery-letter-x ml-0.5"
+                  >
+                    X
+                  </span>
+                </h1>
+              </div>
 
-          {/* Tagline */}
-          <div
-            ref={taglineRef}
-            className="mt-3 text-[9.5px] sm:text-xs font-semibold tracking-[0.3em] text-[#d4c3bd] uppercase"
-          >
-            IGNITING{' '}
-            <span className="text-[#ff681e] drop-shadow-[0_0_8px_rgba(255,104,30,0.8)] font-bold">
-              INTELLIGENCE
-            </span>
-            . PROTECTING{' '}
-            <span className="text-[#ff681e] drop-shadow-[0_0_8px_rgba(255,104,30,0.8)] font-bold">
-              TOMORROW
-            </span>
-            .
-          </div>
+              {/* Tagline */}
+              <div
+                ref={taglineRef}
+                className="mt-3 text-[9.5px] sm:text-xs font-semibold tracking-[0.3em] text-[#d4c3bd] uppercase opacity-0 font-[family-name:var(--font-oxanium),sans-serif]"
+              >
+                IGNITING{' '}
+                <span className="text-[#ff681e] drop-shadow-[0_0_8px_rgba(255,104,30,0.8)] font-bold">
+                  INTELLIGENCE
+                </span>
+                . PROTECTING{' '}
+                <span className="text-[#ff681e] drop-shadow-[0_0_8px_rgba(255,104,30,0.8)] font-bold">
+                  TOMORROW
+                </span>
+                .
+              </div>
+            </div>
+          )}
 
-          {/* Explore Button */}
+          {/* Centered Explore Button (Visible on initial load, dissolves on click) */}
           <div className="mt-8 pointer-events-auto">
             <button
               ref={exploreBtnRef}
               type="button"
               onClick={handleExploreClick}
               disabled={hasStartedExplore}
-              className="group relative px-10 py-3.5 rounded-xl text-xs sm:text-sm font-bold tracking-[0.28em] text-[#fbf5f2] uppercase bg-[#080808]/40 border border-[#ff681e]/40 backdrop-blur-md shadow-[0_0_22px_rgba(255,85,35,0.25)] hover:shadow-[0_0_38px_rgba(255,106,26,0.75)] hover:border-[#ff8b32] hover:bg-[#140603]/80 transition-all duration-300 transform hover:scale-105 active:scale-95"
+              className="group relative px-11 py-3.5 rounded-xl text-xs sm:text-sm font-bold tracking-[0.28em] text-[#fbf5f2] uppercase bg-[#080808]/45 border border-[#ff681e]/40 backdrop-blur-md shadow-[0_0_22px_rgba(255,85,35,0.25)] hover:shadow-[0_0_38px_rgba(255,106,26,0.8)] hover:border-[#ff8b32] hover:bg-[#140603]/80 transition-all duration-300 transform hover:scale-105 active:scale-95 font-[family-name:var(--font-oxanium),sans-serif]"
             >
               <span className="relative z-10 flex items-center gap-2">
                 EXPLORE
@@ -323,13 +366,13 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
           <div className="w-4 h-7 rounded-full border border-white/20 flex items-start justify-center p-1">
             <div className="w-1 h-1.5 rounded-full bg-[#ff681e] animate-bounce mt-0.5" />
           </div>
-          <span className="text-[8px] font-bold tracking-[0.22em] uppercase">
+          <span className="text-[8px] font-bold tracking-[0.22em] uppercase font-[family-name:var(--font-oxanium),sans-serif]">
             SCROLL TO DISCOVER
           </span>
         </div>
       </div>
 
-      {/* Smooth Dark Transition Overlay (150-250ms screen blackout before dashboard fade-in) */}
+      {/* Smooth Dark Transition Overlay */}
       <div
         ref={darkTransitionOverlayRef}
         className="absolute inset-0 z-50 pointer-events-none bg-[#020202] opacity-0"
