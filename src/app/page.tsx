@@ -445,7 +445,7 @@ function DashboardContent() {
                 <strong>{currentIncident.frp} MW</strong>
               </div>
               <div>
-                <Satellite size={17} className="text-[#4ca7ff]" />
+                <Satellite size={17} className="text-[#ff7a45]" />
                 <span>Satellite Sensor</span>
                 <strong>{currentIncident.satellite.split(' ')[0]}</strong>
               </div>

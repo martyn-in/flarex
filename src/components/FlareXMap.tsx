@@ -41,20 +41,20 @@ export const FlareXMap: React.FC = () => {
         const isMedium = spot.severity === 'medium';
         const isPersistent = spot.classification === 'Persistent Thermal Source' || spot.persistenceScore > 50;
 
-        let dotColor = '#20C997'; // low
-        let glowShadow = '0 0 10px rgba(32, 201, 151, 0.6)';
+        let dotColor = '#faad14'; // low
+        let glowShadow = '0 0 10px rgba(250, 173, 20, 0.6)';
         if (isCritical) {
           dotColor = '#ff4949';
           glowShadow = '0 0 15px rgba(255, 73, 73, 0.9)';
         } else if (isPersistent) {
-          dotColor = '#a855f7';
-          glowShadow = '0 0 12px rgba(168, 85, 247, 0.7)';
+          dotColor = '#fa8c16';
+          glowShadow = '0 0 12px rgba(250, 140, 22, 0.7)';
         } else if (isHigh) {
-          dotColor = '#ff8a42';
-          glowShadow = '0 0 12px rgba(255, 138, 66, 0.7)';
+          dotColor = '#ff7a45';
+          glowShadow = '0 0 12px rgba(255, 122, 69, 0.7)';
         } else if (isMedium) {
-          dotColor = '#facc15';
-          glowShadow = '0 0 10px rgba(250, 204, 21, 0.6)';
+          dotColor = '#ffa940';
+          glowShadow = '0 0 10px rgba(255, 169, 64, 0.6)';
         }
 
         const el = document.createElement('div');
@@ -67,7 +67,7 @@ export const FlareXMap: React.FC = () => {
               <div class="selected-ring-2" style="position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}22; pointer-events: none;"></div>
               <div class="selected-ring-1" style="position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}33; pointer-events: none;"></div>
               <div style="position: relative; width: 14px; height: 14px; border-radius: 50%; background: ${dotColor}; border: 2px solid #ffffff; box-shadow: ${glowShadow}; z-index: 20;"></div>
-              <div style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); padding: 2px 7px; border-radius: 6px; background: rgba(10,14,22,0.92); color: #fff; font-size: 10px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 4px;">
+              <div style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); padding: 2px 7px; border-radius: 6px; background: rgba(24, 10, 6, 0.95); color: #fff; font-size: 10px; font-weight: 700; border: 1px solid rgba(255, 106, 61, 0.35); white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.6); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 4px;">
                 <span>${spot.name}</span>
                 <span style="color: ${dotColor}; font-family: monospace;">${spot.frp}MW</span>
               </div>
@@ -111,8 +111,8 @@ export const FlareXMap: React.FC = () => {
       el.className = 'relative flex items-center justify-center cursor-pointer pointer-events-auto';
 
       el.innerHTML = `
-        <div style="padding: 4px 8px; border-radius: 8px; background: rgba(8, 14, 24, 0.85); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 4px 14px rgba(0,0,0,0.5); font-size: 9.5px; font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 5px; transition: transform 0.18s ease; backdrop-filter: blur(12px);">
-          <span style="width: 5px; height: 5px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 6px #38bdf8;"></span>
+        <div style="padding: 4px 8px; border-radius: 8px; background: rgba(20, 9, 6, 0.9); border: 1px solid rgba(255, 106, 61, 0.35); box-shadow: 0 4px 14px rgba(0,0,0,0.6); font-size: 9.5px; font-weight: 700; color: #fef8f6; display: flex; align-items: center; gap: 5px; transition: transform 0.18s ease; backdrop-filter: blur(12px);">
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #ff7a45; box-shadow: 0 0 6px #ff7a45;"></span>
           <span>${facility.name.split(' ')[0]}</span>
         </div>
       `;

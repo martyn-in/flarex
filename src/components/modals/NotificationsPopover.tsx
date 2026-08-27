@@ -69,15 +69,15 @@ export const NotificationsPopover: React.FC = () => {
                 <span className="text-[12px] font-bold text-white truncate">{alert.name}</span>
                 <span className="text-[10px] font-mono text-slate-400 shrink-0">{alert.timestamp.split(' ')[1]}</span>
               </div>
-              <p className="text-[11px] text-slate-300 truncate flex items-center gap-1 mt-0.5">
-                <MapPin className="w-3 h-3 text-cyan-400" />
+              <p className="text-[11px] text-[#d1b8af] truncate flex items-center gap-1 mt-0.5">
+                <MapPin className="w-3 h-3 text-[#ff7a45]" />
                 {alert.location}
               </p>
-              <div className="flex items-center gap-3 mt-1.5 pt-1.5 border-t border-white/[0.06] text-[10.5px]">
-                <span className="font-bold text-red-400 font-mono">{alert.frp} MW</span>
-                <span className="text-slate-500">•</span>
-                <span className="font-semibold text-emerald-400 font-mono">{alert.confidence}% Conf.</span>
-                <span className="text-slate-500">•</span>
+              <div className="flex items-center gap-3 mt-1.5 pt-1.5 border-t border-[rgba(255,106,61,0.1)] text-[10.5px]">
+                <span className="font-bold text-[#ff4949] font-mono">{alert.frp} MW</span>
+                <span className="text-[#8c766e]">•</span>
+                <span className="font-semibold text-[#ffa940] font-mono">{alert.confidence}% Conf.</span>
+                <span className="text-[#8c766e]">•</span>
                 <span className="font-semibold text-white font-mono">{alert.temperature}°C</span>
               </div>
             </div>

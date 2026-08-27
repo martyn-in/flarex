@@ -1,22 +1,22 @@
 'use client';
 
 import React from 'react';
-import { Cpu, CheckCircle2, Sparkles, Activity, ShieldCheck, Layers } from 'lucide-react';
+import { Cpu, CheckCircle2, Sparkles, Activity, ShieldCheck, Layers, Flame } from 'lucide-react';
 import { SYSTEM_OPERATIONAL_STATS } from '@/data/mockData';
 
 export default function AIModelPanel() {
   const featureWeights = [
     { name: 'FRP Radiative Spike (Δ vs Baseline)', weight: 38, icon: Activity },
-    { name: 'Multi-Day Temporal Persistence Score', weight: 28, icon: Sparkles },
+    { name: 'Multi-Day Temporal Persistence Score', weight: 28, icon: Flame },
     { name: 'Industrial Buffer / SEZ Proximity (OSM)', weight: 20, icon: Layers },
     { name: 'Multi-Spectral Skin Temperature (°C)', weight: 14, icon: Cpu },
   ];
 
   const classifications = [
-    { label: 'Persistent Industrial Heat', count: '71.5%', color: 'bg-[#bd7cf7]' },
-    { label: 'Ambient / Agricultural Burn', count: '23.7%', color: 'bg-[#31d4ac]' },
-    { label: 'High-Temperature Process Anomaly', count: '3.8%', color: 'bg-[#ffae42]' },
-    { label: 'Uncontrolled Critical Fire', count: '1.0%', color: 'bg-[#ff505d]' },
+    { label: 'Persistent Industrial Heat', count: '71.5%', color: 'bg-[#ffa940]' },
+    { label: 'Ambient / Agricultural Burn', count: '23.7%', color: 'bg-[#faad14]' },
+    { label: 'High-Temperature Process Anomaly', count: '3.8%', color: 'bg-[#ff8a42]' },
+    { label: 'Uncontrolled Critical Fire', count: '1.0%', color: 'bg-[#ff4949]' },
   ];
 
   return (
@@ -26,7 +26,7 @@ export default function AIModelPanel() {
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Model Status</span>
           <div className="flex items-center gap-1.5 mt-1">
-            <CheckCircle2 size={16} className="text-[#31d5a0]" />
+            <CheckCircle2 size={16} className="text-[#ffa940]" />
             <span className="text-[15px] font-bold text-white">ONLINE</span>
           </div>
           <span className="flarex-kpi-meta">v4.2.1-NRT Ensemble</span>
@@ -34,7 +34,7 @@ export default function AIModelPanel() {
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Inference Confidence</span>
-          <span className="flarex-kpi-value text-[#44d7ff]">
+          <span className="flarex-kpi-value text-[#ff7a45]">
             {SYSTEM_OPERATIONAL_STATS.averageConfidence}%
           </span>
           <span className="flarex-kpi-meta">Validation Accuracy 96.4%</span>
@@ -48,7 +48,7 @@ export default function AIModelPanel() {
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">False Positive Rate</span>
-          <span className="flarex-kpi-value text-[#31d5a0]">1.2%</span>
+          <span className="flarex-kpi-value text-[#ffa940]">1.2%</span>
           <span className="flarex-kpi-meta">Solar glint filtered</span>
         </div>
       </div>
@@ -60,11 +60,11 @@ export default function AIModelPanel() {
           {featureWeights.map((f) => (
             <div key={f.name} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-[10.5px]">
-                <span className="text-[#e7edf3] flex items-center gap-1.5">
-                  <f.icon size={13} className="text-[#44d7ff]" />
+                <span className="text-[#fef8f6] flex items-center gap-1.5">
+                  <f.icon size={13} className="text-[#ff7a45]" />
                   {f.name}
                 </span>
-                <span className="font-mono font-bold text-[#44d7ff]">{f.weight}%</span>
+                <span className="font-mono font-bold text-[#ff7a45]">{f.weight}%</span>
               </div>
               <div className="flarex-severity-track">
                 <div
@@ -84,7 +84,7 @@ export default function AIModelPanel() {
           {classifications.map((c) => (
             <div key={c.label} className="flarex-status-row">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${c.color}`} />
+                <span className={`w-2 h-2 rounded-full ${c.color} shadow-[0_0_6px_currentColor]`} />
                 <span className="flarex-status-name">{c.label}</span>
               </div>
               <span className="font-mono text-[11px] font-bold text-white">{c.count}</span>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { TrendingUp, Sparkles } from 'lucide-react';
+import { TrendingUp, Sparkles, Flame } from 'lucide-react';
 import { SYSTEM_OPERATIONAL_STATS } from '@/data/mockData';
 
 export interface Metric {
@@ -99,7 +99,7 @@ export default function AnalyticsPanel({
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {/* 2x2 KPI Grid */}
       <div className="flarex-kpi-grid">
         {displayMetrics.map((metric) => (
@@ -115,7 +115,7 @@ export default function AnalyticsPanel({
       <section className="flarex-section">
         <div className="flex items-center justify-between mb-3">
           <h3 className="flarex-section-title !mb-0">Temporal Radiative Analysis</h3>
-          <div className="flex items-center gap-1 text-[9.5px] font-semibold text-[#44d7ff] bg-[rgba(68,215,255,0.08)] px-2 py-0.5 rounded-md border border-[rgba(68,215,255,0.18)]">
+          <div className="flex items-center gap-1 text-[9.5px] font-semibold text-[#ff7a45] bg-[rgba(255,90,45,0.12)] px-2 py-0.5 rounded-md border border-[rgba(255,106,61,0.25)]">
             <TrendingUp size={12} />
             <span>+49.6% weekly peak</span>
           </div>
@@ -167,7 +167,7 @@ export default function AnalyticsPanel({
                   <span className={`font-mono text-[11px] font-bold ${r.status === 'Critical' ? 'text-[#ff505d]' : 'text-[#ffae42]'}`}>
                     {r.peakFrp}
                   </span>
-                  <span className="block text-[8.5px] text-[#81909e] uppercase tracking-wider mt-0.5">
+                  <span className="block text-[8.5px] text-[#a3928c] uppercase tracking-wider mt-0.5">
                     {r.status}
                   </span>
                 </div>
@@ -180,7 +180,7 @@ export default function AnalyticsPanel({
       {/* FlareX Insight Card */}
       <section className="insight-card mt-1">
         <div className="insight-icon">
-          <Sparkles size={17} />
+          <Flame size={17} />
         </div>
         <div>
           <span className="insight-label">FLAREX INSIGHT</span>
@@ -190,7 +190,7 @@ export default function AnalyticsPanel({
           </p>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
@@ -215,9 +215,9 @@ function SmoothAnalyticsChart({ values }: { values: number[] }) {
     <div className="w-full h-[145px] overflow-hidden">
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="none">
         <defs>
-          <linearGradient id="fxChartGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#44d7ff" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="#44d7ff" stopOpacity="0" />
+          <linearGradient id="fxFireChartGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#ff5539" stopOpacity="0.38" />
+            <stop offset="100%" stopColor="#ff5539" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -228,16 +228,16 @@ function SmoothAnalyticsChart({ values }: { values: number[] }) {
             x2={width}
             y1={y}
             y2={y}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,106,61,0.08)"
             strokeWidth="1"
           />
         ))}
 
-        <path d={areaPath} fill="url(#fxChartGradient)" />
+        <path d={areaPath} fill="url(#fxFireChartGradient)" />
         <path
           d={path}
           fill="none"
-          stroke="#44d7ff"
+          stroke="#ff7a45"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -249,13 +249,13 @@ function SmoothAnalyticsChart({ values }: { values: number[] }) {
             cx={point.x}
             cy={point.y}
             r="3.5"
-            fill="#07101b"
-            stroke="#44d7ff"
+            fill="#140a07"
+            stroke="#ff7a45"
             strokeWidth="2"
           />
         ))}
       </svg>
-      <div className="flex justify-between items-center text-[9px] text-[#718096] mt-1 px-1">
+      <div className="flex justify-between items-center text-[9px] text-[#a3928c] mt-1 px-1">
         <span>18 May</span>
         <span>19 May</span>
         <span>20 May</span>

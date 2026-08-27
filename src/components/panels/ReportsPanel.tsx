@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileText, Download, FileSpreadsheet, Sparkles, Map } from 'lucide-react';
+import { FileText, Download, FileSpreadsheet, Sparkles, Map, Flame } from 'lucide-react';
 import { REPORTS_LIST, HOTSPOTS_DATA } from '@/data/mockData';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
@@ -92,7 +92,7 @@ export default function ReportsPanel() {
           {REPORTS_LIST.map((rep) => (
             <div key={rep.id} className="flarex-status-row !items-start">
               <div className="flex items-start gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-[rgba(255,174,66,0.1)] border border-[rgba(255,174,66,0.2)] flex items-center justify-center text-[#ffae42] shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-lg bg-[rgba(255,90,45,0.12)] border border-[rgba(255,106,61,0.28)] flex items-center justify-center text-[#ff7a45] shrink-0 mt-0.5">
                   <FileText size={14} />
                 </div>
                 <div className="min-w-0">
@@ -106,7 +106,7 @@ export default function ReportsPanel() {
               <button
                 type="button"
                 onClick={() => handleDownload(rep)}
-                className="w-7 h-7 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(148,163,184,0.15)] flex items-center justify-center text-[#8d9baa] hover:text-white hover:border-[#44d7ff] shrink-0 transition-colors cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-[rgba(255,90,45,0.06)] border border-[rgba(255,106,61,0.2)] flex items-center justify-center text-[#d1b8af] hover:text-white hover:border-[#ff5a3c] hover:bg-[rgba(255,90,45,0.15)] shrink-0 transition-colors cursor-pointer"
                 title={`Download ${rep.name}`}
               >
                 <Download size={13} />

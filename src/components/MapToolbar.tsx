@@ -150,7 +150,7 @@ export const MapToolbar: React.FC = () => {
           type="button"
           onClick={focusActiveIncident}
           className="w-9 h-9 rounded-xl flex items-center justify-center text-cyan-400 hover:text-cyan-200 hover:bg-cyan-500/20 hover:shadow-[0_0_12px_rgba(56,189,248,0.4)] transition-all cursor-pointer"
-          title="Focus on Active Incident (Target Lock 🎯)"
+          title="Focus on Active Incident (Target Lock)"
         >
           <Crosshair className="w-4 h-4" />
         </button>
