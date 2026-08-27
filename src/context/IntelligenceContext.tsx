@@ -14,8 +14,10 @@ export type ActiveDrawerType =
   | 'incidents'
   | 'analytics'
   | 'datasources'
+  | 'data'
   | 'reports'
   | 'ai'
+  | 'settings'
   | null;
 
 export interface MapLayersState {

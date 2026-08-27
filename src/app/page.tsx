@@ -125,9 +125,9 @@ function DashboardContent() {
         {
           name: 'Data Sources',
           icon: Database,
-          active: activeDrawer === 'datasources',
+          active: activeDrawer === 'datasources' || activeDrawer === 'data',
           action: () => {
-            if (activeDrawer === 'datasources') closeDrawer();
+            if (activeDrawer === 'datasources' || activeDrawer === 'data') closeDrawer();
             else openDrawer('datasources');
           },
         },
@@ -157,10 +157,15 @@ function DashboardContent() {
         {
           name: 'Settings',
           icon: Settings,
-          active: isSettingsOpen,
+          active: isSettingsOpen || activeDrawer === 'settings',
           action: () => {
-            closeDrawer();
-            setIsSettingsOpen(!isSettingsOpen);
+            if (isSettingsOpen || activeDrawer === 'settings') {
+              closeDrawer();
+              setIsSettingsOpen(false);
+            } else {
+              closeDrawer();
+              setIsSettingsOpen(true);
+            }
           },
         },
       ],
