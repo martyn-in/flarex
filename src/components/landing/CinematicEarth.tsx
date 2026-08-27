@@ -6,10 +6,9 @@ import gsap from 'gsap';
 
 interface CinematicEarthProps {
   isTransitioning: boolean;
-  phase?: 'idle' | 'forming' | 'revealed' | 'diving';
 }
 
-export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning, phase = 'idle' }) => {
+export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -21,9 +20,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
 
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  // Fine-tuned angles so India is squarely front-and-center
-  const targetRotationRef = useRef({ x: 0.16, y: 4.72 });
-  const currentRotationRef = useRef({ x: 0.16, y: 4.72 });
+  // Set default rotation so India is perfectly centered facing the camera
+  const targetRotationRef = useRef({ x: 0.22, y: 4.22 });
+  const currentRotationRef = useRef({ x: 0.22, y: 4.22 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isIdleRef = useRef(true);
 
@@ -50,7 +49,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    renderer.toneMappingExposure = 1.35;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
@@ -63,19 +62,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
     scene.add(earthGroup);
     earthGroupRef.current = earthGroup;
 
-    // 4. TEXTURE LOADER
+    // 4. CLEAN NASA SATELLITE NIGHT MAP (ZERO LABELS / PLACE NAMES)
     const textureLoader = new THREE.TextureLoader();
-    
-    // High-clarity satellite map centered on India & Asia
     const earthTexture = textureLoader.load('/cinematic/earth_hd_clarity.jpg', (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = maxAnisotropy;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-      tex.generateMipmaps = true;
-    });
-
-    const nightTexture = textureLoader.load('/cinematic/earth_night_map.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = maxAnisotropy;
       tex.wrapS = THREE.RepeatWrapping;
@@ -91,8 +80,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
     const earthMaterial = new THREE.ShaderMaterial({
       uniforms: {
         map: { value: earthTexture },
-        nightMap: { value: nightTexture },
-        sunDirection: { value: new THREE.Vector3(-0.82, 0.68, 0.42).normalize() },
+        sunDirection: { value: new THREE.Vector3(-0.85, 0.65, 0.45).normalize() },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -107,7 +95,6 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
       `,
       fragmentShader: `
         uniform sampler2D map;
-        uniform sampler2D nightMap;
         uniform vec3 sunDirection;
         varying vec2 vUv;
         varying vec3 vNormal;
@@ -117,21 +104,17 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
           vec3 normal = normalize(vNormal);
           vec3 viewDir = normalize(-vPosition);
           
-          vec4 hdColor = texture2D(map, vUv);
-          vec4 nightColor = texture2D(nightMap, vUv);
+          vec4 tex = texture2D(map, vUv);
           
-          // Combine detailed terrain with intense golden night lights
-          vec3 earthBase = mix(hdColor.rgb, nightColor.rgb * 1.35, 0.32);
-          
-          // Enhanced contrast for crystal clarity
-          earthBase = pow(earthBase, vec3(0.94)) * 1.32;
+          // Pure crystal clarity terrain & glowing amber city lights (zero text labels)
+          vec3 earthBase = pow(tex.rgb, vec3(0.92)) * 1.55;
           
           // Solar Rim along upper-left horizon (incandescent fiery corona)
           float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.8);
           float sunLimb = max(0.0, dot(normal, sunDirection));
           
           // Fiery molten gold to crimson horizon rim
-          vec3 rimGlow = mix(vec3(0.95, 0.18, 0.02), vec3(1.0, 0.82, 0.32), pow(sunLimb, 1.3)) * fresnel * (0.32 + 3.6 * pow(sunLimb, 1.6));
+          vec3 rimGlow = mix(vec3(0.95, 0.18, 0.02), vec3(1.0, 0.82, 0.32), pow(sunLimb, 1.3)) * fresnel * (0.35 + 3.8 * pow(sunLimb, 1.6));
           
           vec3 finalColor = earthBase + rimGlow;
           gl_FragColor = vec4(finalColor, 1.0);
@@ -147,7 +130,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
     const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.01, 96, 96);
     const atmosphereMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        sunDirection: { value: new THREE.Vector3(-0.82, 0.68, 0.42).normalize() },
+        sunDirection: { value: new THREE.Vector3(-0.85, 0.65, 0.45).normalize() },
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -408,27 +391,16 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
 
     const tl = gsap.timeline();
 
-    // 0.7 - 1.5s: Earth moves slightly closer
-    tl.to(
-      camera.position,
-      {
-        z: 3.9,
-        duration: 1.5,
-        ease: 'power2.out',
-      },
-      0.7
-    );
-
-    // 3.4 - 4.2s: Continuous forward camera push into the Earth
+    // 0.0 - 1.2s: Continuous forward camera push into the Earth
     tl.to(
       camera.position,
       {
         z: 2.2,
         y: 0.1,
-        duration: 1.3,
+        duration: 1.2,
         ease: 'power3.in',
       },
-      3.2
+      0
     );
 
     tl.to(
@@ -437,10 +409,10 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning,
         x: 1.6,
         y: 1.6,
         z: 1.6,
-        duration: 1.3,
+        duration: 1.2,
         ease: 'power3.in',
       },
-      3.2
+      0
     );
   }, [isTransitioning]);
 

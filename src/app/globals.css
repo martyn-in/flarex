@@ -1843,34 +1843,36 @@ button {
 
 .fiery-wordmark {
   font-family: var(--font-oxanium), 'Orbitron', 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 0 20px rgba(255, 70, 10, 0.7));
 }
 
 .fiery-letter-body {
   background-image: linear-gradient(
     180deg,
-    #ffd08a 0%,
-    #ff8a38 18%,
-    #ff4b22 45%,
-    #b51f12 72%,
-    #61100c 100%
+    #ffffff 0%,
+    #ffdd55 10%,
+    #ff7700 32%,
+    #ff2600 64%,
+    #b30000 100%
   );
   background-size: 100% 200%;
-  animation: thermalMagmaFlow 6s ease-in-out infinite;
+  animation: thermalMagmaFlow 5s ease-in-out infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 106, 40, 0.95);
+  -webkit-text-stroke: 1.5px #ff4500;
   text-shadow:
-    0 0 2px rgba(255, 220, 170, 0.95),
-    0 0 6px rgba(255, 110, 45, 0.70),
-    0 0 16px rgba(255, 65, 25, 0.42),
-    0 0 34px rgba(150, 20, 8, 0.25);
+    0 0 4px rgba(255, 240, 180, 0.95),
+    0 0 12px rgba(255, 120, 20, 0.95),
+    0 0 26px rgba(255, 60, 0, 0.85),
+    0 0 55px rgba(255, 30, 0, 0.65),
+    0 0 90px rgba(200, 20, 0, 0.45);
   display: inline-block;
   transform: translateZ(0);
 }
@@ -1879,22 +1881,46 @@ button {
   background-image: linear-gradient(
     180deg,
     #ffffff 0%,
-    #ffe8b8 14%,
-    #ffa333 36%,
-    #ff3300 68%,
-    #940e05 100%
+    #fff088 12%,
+    #ffa200 34%,
+    #ff1a00 66%,
+    #990000 100%
   );
   background-size: 100% 200%;
-  animation: thermalMagmaFlow 4.5s ease-in-out infinite;
+  animation: thermalMagmaFlow 4s ease-in-out infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1.2px rgba(255, 140, 60, 1);
+  -webkit-text-stroke: 1.8px #ff5500;
   text-shadow:
-    0 0 3px rgba(255, 240, 200, 1),
-    0 0 8px rgba(255, 130, 50, 0.85),
-    0 0 22px rgba(255, 80, 30, 0.55),
-    0 0 45px rgba(200, 30, 10, 0.35);
+    0 0 5px rgba(255, 255, 200, 1),
+    0 0 15px rgba(255, 140, 30, 1),
+    0 0 35px rgba(255, 70, 10, 0.9),
+    0 0 70px rgba(255, 30, 0, 0.75),
+    0 0 110px rgba(200, 20, 0, 0.55);
   display: inline-block;
   transform: translateZ(0);
 }
+
+.fiery-tagline {
+  font-family: var(--font-oxanium), 'Orbitron', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #fff4ed;
+  text-shadow:
+    0 0 6px rgba(255, 130, 40, 0.9),
+    0 0 16px rgba(255, 70, 10, 0.7),
+    0 0 30px rgba(255, 40, 0, 0.45);
+}
+
+.fiery-tagline-highlight {
+  color: #ff7a1a;
+  font-weight: 800;
+  text-shadow:
+    0 0 8px rgba(255, 160, 40, 1),
+    0 0 22px rgba(255, 90, 20, 0.95),
+    0 0 40px rgba(255, 50, 0, 0.8);
+}
+
 
