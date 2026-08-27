@@ -23,7 +23,7 @@ export default function Home() {
     setTimeout(() => {
       setInDashboard(true);
       setIsTransitioning(false);
-    }, 4100);
+    }, 1100);
   };
 
   return (
@@ -34,7 +34,7 @@ export default function Home() {
           onExplore={handleExplore}
         />
       ) : (
-        <div className="w-full min-h-screen transition-opacity duration-1000 ease-in-out">
+        <div className="w-full min-h-screen">
           <FlareXDashboard onReturnToLanding={() => setInDashboard(false)} />
         </div>
       )}
