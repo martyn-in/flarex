@@ -19,9 +19,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
 
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  // Rotation focused on India/Asia and Pacific/Australia night lights
-  const targetRotationRef = useRef({ x: 0.18, y: 4.12 });
-  const currentRotationRef = useRef({ x: 0.18, y: 4.12 });
+  // Rotation focused on India/Asia and surrounding continents facing front
+  const targetRotationRef = useRef({ x: 0.16, y: 4.68 });
+  const currentRotationRef = useRef({ x: 0.16, y: 4.68 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isIdleRef = useRef(true);
 
@@ -49,7 +49,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.35;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
@@ -64,9 +64,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     scene.add(earthGroup);
     earthGroupRef.current = earthGroup;
 
-    // 4. NATURAL HIGH RESOLUTION SATELLITE TEXTURE (ZERO RED TINT)
+    // 4. NATURAL HIGH RESOLUTION SATELLITE TEXTURE (CRYSTAL CLARITY, ZERO RED)
     const textureLoader = new THREE.TextureLoader();
-    const earthTexture = textureLoader.load('/cinematic/earth_hd_clarity.jpg', (tex) => {
+    const earthTexture = textureLoader.load('/cinematic/earth_natural_clarity.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = maxAnisotropy;
       tex.wrapS = THREE.RepeatWrapping;
@@ -107,11 +107,11 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           vec4 tex = texture2D(map, vUv);
           
           // Pure, natural photorealistic Earth terrain & crisp golden city lights
-          vec3 earthBase = tex.rgb * 1.35;
+          vec3 earthBase = tex.rgb * 1.5;
           
-          // Natural soft blue atmospheric limb glow
-          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.5);
-          vec3 blueAtmosphereRim = vec3(0.2, 0.55, 1.0) * fresnel * 0.95;
+          // Soft natural cyan-blue atmospheric limb glow
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.6);
+          vec3 blueAtmosphereRim = vec3(0.18, 0.52, 0.95) * fresnel * 0.9;
           
           vec3 finalColor = earthBase + blueAtmosphereRim;
           gl_FragColor = vec4(finalColor, 1.0);
@@ -136,6 +136,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
         }
       `,
       fragmentShader: `
+        uniform vec3 sunDirection;
         varying vec3 vNormal;
         varying vec3 vPosition;
 
@@ -146,8 +147,8 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.8);
           
           // Natural, crisp celestial blue atmosphere (zero red)
-          vec3 naturalBlue = vec3(0.22, 0.58, 1.0);
-          float intensity = fresnel * 0.9;
+          vec3 naturalBlue = vec3(0.2, 0.55, 1.0);
+          float intensity = fresnel * 0.85;
           
           gl_FragColor = vec4(naturalBlue, intensity);
         }
