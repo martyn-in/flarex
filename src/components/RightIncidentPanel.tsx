@@ -18,6 +18,10 @@ import {
   Eye,
   Satellite,
   Cpu,
+  ShieldAlert,
+  Radio,
+  Wind,
+  FileCheck,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -293,7 +297,7 @@ export const RightIncidentPanel: React.FC = () => {
       </div>
 
       {/* 4. TAB CONTENTS */}
-      <div className="flex-1 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         {/* WHY? EXPLAINABILITY TAB (THE HERO FEATURE) */}
         {activeTab === 'Why?' && (
           <div className="bg-[#f0f7fd] border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
@@ -497,7 +501,49 @@ export const RightIncidentPanel: React.FC = () => {
         )}
       </div>
 
-      {/* 5. EMERGENCY DISPATCH ACTION BUTTON */}
+      {/* 5. OPERATIONAL EMERGENCY CONTEXT & PLUME DISPERSION (FILLS RIGHT SPACE CLEANLY) */}
+      <div className="bg-[#f0f7fd] border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+        <div className="flex items-center justify-between pb-1.5 border-b border-[#cfe0f0]">
+          <div className="flex items-center gap-1.5">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#0284c7]" />
+            <span className="text-[11px] font-extrabold text-[#0c2340] uppercase tracking-wider">
+              Emergency Units &amp; Plume
+            </span>
+          </div>
+          <span className="text-[9px] font-bold text-[#0369a1] bg-[#e0f2fe] px-2 py-0.5 rounded-full border border-[#bae6fd]">
+            SOP Active
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
+          <div className="p-2 rounded-xl bg-white border border-[#cfe0f0]">
+            <span className="text-[9px] text-[#5b7596] block font-semibold">Nearest Station</span>
+            <span className="font-bold text-[#0c2340] block truncate">
+              {selectedHotspot.nearestFacility.name.split(' ')[0]} Fire Unit
+            </span>
+            <span className="text-[9px] text-[#0284c7] font-mono font-bold">2.4 km (~5 mins)</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white border border-[#cfe0f0]">
+            <span className="text-[9px] text-[#5b7596] block font-semibold flex items-center gap-1">
+              <Wind size={10} className="text-[#0284c7]" /> Plume Vector
+            </span>
+            <span className="font-bold text-[#0c2340] block truncate">
+              12 km/h SW → NE
+            </span>
+            <span className="text-[9px] text-amber-700 font-mono font-bold">Buffer: 850m</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-[#3b5677] pt-1 border-t border-[#cfe0f0]/80">
+          <span className="flex items-center gap-1 font-medium">
+            <Radio className="w-3 h-3 text-[#0284c7]" />
+            SPCB Telemetry Ingestion:
+          </span>
+          <span className="font-mono font-bold text-emerald-700">ONLINE (Active)</span>
+        </div>
+      </div>
+
+      {/* 6. EMERGENCY DISPATCH ACTION BUTTON */}
       {isCritical && (
         <button
           type="button"
