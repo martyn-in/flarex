@@ -15,16 +15,8 @@ import {
   Bell,
   Search,
   Radio,
-  Thermometer,
-  ShieldCheck,
-  MapPin,
-  Satellite,
-  Clock3,
   ArrowUpRight,
   Globe,
-  TrendingUp,
-  Layers,
-  Trees,
 } from 'lucide-react';
 import { useIntelligence } from '@/context/IntelligenceContext';
 import { IncidentListDrawer } from '@/components/drawers/IncidentListDrawer';

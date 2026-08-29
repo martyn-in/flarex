@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FlameX: Geospatial Thermal Intelligence & AI Architecture Blueprint</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1a1a1a;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 10.5pt;
+    }
+
+    .cover-header {
+      border-bottom: 3px solid #ff4949;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .brand-title {
+      font-size: 24pt;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title span {
+      color: #ff4949;
+    }
+
+    .brand-subtitle {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 3px;
+    }
+
+    .doc-meta {
+      text-align: right;
+      font-size: 8.5pt;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-live {
+      display: inline-block;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #10b981;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 8pt;
+      margin-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      font-weight: 800;
+      color: #0f172a;
+      border-left: 4px solid #ff4949;
+      padding-left: 10px;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+      font-size: 9.8pt;
+    }
+
+    .callout-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .callout-box.alert {
+      background: #fff5f5;
+      border-color: #fecaca;
+      border-left: 4px solid #ef4444;
+    }
+
+    .callout-box.primary {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      border-left: 4px solid #10b981;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      font-size: 10pt;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 9pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .checklist {
+      list-style: none;
+      margin: 8px 0;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 22px;
+      margin-bottom: 6px;
+      font-size: 9.5pt;
+      color: #1e293b;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #059669;
+      font-weight: 800;
+      font-size: 10.5pt;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: #0f172a;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 10px 0;
+      page-break-inside: avoid;
+    }
+
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #ffffff;
+    }
+
+    .card-header {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 4px;
+      color: #0f172a;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .tag-normal {
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 8pt;
+    }
+
+    .tag-critical {
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 8pt;
+    }
+
+    .footer-note {
+      margin-top: 30px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+      font-size: 8pt;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER HEADER -->
+  <div class="cover-header">
+    <div>
+      <div class="brand-title">🔥 Flame<span>X</span></div>
+      <div class="brand-subtitle">Geospatial Thermal Intelligence &amp; AI Decision Platform</div>
+    </div>
+    <div class="doc-meta">
+      <div class="badge-live">PRODUCTION VERIFIED</div>
+      <div><strong>Version:</strong> 1.2-NRT</div>
+      <div><strong>Release Date:</strong> 29 August 2026</div>
+      <div><strong>Deployment:</strong> flarex-gamma.vercel.app</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2>1. Executive Vision &amp; Problem Statement</h2>
+  <p>
+    Standard NASA FIRMS implementations only visualize where heat anomalies are detected. However, FIRMS data alone cannot answer the critical operational question: <strong>"Is this heat an uncontrolled industrial disaster, a routine operational gas flare, a wildfire, or seasonal agricultural burning?"</strong>
+  </p>
+  <div class="callout-box primary">
+    <div class="callout-title">The FlameX Paradigm Shift</div>
+    <p>
+      FlameX transforms raw satellite heat coordinates into contextual, explainable intelligence by fusing <strong>satellite radiance (NASA FIRMS)</strong>, <strong>infrastructure geofences (OpenStreetMap)</strong>, <strong>10m land cover (ESA WorldCover)</strong>, and a <strong>30-day temporal baseline engine</strong>.
+    </p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <h2>2. The 5 Core Data Streams</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Data Stream</th>
+        <th style="width: 18%;">Source &amp; Resolution</th>
+        <th style="width: 60%;">Operational Role in FlameX</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Thermal Radiance</strong></td>
+        <td>NASA FIRMS (VIIRS 375m / MODIS 1km)</td>
+        <td>Ingests Fire Radiative Power (FRP in MW), brightness temperatures (T4/T5), detection confidence, and satellite timestamps.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Industrial GIS Context</strong></td>
+        <td>OpenStreetMap (OSM) Vectors</td>
+        <td>Computes spatial proximity (distance in meters) to refineries, chemical SEZs, power plants, steel mills, and mines.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Land-Cover Context</strong></td>
+        <td>ESA WorldCover (10m Pixel Grid)</td>
+        <td>Categorizes surface landuse: <em>Industrial/Built-up, Dense Forest, Cropland, Mining/Bare Soil, Water</em>.</td>
+      </tr>
+      <tr>
+        <td><strong>4. Optical Verification</strong></td>
+        <td>Sentinel-2 MSI (10m Bands)</td>
+        <td>Provides true-color (B04, B03, B02) and SWIR (B12) visual verification of smoke plumes and structural damage.</td>
+      </tr>
+      <tr>
+        <td><strong>5. Population Exposure</strong></td>
+        <td>Demographic Population Grids</td>
+        <td>Measures distance to nearest residential settlement zones to escalate hazard severity to CRITICAL.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3 -->
+  <h2>3. How the AI Predicts: The Detective Methodology</h2>
+  <p>
+    When a heat anomaly is detected, FlameX executes a multi-feature decision algorithm answering three fundamental questions:
+  </p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">📍 1. WHERE is the Heat?</div>
+      <p style="font-size: 8.8pt;">
+        Checks underlying terrain via ESA WorldCover and distance to industrial assets via OSM. Anomaly within 500m of a refinery is tagged as industrial.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-header">📈 2. WHAT is Normal for this Spot?</div>
+      <p style="font-size: 8.8pt;">
+        Queries the 30-day baseline engine. If a refinery flare burns at 108 MW every day (28/30 days), it is normal. If it surges to 380 MW (3.6× baseline) with no recurrence, it is an emergency fire.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 12px;">
+    <div class="card-header">👥 3. WHO is at Risk?</div>
+    <p style="font-size: 8.8pt;">
+      Evaluates human settlement proximity. If high radiance is within 1,000m of a populated town, FlameX escalates the incident to <strong>CRITICAL DISPATCH</strong>.
+    </p>
+  </div>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- SECTION 4 -->
+  <h2>4. Case Study: Normal Gas Flare vs Uncontrolled Fire</h2>
+  <p>
+    The table below illustrates how the AI differentiates a routine refinery flare stack from a severe chemical plant fire:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Evaluation Parameter</th>
+        <th>Scenario A: Jamnagar Mega Refinery</th>
+        <th>Scenario B: Dahej Petrochemical SEZ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Thermal Power (FRP)</strong></td>
+        <td><span class="mono">112.0 MW</span></td>
+        <td><span class="mono" style="color: #dc2626; font-weight: bold;">380.0 MW (Catastrophic Spike)</span></td>
+      </tr>
+      <tr>
+        <td><strong>30-Day Historical Baseline</strong></td>
+        <td><span class="mono">108.0 MW</span></td>
+        <td><span class="mono">105.0 MW</span></td>
+      </tr>
+      <tr>
+        <td><strong>Baseline Multiplier (FRP / Baseline)</strong></td>
+        <td><strong style="color: #166534;">1.04× (Normal Variance)</strong></td>
+        <td><strong style="color: #dc2626;">3.6× ABOVE BASELINE</strong></td>
+      </tr>
+      <tr>
+        <td><strong>30-Day Recurrence Frequency</strong></td>
+        <td><strong>28 / 30 days</strong> (Daily continuous flaring)</td>
+        <td><strong>3 / 30 days</strong> (Sudden unexpected onset)</td>
+      </tr>
+      <tr>
+        <td><strong>Land Cover (ESA WorldCover)</strong></td>
+        <td>Industrial / Built-up</td>
+        <td>Industrial / Built-up</td>
+      </tr>
+      <tr>
+        <td><strong>Facility Proximity (OSM)</strong></td>
+        <td>45 m from Refinery Flare Unit A</td>
+        <td>65 m from Chemical Refinery Tank Farm</td>
+      </tr>
+      <tr>
+        <td><strong>Population Buffer</strong></td>
+        <td>3.8 km (Safe industrial buffer)</td>
+        <td>450 m from Dahej Coastal Settlement</td>
+      </tr>
+      <tr>
+        <td><strong>AI Classification Verdict</strong></td>
+        <td><span class="tag-normal">🟢 GAS FLARE (NORMAL)</span></td>
+        <td><span class="tag-critical">🔴 INDUSTRIAL FIRE (CRITICAL)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 5 -->
+  <h2>5. Multi-Source Explainability Checklist ("Why?")</h2>
+  <p>
+    Rather than acting as an opaque black box, FlameX synthesizes verified proof points for disaster response teams and regulatory judges:
+  </p>
+
+  <div class="callout-box alert">
+    <div class="callout-title" style="color: #991b1b;">AI Evidence Synthesis for Incident #FL-102 (Dahej SEZ)</div>
+    <ul class="checklist">
+      <li><strong>65 m from XYZ Petrochemical Refinery Tank Farm</strong> (OSM infrastructure match)</li>
+      <li><strong>Industrial / Built-up land cover</strong> (ESA WorldCover 10m high-resolution classification)</li>
+      <li><strong>Extreme thermal radiance: 380.0 MW</strong> with skin temperature of 139°C (NASA FIRMS VIIRS)</li>
+      <li><strong>3.6× above 30-day historical baseline</strong> (105.0 MW typical operating level)</li>
+      <li><strong>Low temporal recurrence (3/30 days)</strong> indicating sudden catastrophic onset rather than routine flaring</li>
+      <li><strong>Population vulnerability: 450 m</strong> from Dahej residential settlement</li>
+      <li><strong>Zero adjacent dense forest or agricultural burning footprint</strong> (Eliminates natural wildfire/stubble)</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 6 -->
+  <h2>6. Technical Stack &amp; Architecture Specification</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Layer</th>
+        <th style="width: 35%;">Technology</th>
+        <th style="width: 40%;">Architecture Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend Platform</strong></td>
+        <td>Next.js 16 (App Router + React 19)</td>
+        <td>Dynamic client components with fast Turbopack compilation. Zero hardcoded stats.</td>
+      </tr>
+      <tr>
+        <td><strong>2D Geospatial Engine</strong></td>
+        <td>MapLibre GL JS (WebGL)</td>
+        <td>High-resolution satellite basemaps with live multi-ring danger pulses and GIS boundaries.</td>
+      </tr>
+      <tr>
+        <td><strong>3D Globe Overview</strong></td>
+        <td>Three.js &amp; React Three Fiber</td>
+        <td>Cinematic Earth sphere with orbital particle shaders and camera panning.</td>
+      </tr>
+      <tr>
+        <td><strong>Charts &amp; Curves</strong></td>
+        <td>Recharts</td>
+        <td>Real-time SVG 7-day radiative trajectory curve with dashed baseline reference lines.</td>
+      </tr>
+      <tr>
+        <td><strong>Database &amp; Engine</strong></td>
+        <td>SQLite (better-sqlite3)</td>
+        <td>Write-Ahead Logging (WAL), automatic /tmp serverless mount for Vercel deployment.</td>
+      </tr>
+      <tr>
+        <td><strong>AI Engine</strong></td>
+        <td>FlameX Spatial Ensemble v1.2</td>
+        <td>6-class probability distribution, abnormality scoring, and natural language copilot.</td>
+      </tr>
+      <tr>
+        <td><strong>Cloud Deployment</strong></td>
+        <td>Vercel Production Edge</td>
+        <td>Live on <code>https://flarex-gamma.vercel.app</code> with GitHub CI/CD integration.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FOOTER NOTE -->
+  <div class="footer-note">
+    <div>FlameX Intelligence Platform • Technical Architecture &amp; Methodology</div>
+    <div>Page 2 of 2 • Confidential &amp; Proprietary</div>
+  </div>
+
+</body>
+</html>
