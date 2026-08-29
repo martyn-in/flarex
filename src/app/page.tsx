@@ -19,12 +19,7 @@ export default function Home() {
   }, []);
 
   const handleExplore = () => {
-    setIsTransitioning(true);
-    // Smooth 1.3s cinematic dive directly into the dashboard
-    setTimeout(() => {
-      setInDashboard(true);
-      setIsTransitioning(false);
-    }, 1300);
+    setInDashboard(true);
   };
 
   return (
@@ -35,7 +30,7 @@ export default function Home() {
           onExplore={handleExplore}
         />
       ) : (
-        <div className="w-full min-h-screen transition-opacity duration-700 ease-in-out">
+        <div className="w-full min-h-screen animate-fadeIn">
           <FlareXDashboard onReturnToLanding={() => setInDashboard(false)} />
         </div>
       )}
