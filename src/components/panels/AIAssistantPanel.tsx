@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { BrainCircuit, Send, Sparkles, User, Bot, CheckCircle2, ChevronRight } from 'lucide-react';
+import { BrainCircuit, Send, Sparkles, User, Bot, CheckCircle2, ChevronRight, Cpu } from 'lucide-react';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function AIAssistantPanel() {
@@ -30,7 +30,7 @@ export default function AIAssistantPanel() {
     } else if (actionKey === 'FILTER_CRITICAL') {
       setFilter('critical');
     } else if (actionKey === 'SELECT_DAHEJ') {
-      const dahej = hotspots.find((h) => h.id === 'FLX-DHJ-001' || h.name.includes('Dahej') || h.name.includes('XYZ'));
+      const dahej = hotspots.find((h) => h.id === 'FLX-DHJ-001' || h.name.includes('Dahej') || h.name.includes('ONGC'));
       if (dahej) selectHotspot(dahej, true);
     } else if (actionKey === 'OPEN_ANALYTICS') {
       openDrawer('analytics');
@@ -41,20 +41,20 @@ export default function AIAssistantPanel() {
     'Which industrial facilities have abnormal thermal activity?',
     'Summarize industrial fires vs normal flares',
     'Explain the Dahej SEZ anomaly diagnosis',
-    'How does the FlameX intelligence pipeline work?',
+    'How does the FLAREX intelligence pipeline work?',
   ];
 
   return (
-    <div className="flex flex-col h-full gap-3">
-      {/* Top AI Model Metadata Header */}
-      <div className="p-3 rounded-2xl glass-card flex items-center justify-between">
+    <div className="flex flex-col h-[calc(100vh-140px)] min-h-[500px]">
+      {/* Header Info */}
+      <div className="p-3.5 bg-gradient-to-r from-orange-950/40 via-slate-900/40 to-slate-950/40 border border-orange-500/20 rounded-xl mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]">
-            <BrainCircuit size={18} />
+          <div className="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+            <Cpu size={16} />
           </div>
           <div>
             <h4 className="text-[12.5px] font-bold text-white leading-tight">
-              FlameX Grounded Intelligence Copilot
+              FLAREX Grounded Intelligence Copilot
             </h4>
             <span className="text-[10px] text-cyan-300 font-mono flex items-center gap-1 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

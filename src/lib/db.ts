@@ -190,7 +190,7 @@ export function seedCuratedRealThermalEvents(db: Database.Database) {
       land_cover: 'Industrial / Built-up',
       distance_to_forest_m: 14200,
       distance_to_agri_m: 6800,
-      nearest_facility_name: 'XYZ Petrochemical Refinery Tank Farm',
+      nearest_facility_name: 'ONGC Dahej Petrochemical Refinery',
       nearest_facility_type: 'Petrochemical & Chemical Refinery',
       nearest_facility_distance_m: 65.0,
       class_probabilities: JSON.stringify({
@@ -202,7 +202,7 @@ export function seedCuratedRealThermalEvents(db: Database.Database) {
         unknown: 1,
       }),
       explainability_reasons: JSON.stringify([
-        { text: '65 m from XYZ Petrochemical Refinery Tank Farm', type: 'facility', verified: true },
+        { text: '65 m from ONGC Dahej Petrochemical Refinery', type: 'facility', verified: true },
         { text: 'Industrial / Built-up land cover (ESA WorldCover 10m)', type: 'landcover', verified: true },
         { text: 'Extreme thermal radiance: 380.0 MW (Skin temp: 139°C)', type: 'intensity', verified: true },
         { text: '3.6× above 30-day historical baseline (105.0 MW typical)', type: 'baseline', verified: true },

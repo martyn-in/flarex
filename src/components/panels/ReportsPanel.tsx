@@ -45,7 +45,7 @@ export default function ReportsPanel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flamex-hotspots-${new Date().toISOString().slice(0, 10)}.geojson`;
+    a.download = `flarex-hotspots-${new Date().toISOString().slice(0, 10)}.geojson`;
     a.click();
     URL.revokeObjectURL(url);
     addToast('GeoJSON export generated and downloaded successfully.', 'success');
@@ -65,7 +65,7 @@ export default function ReportsPanel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flamex-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `flarex-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     addToast('CSV manifest exported successfully.', 'success');

@@ -138,7 +138,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
   {
     id: 'FLX-DHJ-001',
     eventId: 'FL-102',
-    name: 'XYZ Petrochemical Refinery Tank Farm',
+    name: 'ONGC Dahej Petrochemical Refinery',
     location: 'Dahej SEZ Petrochemical Complex, Gujarat',
     state: 'Gujarat',
     district: 'Bharuch',
@@ -188,7 +188,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '29 Aug', frp: 380.0, baseline: 105.0, isSpike: true },
     ],
     nearestFacility: {
-      name: 'XYZ Petrochemical Refinery Tank Farm',
+      name: 'ONGC Dahej Petrochemical Refinery',
       category: 'Industrial Fire',
       type: 'Petrochemical & Chemical Refinery',
       distance: '65 m',
@@ -196,7 +196,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       hazardRating: 'Critical',
     },
     aiReasons: [
-      { text: '65 m from XYZ Petrochemical Refinery Tank Farm', type: 'facility', verified: true },
+      { text: '65 m from ONGC Dahej Petrochemical Refinery', type: 'facility', verified: true },
       { text: 'Industrial / Built-up land cover (ESA WorldCover 10m)', type: 'landcover', verified: true },
       { text: 'Extreme thermal radiance: 380.0 MW (Skin temp: 139°C)', type: 'intensity', verified: true },
       { text: '3.6× above 30-day historical baseline (105.0 MW typical)', type: 'baseline', verified: true },

@@ -271,16 +271,12 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           <div
             className="brand cursor-pointer"
             onClick={() => {
-              if (onReturnToLanding) {
-                onReturnToLanding();
-              } else {
-                closeDrawer();
-                setIsSettingsOpen(false);
-                setFilter(null);
-                resetMapView();
-              }
+              closeDrawer();
+              setIsSettingsOpen(false);
+              setFilter(null);
+              resetMapView();
             }}
-            title="Return to Globe Intro"
+            title="Reset to National Overview"
           >
             <div className="brand-icon">
               <Flame size={22} />
@@ -324,17 +320,6 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
 
         {/* Sidebar Footer */}
         <div className="sidebar-footer">
-          {onReturnToLanding && (
-            <button
-              type="button"
-              onClick={onReturnToLanding}
-              className="w-full mb-3 py-2 px-3 rounded-xl bg-[#f0f7fd] hover:bg-[#e1effc] text-[#3b5677] hover:text-[#0c2340] text-[11px] font-bold flex items-center justify-center gap-2 border border-[#cfe0f0] hover:border-[#0284c7] transition-all cursor-pointer shadow-xs"
-            >
-              <Globe size={14} className="text-[#0284c7]" />
-              <span>3D Earth Globe</span>
-            </button>
-          )}
-
           <div className="sidebar-status-card">
             <span className="status-badge-dot" />
             <div>
