@@ -1,91 +1,113 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Activity, Flame, MapPin, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import {
+  Activity,
+  Flame,
+  Search,
+  MapPin,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowUpRight,
+} from 'lucide-react';
 import { useIntelligence } from '@/context/IntelligenceContext';
 import { Hotspot } from '@/types';
 
 export default function PersistentSourcesPanel() {
-  const { hotspots, selectedHotspot, selectHotspot, addToast } = useIntelligence();
-  const [filterState, setFilterState] = useState<'ALL' | 'NORMAL' | 'ABNORMAL'>('ALL');
+  const { hotspots, selectHotspot, selectedHotspot, closeDrawer } = useIntelligence();
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'normal' | 'abnormal'>('all');
 
-  // Filter persistent or high recurrence thermal sources
-  const persistentList = hotspots.filter((h) => {
-    const isPersistent =
-      h.classification === 'Gas Flare' ||
-      h.classification === 'Mining / Furnace Activity' ||
-      h.persistenceScore >= 40;
+  // Filter persistent sources (>10 days recurrence or Gas Flare / Blast Furnace)
+  const persistentList = hotspots
+    .filter((h) => {
+      const isPersistent =
+        h.classification === 'Gas Flare' ||
+        h.classification === 'Mining / Furnace Activity' ||
+        parseInt(h.persistenceDays) >= 10;
+      if (!isPersistent) return false;
 
-    if (!isPersistent) return false;
-
-    if (filterState === 'NORMAL') return h.status === 'NORMAL';
-    if (filterState === 'ABNORMAL') return h.status === 'ABNORMAL' || h.status === 'CRITICAL_FIRE' || h.baselineRatio >= 1.8;
-
-    return true;
-  });
+      if (filterType === 'normal') return h.status === 'NORMAL';
+      if (filterType === 'abnormal') return h.status !== 'NORMAL';
+      return true;
+    })
+    .filter(
+      (h) =>
+        h.name.toLowerCase().includes(search.toLowerCase()) ||
+        h.nearestFacility.name.toLowerCase().includes(search.toLowerCase()) ||
+        h.location.toLowerCase().includes(search.toLowerCase())
+    );
 
   const normalCount = hotspots.filter(
-    (h) => (h.classification === 'Gas Flare' || h.persistenceScore >= 40) && h.status === 'NORMAL'
+    (h) => (h.classification === 'Gas Flare' || parseInt(h.persistenceDays) >= 10) && h.status === 'NORMAL'
   ).length;
 
   const abnormalCount = hotspots.filter(
-    (h) => (h.classification === 'Gas Flare' || h.persistenceScore >= 40) && (h.status === 'ABNORMAL' || h.status === 'CRITICAL_FIRE' || h.baselineRatio >= 1.8)
+    (h) => (h.classification === 'Gas Flare' || parseInt(h.persistenceDays) >= 10) && h.status !== 'NORMAL'
   ).length;
 
   const handleSelect = (spot: Hotspot) => {
     selectHotspot(spot, true);
-    addToast(`Persistent Source: ${spot.name} (${spot.status})`, spot.status === 'NORMAL' ? 'info' : 'warning');
+    closeDrawer();
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Overview Stat Strip */}
-      <div className="grid grid-cols-2 gap-2">
-        <div
-          onClick={() => setFilterState('NORMAL')}
-          className={`glass-card p-3 rounded-xl cursor-pointer transition-all ${filterState === 'NORMAL' ? 'border-emerald-500 bg-emerald-950/20' : ''}`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-slate-400">Normal Flares</span>
-            <CheckCircle2 size={15} className="text-emerald-400" />
-          </div>
-          <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-[20px] font-black text-emerald-400 font-mono">{normalCount}</span>
-            <span className="text-[10px] text-slate-400">≤ 1.5× baseline</span>
-          </div>
+    <div className="flex flex-col gap-3.5">
+      {/* 2x2 KPI Summary Grid */}
+      <div className="flarex-kpi-grid">
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">Tracked Flares</span>
+          <span className="flarex-kpi-value text-slate-900">{persistentList.length}</span>
+          <span className="flarex-kpi-meta">Refinery &amp; Chemical Corridors</span>
         </div>
 
-        <div
-          onClick={() => setFilterState('ABNORMAL')}
-          className={`glass-card p-3 rounded-xl cursor-pointer transition-all ${filterState === 'ABNORMAL' ? 'border-red-500 bg-red-950/20' : ''}`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-slate-400">Abnormal Surges</span>
-            <AlertTriangle size={15} className="text-red-400" />
-          </div>
-          <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-[20px] font-black text-red-400 font-mono">{abnormalCount}</span>
-            <span className="text-[10px] text-slate-400">&gt; 2.0× baseline</span>
-          </div>
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">Normal Baseline</span>
+          <span className="flarex-kpi-value text-emerald-600">{normalCount}</span>
+          <span className="flarex-kpi-meta">Within operational bound</span>
+        </div>
+
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">Abnormal Surges</span>
+          <span className="flarex-kpi-value text-red-600">{abnormalCount}</span>
+          <span className="flarex-kpi-meta">&gt; 1.5× baseline multiplier</span>
+        </div>
+
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">Avg Persistence</span>
+          <span className="flarex-kpi-value text-purple-700">22.4 d</span>
+          <span className="flarex-kpi-meta">30-day temporal window</span>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 pb-1">
-        {(['ALL', 'NORMAL', 'ABNORMAL'] as const).map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => setFilterState(mode)}
-            className={`px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider transition-all cursor-pointer ${
-              filterState === mode
-                ? 'bg-[rgba(255,90,45,0.18)] border border-[#ff5a3c] text-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.25)]'
-                : 'bg-[rgba(255,90,45,0.04)] border border-[rgba(255,106,61,0.15)] text-[#a3928c] hover:text-white'
-            }`}
-          >
-            {mode === 'ALL' ? 'ALL RECURRING' : mode}
-          </button>
-        ))}
+      {/* Filter Tabs & Search */}
+      <div className="flex flex-col gap-2">
+        <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+          {(['all', 'normal', 'abnormal'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setFilterType(t)}
+              className={`flex-1 py-1 px-2 rounded-lg text-[10.5px] font-bold uppercase transition-all cursor-pointer ${
+                filterType === t
+                  ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {t === 'all' ? `All (${persistentList.length})` : t === 'normal' ? `Normal (${normalCount})` : `Abnormal (${abnormalCount})`}
+            </button>
+          ))}
+        </div>
+
+        <div className="search-box !w-full">
+          <Search size={14} className="text-slate-400 shrink-0" />
+          <input
+            type="text"
+            placeholder="Filter by facility name or location..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* Persistent Sources Cards */}
@@ -98,22 +120,22 @@ export default function PersistentSourcesPanel() {
             <div
               key={spot.id}
               onClick={() => handleSelect(spot)}
-              className={`flarex-status-row !p-3 flex-col !items-stretch gap-2.5 transition-all cursor-pointer ${
+              className={`p-3 rounded-xl border flex flex-col gap-2.5 transition-all cursor-pointer ${
                 isSelected
-                  ? '!border-[#ff5a3c] !bg-[rgba(255,90,45,0.12)] shadow-[0_0_15px_rgba(255,90,60,0.25)]'
+                  ? 'border-orange-500 bg-orange-50/60 shadow-sm'
                   : isNormal
-                  ? 'hover:bg-white/[0.04]'
-                  : 'border-red-500/30 bg-red-950/10 hover:bg-red-950/20'
+                  ? 'bg-white border-slate-200 hover:bg-slate-50'
+                  : 'border-red-200 bg-red-50/50 hover:bg-red-50'
               }`}
             >
               {/* Top Row: Facility Name & Status Pill */}
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h4 className="text-[12.5px] font-bold text-white leading-snug">
+                  <h4 className="text-[12.5px] font-extrabold text-slate-900 leading-snug">
                     {spot.nearestFacility.name}
                   </h4>
-                  <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
-                    <MapPin size={11} className="text-cyan-400 shrink-0" />
+                  <span className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5 font-medium">
+                    <MapPin size={11} className="text-slate-400 shrink-0" />
                     {spot.location}
                   </span>
                 </div>
@@ -121,8 +143,8 @@ export default function PersistentSourcesPanel() {
                 <span
                   className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase border shrink-0 ${
                     isNormal
-                      ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400'
-                      : 'bg-red-950/60 border-red-500/40 text-red-400 shadow-[0_0_8px_rgba(255,77,79,0.3)]'
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                      : 'bg-red-50 border-red-300 text-red-700'
                   }`}
                 >
                   {isNormal ? 'NORMAL' : 'ABNORMAL'}
@@ -130,31 +152,31 @@ export default function PersistentSourcesPanel() {
               </div>
 
               {/* Middle Row: Recurrence & Radiance Comparison */}
-              <div className="grid grid-cols-3 gap-2 py-2 px-2.5 rounded-xl bg-black/30 border border-white/[0.06] text-center">
+              <div className="grid grid-cols-3 gap-2 py-2 px-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
                 <div>
-                  <span className="text-[9px] text-slate-400 block">30-Day Recurrence</span>
-                  <span className="font-mono text-[11px] font-bold text-purple-300">
+                  <span className="text-[9px] text-slate-500 block font-semibold">30-Day Recurrence</span>
+                  <span className="font-mono text-[11px] font-bold text-purple-700">
                     {spot.persistenceDays}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 block">Typical FRP</span>
-                  <span className="font-mono text-[11px] font-bold text-slate-200">
+                  <span className="text-[9px] text-slate-500 block font-semibold">Typical FRP</span>
+                  <span className="font-mono text-[11px] font-bold text-slate-700">
                     {spot.baselineFrp} MW
                   </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 block">Current FRP</span>
-                  <span className={`font-mono text-[11px] font-bold ${isNormal ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <span className="text-[9px] text-slate-500 block font-semibold">Current FRP</span>
+                  <span className={`font-mono text-[11px] font-bold ${isNormal ? 'text-emerald-700' : 'text-red-700'}`}>
                     {spot.frp} MW
                   </span>
                 </div>
               </div>
 
               {/* Bottom: Classification & Multiplier */}
-              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-white/[0.06]">
-                <span className="text-slate-300 font-medium">{spot.classification}</span>
-                <span className={`font-mono font-bold ${isNormal ? 'text-emerald-400' : 'text-red-400'}`}>
+              <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+                <span className="text-slate-700 font-semibold">{spot.classification}</span>
+                <span className={`font-mono font-bold ${isNormal ? 'text-emerald-700' : 'text-red-700'}`}>
                   {spot.baselineRatio}× baseline
                 </span>
               </div>
