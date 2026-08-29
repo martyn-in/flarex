@@ -265,61 +265,59 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   return (
     <main className="app-shell flex h-screen w-full overflow-hidden bg-[#f0f5fa] text-[#0c2340]">
       {/* 1. SIDEBAR */}
-      <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
-        <div>
-          {/* Brand */}
-          <div
-            className="brand cursor-pointer"
-            onClick={() => {
-              closeDrawer();
-              setIsSettingsOpen(false);
-              setFilter(null);
-              resetMapView();
-            }}
-            title="Reset to National Overview"
-          >
-            <div className="brand-icon">
-              <Flame size={22} />
-            </div>
-            <div>
-              <h2>
-                FLARE<span>X</span>
-              </h2>
-              <p>Thermal Intelligence Layer</p>
-            </div>
+      <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between h-full">
+        {/* Brand */}
+        <div
+          className="brand cursor-pointer shrink-0"
+          onClick={() => {
+            closeDrawer();
+            setIsSettingsOpen(false);
+            setFilter(null);
+            resetMapView();
+          }}
+          title="Reset to National Overview"
+        >
+          <div className="brand-icon">
+            <Flame size={22} />
           </div>
-
-          {/* Grouped Navigation */}
-          <nav className="navigation">
-            {menu.map((group) => (
-              <div className="nav-group" key={group.section}>
-                <span className="section-title">{group.section}</span>
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.name}
-                      type="button"
-                      onClick={item.action}
-                      className={`nav-item ${item.active ? 'active' : ''}`}
-                    >
-                      <Icon size={18} />
-                      <span>{item.name}</span>
-                      {item.badge && (
-                        <span className={`badge ${item.badgeColor || 'bg-slate-700'}`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </nav>
+          <div>
+            <h2>
+              FLARE<span>X</span>
+            </h2>
+            <p>Thermal Intelligence Layer</p>
+          </div>
         </div>
 
+        {/* Grouped Navigation */}
+        <nav className="navigation flex-1 flex flex-col justify-between py-2 my-1">
+          {menu.map((group) => (
+            <div className="nav-group flex flex-col gap-1" key={group.section}>
+              <span className="section-title">{group.section}</span>
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={item.action}
+                    className={`nav-item ${item.active ? 'active' : ''}`}
+                  >
+                    <Icon size={18} />
+                    <span>{item.name}</span>
+                    {item.badge && (
+                      <span className={`badge ${item.badgeColor || 'bg-slate-700'}`}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+
         {/* Sidebar Footer */}
-        <div className="sidebar-footer">
+        <div className="sidebar-footer shrink-0">
           <div className="sidebar-status-card">
             <span className="status-badge-dot" />
             <div>
