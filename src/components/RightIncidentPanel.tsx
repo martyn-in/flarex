@@ -74,7 +74,7 @@ export const RightIncidentPanel: React.FC = () => {
   };
 
   return (
-    <aside className="w-[390px] h-full glass-panel p-3.5 flex flex-col gap-2.5 z-20 shrink-0 select-none overflow-y-auto relative bg-white border-l border-slate-200 shadow-sm">
+    <aside className="w-[390px] h-full glass-panel p-3.5 flex flex-col gap-2.5 z-20 shrink-0 select-none overflow-y-auto relative bg-white border-l border-[#cfe0f0] shadow-sm">
       {/* Top Accent Line for Priority */}
       {isCritical && (
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
@@ -87,7 +87,7 @@ export const RightIncidentPanel: React.FC = () => {
             ? 'bg-red-50/70 border-red-200'
             : isNormalFlare
             ? 'bg-emerald-50/60 border-emerald-200'
-            : 'bg-slate-50 border-slate-200'
+            : 'bg-[#f0f7fd] border-[#cfe0f0]'
         }`}
       >
         <div className="flex items-center justify-between">
@@ -102,11 +102,11 @@ export const RightIncidentPanel: React.FC = () => {
                     ? 'bg-red-600'
                     : isNormalFlare
                     ? 'bg-emerald-600'
-                    : 'bg-orange-500'
+                    : 'bg-[#0284c7]'
                 }`}
               />
             </span>
-            <span className="text-[10px] font-extrabold text-slate-600 tracking-wider uppercase">
+            <span className="text-[10px] font-extrabold text-[#3b5677] tracking-wider uppercase">
               {selectedHotspot.classification.toUpperCase()}
             </span>
           </div>
@@ -117,7 +117,7 @@ export const RightIncidentPanel: React.FC = () => {
             >
               {selectedHotspot.severity}
             </span>
-            <span className="font-mono text-[10px] font-bold text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+            <span className="font-mono text-[10px] font-bold text-[#3b5677] bg-white px-1.5 py-0.5 rounded border border-[#cfe0f0]">
               {selectedHotspot.eventId}
             </span>
           </div>
@@ -125,7 +125,7 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* Primary Classification Headline with Confidence */}
         <div className="mt-2 flex items-center justify-between">
-          <h2 className="text-[16px] font-black text-slate-900 leading-tight flex items-center gap-1.5">
+          <h2 className="text-[16px] font-black text-[#0c2340] leading-tight flex items-center gap-1.5">
             {isCritical && <Flame className="w-4.5 h-4.5 text-red-600 shrink-0" />}
             {isWildfire && <Trees className="w-4.5 h-4.5 text-amber-600 shrink-0" />}
             <span>{selectedHotspot.classification}</span>
@@ -157,28 +157,28 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
 
         {/* Spatial, Land-Cover & Population Proximity Summary */}
-        <div className="mt-2 pt-2 border-t border-slate-200 flex flex-col gap-1 text-[11px]">
-          <div className="flex items-center justify-between text-slate-700">
-            <span className="flex items-center gap-1 text-slate-500 font-medium">
-              <Building2 className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+        <div className="mt-2 pt-2 border-t border-[#cfe0f0] flex flex-col gap-1 text-[11px]">
+          <div className="flex items-center justify-between text-[#244265]">
+            <span className="flex items-center gap-1 text-[#5b7596] font-medium">
+              <Building2 className="w-3.5 h-3.5 text-[#0284c7] shrink-0" />
               {selectedHotspot.nearestFacility.distance} from {selectedHotspot.nearestFacility.name.split(' ')[0]}
             </span>
-            <span className="text-slate-900 font-mono text-[10px] font-bold">
+            <span className="text-[#0c2340] font-mono text-[10px] font-bold">
               {selectedHotspot.nearestFacility.distance}
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-600">
+          <div className="flex items-center justify-between text-[#3b5677]">
             <span className="flex items-center gap-1">
               <Layers className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               {selectedHotspot.landCover}
             </span>
-            <span className="text-slate-500 font-mono font-medium">{selectedHotspot.state}</span>
+            <span className="text-[#5b7596] font-mono font-medium">{selectedHotspot.state}</span>
           </div>
 
           {/* Population Proximity Feature */}
-          <div className="flex items-center justify-between text-slate-700 pt-1 border-t border-slate-200/60">
-            <span className="flex items-center gap-1 text-slate-500">
+          <div className="flex items-center justify-between text-[#244265] pt-1 border-t border-[#cfe0f0]/60">
+            <span className="flex items-center gap-1 text-[#5b7596]">
               <Users className="w-3.5 h-3.5 text-rose-600 shrink-0" />
               Population Proximity
             </span>
@@ -189,11 +189,11 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
 
         {/* Map Focus Action */}
-        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200">
+        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#cfe0f0]">
           <button
             type="button"
             onClick={() => flyToCoords(selectedHotspot.coordinates, 8.2, 30)}
-            className="flex-1 py-1.5 px-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+            className="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#0284c7] to-[#0369a1] hover:from-[#0369a1] hover:to-[#075985] text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
           >
             <Crosshair className="w-3.5 h-3.5" />
             <span>Focus on Map</span>
@@ -202,7 +202,7 @@ export const RightIncidentPanel: React.FC = () => {
           <button
             type="button"
             onClick={handleCopyCoords}
-            className="py-1.5 px-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-[10.5px] font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+            className="py-1.5 px-3 rounded-xl bg-white border border-[#cfe0f0] text-[#244265] hover:text-[#0c2340] hover:bg-[#f0f7fd] text-[10.5px] font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs"
             title="Copy GIS Coordinates"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -214,43 +214,43 @@ export const RightIncidentPanel: React.FC = () => {
       {/* 2. PRIMARY TELEMETRY METRIC GRID */}
       <div className="grid grid-cols-2 gap-1.5">
         {/* Current FRP */}
-        <div className="bg-white border border-slate-200 rounded-xl p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Current FRP</span>
+            <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Current FRP</span>
             <Flame className="w-3.5 h-3.5 text-red-600" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
             <span className="text-[20px] font-black text-red-600 font-mono leading-none">
               {selectedHotspot.frp}
             </span>
-            <span className="text-[10px] font-bold text-slate-400">MW</span>
+            <span className="text-[10px] font-bold text-[#7b95b3]">MW</span>
           </div>
         </div>
 
         {/* Historical Baseline */}
-        <div className="bg-white border border-slate-200 rounded-xl p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Hist. Baseline</span>
-            <Clock className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Hist. Baseline</span>
+            <Clock className="w-3.5 h-3.5 text-[#0284c7]" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
-            <span className="text-[20px] font-black text-slate-800 font-mono leading-none">
+            <span className="text-[20px] font-black text-[#0c2340] font-mono leading-none">
               {selectedHotspot.baselineFrp}
             </span>
-            <span className="text-[10px] font-bold text-slate-400">MW</span>
+            <span className="text-[10px] font-bold text-[#7b95b3]">MW</span>
           </div>
         </div>
 
         {/* Multi-Spectral Skin Temperature */}
-        <div className="bg-white border border-slate-200 rounded-xl p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Skin Temp (T4)</span>
+            <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Skin Temp (T4)</span>
             <span className="text-[9px] font-bold text-amber-700 bg-amber-100 px-1 py-0.2 rounded">
               VIIRS
             </span>
           </div>
           <div className="mt-0.5 flex items-baseline gap-0.5">
-            <span className="text-[20px] font-black text-slate-900 font-mono leading-none">
+            <span className="text-[20px] font-black text-[#0c2340] font-mono leading-none">
               {selectedHotspot.temperature}
             </span>
             <span className="text-[12px] font-bold text-amber-600">°C</span>
@@ -258,9 +258,9 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
 
         {/* 30-Day Persistence Score */}
-        <div className="bg-white border border-slate-200 rounded-xl p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Recurrence</span>
+            <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Recurrence</span>
             <span className="text-[9.5px] font-mono text-purple-700 font-bold">
               {selectedHotspot.persistenceDays}
             </span>
@@ -269,13 +269,13 @@ export const RightIncidentPanel: React.FC = () => {
             <span className="text-[20px] font-black text-purple-700 font-mono leading-none">
               {selectedHotspot.persistenceScore}
             </span>
-            <span className="text-[10px] font-bold text-slate-400">/ 100</span>
+            <span className="text-[10px] font-bold text-[#7b95b3]">/ 100</span>
           </div>
         </div>
       </div>
 
       {/* 3. INVESTIGATION TABS */}
-      <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200 overflow-x-auto">
+      <div className="flex rounded-xl bg-[#e6f0fa] p-1 border border-[#cfe0f0] overflow-x-auto">
         {(['Why?', 'History', 'AI Probabilities', 'Sentinel-2', 'Overview'] as const).map((tab) => (
           <button
             key={tab}
@@ -283,8 +283,8 @@ export const RightIncidentPanel: React.FC = () => {
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-1 px-1 rounded-lg text-[10px] font-bold transition-all duration-150 cursor-pointer whitespace-nowrap ${
               activeTab === tab
-                ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-[#0284c7] shadow-xs border border-[#cfe0f0]'
+                : 'text-[#4e6b8c] hover:text-[#0c2340]'
             }`}
           >
             {tab}
@@ -296,11 +296,11 @@ export const RightIncidentPanel: React.FC = () => {
       <div className="flex-1 flex flex-col gap-2">
         {/* WHY? EXPLAINABILITY TAB (THE HERO FEATURE) */}
         {activeTab === 'Why?' && (
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
+          <div className="bg-[#f0f7fd] border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+            <div className="flex items-center justify-between pb-1.5 border-b border-[#cfe0f0]">
               <div className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-orange-600" />
-                <span className="text-[11.5px] font-extrabold text-slate-900">
+                <Cpu className="w-3.5 h-3.5 text-[#0284c7]" />
+                <span className="text-[11.5px] font-extrabold text-[#0c2340]">
                   Multi-Source Evidence Fusion
                 </span>
               </div>
@@ -309,14 +309,14 @@ export const RightIncidentPanel: React.FC = () => {
               </span>
             </div>
 
-            <p className="text-[10.5px] text-slate-600 leading-snug">
+            <p className="text-[10.5px] text-[#3b5677] leading-snug">
               Why did FlameX classify this as{' '}
-              <strong className="text-slate-900 font-bold">{selectedHotspot.classification}</strong>?
+              <strong className="text-[#0c2340] font-bold">{selectedHotspot.classification}</strong>?
             </p>
 
             <div className="flex flex-col gap-1.5 mt-0.5">
               {selectedHotspot.aiReasons.map((reason, idx) => (
-                <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-800">
+                <div key={idx} className="flex items-start gap-1.5 text-[11px] text-[#0c2340]">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span className="leading-snug">{reason.text}</span>
                 </div>
@@ -327,12 +327,12 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* HISTORY TAB: 7-DAY FRP CURVE WITH BASELINE */}
         {activeTab === 'History' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs">
+          <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs">
             <div className="flex items-center justify-between text-[10.5px]">
-              <span className="font-bold text-slate-900">7-Day Radiative Power Curve</span>
+              <span className="font-bold text-[#0c2340]">7-Day Radiative Power Curve</span>
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 text-[9px] text-slate-500">
-                  <span className="w-2.5 h-0.5 border-t border-dashed border-slate-400" /> Baseline ({selectedHotspot.baselineFrp} MW)
+                <span className="flex items-center gap-1 text-[9px] text-[#5b7596]">
+                  <span className="w-2.5 h-0.5 border-t border-dashed border-[#5b7596]" /> Baseline ({selectedHotspot.baselineFrp} MW)
                 </span>
                 <span className="flex items-center gap-1 text-[9px] text-red-600 font-bold">
                   <span className="w-2 h-2 rounded-full bg-red-600" /> FRP
@@ -348,12 +348,12 @@ export const RightIncidentPanel: React.FC = () => {
                 >
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: '#64748B', fontSize: 9 }}
-                    axisLine={{ stroke: '#E2E8F0' }}
+                    tick={{ fill: '#5B7596', fontSize: 9 }}
+                    axisLine={{ stroke: '#CFE0F0' }}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: '#64748B', fontSize: 9 }}
+                    tick={{ fill: '#5B7596', fontSize: 9 }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -361,10 +361,10 @@ export const RightIncidentPanel: React.FC = () => {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white p-2 rounded-lg shadow-md text-[10px] text-slate-900 border border-slate-200">
-                            <p className="text-slate-500 font-medium">{payload[0].payload.date}</p>
+                          <div className="bg-white p-2 rounded-lg shadow-md text-[10px] text-[#0c2340] border border-[#cfe0f0]">
+                            <p className="text-[#5b7596] font-medium">{payload[0].payload.date}</p>
                             <p className="text-red-600 font-bold mt-0.5">FRP: {payload[0].value} MW</p>
-                            <p className="text-slate-600 mt-0.5">Baseline: {payload[0].payload.baseline} MW</p>
+                            <p className="text-[#5b7596] mt-0.5">Baseline: {payload[0].payload.baseline} MW</p>
                           </div>
                         );
                       }
@@ -373,7 +373,7 @@ export const RightIncidentPanel: React.FC = () => {
                   />
                   <ReferenceLine
                     y={selectedHotspot.baselineFrp}
-                    stroke="#94A3B8"
+                    stroke="#0284C7"
                     strokeDasharray="3 3"
                     strokeWidth={1.5}
                   />
@@ -393,8 +393,8 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* AI PROBABILITIES TAB */}
         {activeTab === 'AI Probabilities' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-            <span className="text-[10.5px] font-bold text-slate-800">
+          <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+            <span className="text-[10.5px] font-bold text-[#0c2340]">
               6-Class AI Classifier Output Distribution
             </span>
 
@@ -409,10 +409,10 @@ export const RightIncidentPanel: React.FC = () => {
               ].map((item) => (
                 <div key={item.label} className="flex flex-col gap-1">
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-slate-700 font-medium">{item.label}</span>
-                    <span className="font-mono font-bold text-slate-900">{item.val}%</span>
+                    <span className="text-[#3b5677] font-medium">{item.label}</span>
+                    <span className="font-mono font-bold text-[#0c2340]">{item.val}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+                  <div className="w-full h-1.5 bg-[#e6f0fa] rounded-full overflow-hidden border border-[#cfe0f0]/60">
                     <div
                       className={`h-full ${item.color} rounded-full transition-all duration-300`}
                       style={{ width: `${item.val}%` }}
@@ -426,11 +426,11 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* SENTINEL-2 OPTICAL IMAGERY TAB */}
         {activeTab === 'Sentinel-2' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-            <div className="flex items-center justify-between pb-1 border-b border-slate-200">
+          <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+            <div className="flex items-center justify-between pb-1 border-b border-[#cfe0f0]">
               <div className="flex items-center gap-1.5">
-                <Satellite className="w-3.5 h-3.5 text-slate-700" />
-                <span className="text-[11px] font-bold text-slate-900">Sentinel-2 MSI Optical Verification</span>
+                <Satellite className="w-3.5 h-3.5 text-[#0284c7]" />
+                <span className="text-[11px] font-bold text-[#0c2340]">Sentinel-2 MSI Optical Verification</span>
               </div>
               <span className="text-[9px] font-mono text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded border border-emerald-200 font-bold">
                 10m Resol.
@@ -438,26 +438,26 @@ export const RightIncidentPanel: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[9px] text-slate-500 block">Sentinel Tile</span>
-                <span className="font-mono font-bold text-slate-800">
+              <div className="p-2 rounded-xl bg-[#f0f7fd] border border-[#cfe0f0]">
+                <span className="text-[9px] text-[#5b7596] block">Sentinel Tile</span>
+                <span className="font-mono font-bold text-[#0c2340]">
                   {selectedHotspot.sentinelImagery?.tileId || 'T43QBC'}
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[9px] text-slate-500 block">Cloud Cover</span>
+              <div className="p-2 rounded-xl bg-[#f0f7fd] border border-[#cfe0f0]">
+                <span className="text-[9px] text-[#5b7596] block">Cloud Cover</span>
                 <span className="font-mono font-bold text-emerald-700">
                   {selectedHotspot.sentinelImagery?.cloudCoverPct || 1.8}% (Clear)
                 </span>
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-orange-50 border border-orange-200 text-[10.5px]">
-              <div className="flex items-center gap-1 font-bold text-orange-950 mb-0.5">
-                <Eye size={13} className="text-orange-600" />
+            <div className="p-2.5 rounded-xl bg-[#e0f2fe]/60 border border-[#bae6fd] text-[10.5px]">
+              <div className="flex items-center gap-1 font-bold text-[#0369a1] mb-0.5">
+                <Eye size={13} className="text-[#0284c7]" />
                 <span>Visual Optical Verification</span>
               </div>
-              <p className="leading-snug text-slate-700">
+              <p className="leading-snug text-[#244265]">
                 Multi-spectral true-color bands (B04, B03, B02) show localized smoke plume displacement over industrial structure.
               </p>
             </div>
@@ -466,32 +466,32 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* OVERVIEW TAB */}
         {activeTab === 'Overview' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs">
+          <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs">
             <div className="flex justify-between items-center text-[10.5px]">
-              <span className="text-slate-500 flex items-center gap-1.5">
-                <Satellite className="w-3.5 h-3.5 text-slate-600" /> Sensor Stream
+              <span className="text-[#5b7596] flex items-center gap-1.5">
+                <Satellite className="w-3.5 h-3.5 text-[#0284c7]" /> Sensor Stream
               </span>
-              <span className="text-slate-800 font-semibold">{selectedHotspot.satellite}</span>
+              <span className="text-[#0c2340] font-semibold">{selectedHotspot.satellite}</span>
             </div>
             <div className="flex justify-between items-center text-[10.5px]">
-              <span className="text-slate-500 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-slate-500" /> Detection Time
+              <span className="text-[#5b7596] flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#5b7596]" /> Detection Time
               </span>
-              <span className="text-slate-800 font-mono font-semibold">{selectedHotspot.timestamp}</span>
+              <span className="text-[#0c2340] font-mono font-semibold">{selectedHotspot.timestamp}</span>
             </div>
             <div className="flex justify-between items-center text-[10.5px]">
-              <span className="text-slate-500">GIS Coordinates</span>
-              <span className="text-slate-900 font-mono font-bold">
+              <span className="text-[#5b7596]">GIS Coordinates</span>
+              <span className="text-[#0c2340] font-mono font-bold">
                 {selectedHotspot.coordinates[1].toFixed(4)}°N, {selectedHotspot.coordinates[0].toFixed(4)}°E
               </span>
             </div>
             <div className="flex justify-between items-center text-[10.5px]">
-              <span className="text-slate-500">Land Cover</span>
-              <span className="text-slate-800 font-semibold">{selectedHotspot.landCover}</span>
+              <span className="text-[#5b7596]">Land Cover</span>
+              <span className="text-[#0c2340] font-semibold">{selectedHotspot.landCover}</span>
             </div>
-            <div className="flex justify-between items-center text-[10.5px] pt-1 border-t border-slate-200">
-              <span className="text-slate-500">Facility Proximity</span>
-              <span className="text-slate-900 font-bold">{selectedHotspot.nearestFacility.name}</span>
+            <div className="flex justify-between items-center text-[10.5px] pt-1 border-t border-[#cfe0f0]">
+              <span className="text-[#5b7596]">Facility Proximity</span>
+              <span className="text-[#0c2340] font-bold">{selectedHotspot.nearestFacility.name}</span>
             </div>
           </div>
         )}

@@ -263,7 +263,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   };
 
   return (
-    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#f8fafc] text-slate-900">
+    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#f0f5fa] text-[#0c2340]">
       {/* 1. SIDEBAR */}
       <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
         <div>
@@ -328,9 +328,9 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             <button
               type="button"
               onClick={onReturnToLanding}
-              className="w-full mb-3 py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-[11px] font-bold flex items-center justify-center gap-2 border border-slate-200 hover:border-orange-500/40 transition-all cursor-pointer shadow-xs"
+              className="w-full mb-3 py-2 px-3 rounded-xl bg-[#f0f7fd] hover:bg-[#e1effc] text-[#3b5677] hover:text-[#0c2340] text-[11px] font-bold flex items-center justify-center gap-2 border border-[#cfe0f0] hover:border-[#0284c7] transition-all cursor-pointer shadow-xs"
             >
-              <Globe size={14} className="text-orange-600" />
+              <Globe size={14} className="text-[#0284c7]" />
               <span>3D Earth Globe</span>
             </button>
           )}
