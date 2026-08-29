@@ -1,15 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
 import { Flame, ArrowRight, Menu } from 'lucide-react';
 import gsap from 'gsap';
-
-// Dynamic import for Three.js WebGL Earth with SSR disabled
-const CinematicEarth = dynamic(
-  () => import('./CinematicEarth').then((mod) => mod.CinematicEarth),
-  { ssr: false }
-);
 
 interface CinematicLandingProps {
   isTransitioning: boolean;
@@ -21,13 +14,93 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
   onExplore,
 }) => {
   const [hasStartedDive, setHasStartedDive] = useState(false);
-
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const heroStackRef = useRef<HTMLDivElement>(null);
   const flameEmblemRef = useRef<HTMLDivElement>(null);
   const wordmarkRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
   const exploreBtnRef = useRef<HTMLButtonElement>(null);
   const darkTransitionOverlayRef = useRef<HTMLDivElement>(null);
+
+  // Live drifting ambient space embers on canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      opacity: number;
+      color: string;
+    }> = [];
+
+    const colors = [
+      'rgba(255, 87, 34, ',
+      'rgba(255, 140, 0, ',
+      'rgba(255, 175, 50, ',
+      'rgba(255, 215, 100, ',
+    ];
+
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * width * 0.65,
+        y: Math.random() * height,
+        size: Math.random() * 2.2 + 0.8,
+        speedX: (Math.random() - 0.4) * 0.35,
+        speedY: -(Math.random() * 0.55 + 0.2),
+        opacity: Math.random() * 0.7 + 0.2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width * 0.65;
+        }
+        if (p.x < -10) p.x = width * 0.65;
+        if (p.x > width * 0.65) p.x = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + p.opacity + ')';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#ff5722';
+        ctx.fill();
+      });
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const handleExploreClick = () => {
     if (hasStartedDive) return;
@@ -59,20 +132,36 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
   }, [hasStartedDive]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#07070b] text-white select-none">
-      {/* Deep Cosmic Background */}
+    <div className="relative w-screen h-screen overflow-hidden bg-[#06060a] text-white select-none">
+      {/* 100% Photorealistic Master Earth Background */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="absolute inset-0 z-0 pointer-events-none bg-cover bg-no-repeat transition-transform duration-1000 ease-out"
+        style={{
+          backgroundImage: `url('/cinematic/flarex_master_globe_hero.jpg')`,
+          backgroundPosition: 'right 28% center',
+          backgroundSize: 'cover',
+        }}
+      />
+
+      {/* Subtle Ambient Space Gradient on the Left */}
+      <div
+        className="absolute inset-0 z-1 pointer-events-none"
         style={{
           background: `
-            radial-gradient(circle at 75% 50%, rgba(255, 87, 34, 0.05) 0%, rgba(7, 7, 11, 0.8) 50%, #07070b 100%)
+            linear-gradient(to right, rgba(6, 6, 10, 0.92) 0%, rgba(6, 6, 10, 0.6) 42%, rgba(6, 6, 10, 0) 75%)
           `,
         }}
       />
 
+      {/* Live Ambient Ember Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-2 pointer-events-none"
+      />
+
       {/* Subtle Topographical Contour Line Overlay in Bottom-Left */}
       <svg
-        className="absolute bottom-0 left-0 w-[560px] h-[460px] opacity-[0.12] pointer-events-none stroke-[#ff5722] z-5"
+        className="absolute bottom-0 left-0 w-[580px] h-[480px] opacity-[0.14] pointer-events-none stroke-[#ff5722] z-3"
         viewBox="0 0 500 500"
         fill="none"
       >
@@ -106,15 +195,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
         </button>
       </header>
 
-      {/* 3D High-Clarity WebGL Earth (Positioned on the Right Side) */}
-      <div className="absolute inset-0 z-10">
-        <CinematicEarth isTransitioning={hasStartedDive || isTransitioning} />
-      </div>
-
-      {/* Atmospheric Vignette */}
-      <div className="absolute inset-0 z-15 pointer-events-none bg-[radial-gradient(ellipse_at_center,_transparent_60%,_rgba(7,7,11,0.7)_100%)]" />
-
-      {/* FOREGROUND HERO CONTENT (Left Aligned) */}
+      {/* FOREGROUND HERO CONTENT (Left Aligned matching 100% of reference image) */}
       <div className="relative z-20 flex flex-col justify-center w-full h-full px-8 md:px-16 lg:px-24 pointer-events-none">
         <div
           ref={heroStackRef}
@@ -132,7 +213,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
             />
           </div>
 
-          {/* Massive FLAREX Wordmark */}
+          {/* Massive FLAREX Wordmark: FLARE in pure White + X in Fiery Orange */}
           <div
             ref={wordmarkRef}
             className="select-none text-left transform transition-all duration-300 pointer-events-auto my-1"
@@ -180,7 +261,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
       {/* Smooth Dark Transition Overlay */}
       <div
         ref={darkTransitionOverlayRef}
-        className="absolute inset-0 z-50 pointer-events-none bg-[#07070b] opacity-0"
+        className="absolute inset-0 z-50 pointer-events-none bg-[#06060a] opacity-0"
       />
     </div>
   );
