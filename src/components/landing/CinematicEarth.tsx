@@ -15,7 +15,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
   const earthGroupRef = useRef<THREE.Group | null>(null);
   const earthMeshRef = useRef<THREE.Mesh | null>(null);
   const atmosphereMeshRef = useRef<THREE.Mesh | null>(null);
-  const particlesRef = useRef<THREE.Points | null>(null);
+  const starsRef = useRef<THREE.Points | null>(null);
 
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
@@ -40,7 +40,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     camera.position.set(0, 0, 4.3);
     cameraRef.current = camera;
 
-    // 2. RENDERER WITH HIGH QUALITY ANISOTROPY & COLOR SPACE
+    // 2. RENDERER WITH HIGH QUALITY ANISOTROPY & NATURAL COLOR SPACE
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -49,7 +49,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
+    renderer.toneMappingExposure = 1.25;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
@@ -64,7 +64,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     scene.add(earthGroup);
     earthGroupRef.current = earthGroup;
 
-    // 4. HIGH RESOLUTION NIGHT SATELLITE TEXTURE WITH GLOWING ANOMALIES
+    // 4. NATURAL HIGH RESOLUTION SATELLITE TEXTURE (ZERO RED TINT)
     const textureLoader = new THREE.TextureLoader();
     const earthTexture = textureLoader.load('/cinematic/earth_hd_clarity.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -75,14 +75,13 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       tex.generateMipmaps = true;
     });
 
-    // 5. EARTH SPHERE MESH
+    // 5. EARTH SPHERE MESH WITH NATURAL BLUE/CYAN ATMOSPHERE
     const earthRadius = isDesktop ? 1.75 : 1.5;
     const earthGeometry = new THREE.SphereGeometry(earthRadius, 96, 96);
 
     const earthMaterial = new THREE.ShaderMaterial({
       uniforms: {
         map: { value: earthTexture },
-        sunDirection: { value: new THREE.Vector3(0.75, 0.55, 0.4).normalize() },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -97,7 +96,6 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       `,
       fragmentShader: `
         uniform sampler2D map;
-        uniform vec3 sunDirection;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vPosition;
@@ -108,17 +106,14 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           
           vec4 tex = texture2D(map, vUv);
           
-          // Enhanced crystal clarity terrain & glowing warm amber fire clusters
-          vec3 earthBase = pow(tex.rgb, vec3(0.88)) * 1.65;
+          // Pure, natural photorealistic Earth terrain & crisp golden city lights
+          vec3 earthBase = tex.rgb * 1.35;
           
-          // Atmospheric limb glow along upper & outer horizon
-          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.2);
-          float sunLimb = max(0.0, dot(normal, sunDirection));
+          // Natural soft blue atmospheric limb glow
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.5);
+          vec3 blueAtmosphereRim = vec3(0.2, 0.55, 1.0) * fresnel * 0.95;
           
-          // Warm solar limb & atmospheric rim
-          vec3 rimGlow = mix(vec3(0.2, 0.45, 0.95), vec3(1.0, 0.65, 0.25), pow(sunLimb, 1.2)) * fresnel * (0.4 + 2.8 * pow(sunLimb, 1.5));
-          
-          vec3 finalColor = earthBase + rimGlow;
+          vec3 finalColor = earthBase + blueAtmosphereRim;
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
@@ -128,12 +123,9 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     earthGroup.add(earthMesh);
     earthMeshRef.current = earthMesh;
 
-    // 6. ATMOSPHERIC CORONA RING
-    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.012, 96, 96);
+    // 6. NATURAL EARTH ATMOSPHERIC BLUE CORONA
+    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.015, 96, 96);
     const atmosphereMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        sunDirection: { value: new THREE.Vector3(0.75, 0.55, 0.4).normalize() },
-      },
       vertexShader: `
         varying vec3 vNormal;
         varying vec3 vPosition;
@@ -144,7 +136,6 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
         }
       `,
       fragmentShader: `
-        uniform vec3 sunDirection;
         varying vec3 vNormal;
         varying vec3 vPosition;
 
@@ -153,13 +144,12 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
           vec3 viewDir = normalize(-vPosition);
           
           float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.8);
-          float sunBias = max(0.0, dot(normal, sunDirection));
           
-          // Radiant glowing blue to amber corona along outer edge
-          float intensity = fresnel * (0.18 + 3.2 * pow(sunBias, 1.8));
-          vec3 atmosphericColor = mix(vec3(0.2, 0.5, 1.0), vec3(1.0, 0.7, 0.3), pow(sunBias, 1.5));
+          // Natural, crisp celestial blue atmosphere (zero red)
+          vec3 naturalBlue = vec3(0.22, 0.58, 1.0);
+          float intensity = fresnel * 0.9;
           
-          gl_FragColor = vec4(atmosphericColor, intensity * 0.95);
+          gl_FragColor = vec4(naturalBlue, intensity);
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -172,73 +162,41 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     earthGroup.add(atmosphereMesh);
     atmosphereMeshRef.current = atmosphereMesh;
 
-    // 7. FLOATING 3D THERMAL EMBER PARTICLES
-    const particleCount = 180;
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleColors = new Float32Array(particleCount * 3);
-    const particleSpeeds = new Float32Array(particleCount * 3);
+    // 7. SUBTLE CELESTIAL BACKGROUND STARS (Clean & Natural)
+    const starCount = 140;
+    const starPositions = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
 
-    const baseColors = [
-      new THREE.Color(0xff3315),
-      new THREE.Color(0xff6a1a),
-      new THREE.Color(0xffaa33),
-      new THREE.Color(0xffe082),
-    ];
+    for (let i = 0; i < starCount; i++) {
+      const radius = earthRadius + 0.5 + Math.random() * 2.2;
+      const theta = Math.PI * 0.05 + Math.random() * Math.PI * 1.9;
+      const phi = (Math.random() - 0.5) * Math.PI * 1.1;
 
-    for (let i = 0; i < particleCount; i++) {
-      const radius = earthRadius + 0.1 + Math.random() * 1.6;
-      const theta = Math.PI * 0.1 + Math.random() * Math.PI * 1.8;
-      const phi = (Math.random() - 0.5) * Math.PI * 0.95;
+      starPositions[i * 3] = radius * Math.cos(phi) * Math.sin(theta);
+      starPositions[i * 3 + 1] = radius * Math.sin(phi);
+      starPositions[i * 3 + 2] = radius * Math.cos(phi) * Math.cos(theta);
 
-      const x = radius * Math.cos(phi) * Math.sin(theta);
-      const y = radius * Math.sin(phi);
-      const z = radius * Math.cos(phi) * Math.cos(theta);
-
-      particlePositions[i * 3] = x;
-      particlePositions[i * 3 + 1] = y;
-      particlePositions[i * 3 + 2] = z;
-
-      const c = baseColors[Math.floor(Math.random() * baseColors.length)];
-      particleColors[i * 3] = c.r;
-      particleColors[i * 3 + 1] = c.g;
-      particleColors[i * 3 + 2] = c.b;
-
-      particleSpeeds[i * 3] = (Math.random() - 0.5) * 0.0015;
-      particleSpeeds[i * 3 + 1] = Math.random() * 0.0025 + 0.0008;
-      particleSpeeds[i * 3 + 2] = (Math.random() - 0.5) * 0.0015;
+      starColors[i * 3] = 0.85 + Math.random() * 0.15;
+      starColors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
+      starColors[i * 3 + 2] = 1.0;
     }
 
-    const particleGeometry = new THREE.BufferGeometry();
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-    particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
-    const particleCanvas = document.createElement('canvas');
-    particleCanvas.width = 32;
-    particleCanvas.height = 32;
-    const pctx = particleCanvas.getContext('2d');
-    if (pctx) {
-      const grad = pctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      grad.addColorStop(0.3, 'rgba(255, 160, 45, 0.9)');
-      grad.addColorStop(0.7, 'rgba(255, 55, 15, 0.35)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      pctx.fillStyle = grad;
-      pctx.fillRect(0, 0, 32, 32);
-    }
-    const particleTexture = new THREE.CanvasTexture(particleCanvas);
-
-    const particleMaterial = new THREE.PointsMaterial({
-      size: 0.045,
+    const starMaterial = new THREE.PointsMaterial({
+      size: 0.025,
       vertexColors: true,
-      map: particleTexture,
       transparent: true,
+      opacity: 0.75,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
 
-    const particles = new THREE.Points(particleGeometry, particleMaterial);
-    earthGroup.add(particles);
-    particlesRef.current = particles;
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    earthGroup.add(stars);
+    starsRef.current = stars;
 
     // INITIAL ROTATION
     earthGroup.rotation.x = currentRotationRef.current.x;
@@ -328,7 +286,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
-    // 8. RENDER & SLOW CELESTIAL DRIFT
+    // 8. RENDER & NATURAL CELESTIAL DRIFT
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -343,22 +301,6 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       if (earthGroupRef.current) {
         earthGroupRef.current.rotation.x = currentRotationRef.current.x;
         earthGroupRef.current.rotation.y = currentRotationRef.current.y;
-      }
-
-      // Animate floating ember particles
-      if (particlesRef.current) {
-        const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
-        for (let i = 0; i < particleCount; i++) {
-          positions[i * 3] += particleSpeeds[i * 3];
-          positions[i * 3 + 1] += particleSpeeds[i * 3 + 1];
-          positions[i * 3 + 2] += particleSpeeds[i * 3 + 2];
-
-          // Reset if drifting too far
-          if (positions[i * 3 + 1] > earthRadius + 1.8) {
-            positions[i * 3 + 1] = -earthRadius * 0.5;
-          }
-        }
-        particlesRef.current.geometry.attributes.position.needsUpdate = true;
       }
 
       renderer.render(scene, camera);
@@ -386,9 +328,8 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       earthMaterial.dispose();
       atmosphereGeometry.dispose();
       atmosphereMaterial.dispose();
-      particleGeometry.dispose();
-      particleMaterial.dispose();
-      particleTexture.dispose();
+      starGeometry.dispose();
+      starMaterial.dispose();
     };
   }, [isTransitioning]);
 
