@@ -14,6 +14,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const earthGroupRef = useRef<THREE.Group | null>(null);
   const earthMeshRef = useRef<THREE.Mesh | null>(null);
+  const atmosphereMeshRef = useRef<THREE.Mesh | null>(null);
   const starsRef = useRef<THREE.Points | null>(null);
 
   const isDraggingRef = useRef(false);
@@ -39,7 +40,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     camera.position.set(0, 0, 4.3);
     cameraRef.current = camera;
 
-    // 2. RENDERER WITH HIGH QUALITY ANISOTROPY
+    // 2. RENDERER WITH HIGH QUALITY ANISOTROPY & NATURAL COLOR SPACE
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -55,15 +56,15 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
 
     const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
-    // 3. EARTH GROUP (Positioned on the RIGHT side on desktop, centered on mobile)
+    // 3. EARTH GROUP (Perfect elegant scale on the right side)
     const earthGroup = new THREE.Group();
-    const xPos = isDesktop ? 1.05 : 0;
-    const yPos = isDesktop ? 0.0 : -0.35;
+    const xPos = isDesktop ? 0.95 : 0;
+    const yPos = isDesktop ? 0.0 : -0.22;
     earthGroup.position.set(xPos, yPos, 0);
     scene.add(earthGroup);
     earthGroupRef.current = earthGroup;
 
-    // 4. NATURAL HIGH RESOLUTION SATELLITE TEXTURE (ZERO BORDER, ZERO ARTIFICIAL RIMS)
+    // 4. NATURAL HIGH RESOLUTION SATELLITE TEXTURE (CRYSTAL CLARITY, ZERO RED)
     const textureLoader = new THREE.TextureLoader();
     const earthTexture = textureLoader.load('/cinematic/earth_natural_clarity.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -74,26 +75,100 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       tex.generateMipmaps = true;
     });
 
-    // 5. NATURAL EARTH SPHERE (Standard MeshBasicMaterial - seamless blend with space)
-    const earthRadius = isDesktop ? 1.75 : 1.5;
+    // 5. EARTH SPHERE MESH (Reduced to perfect balanced proportion)
+    const earthRadius = isDesktop ? 1.4 : 1.2;
     const earthGeometry = new THREE.SphereGeometry(earthRadius, 96, 96);
 
-    const earthMaterial = new THREE.MeshBasicMaterial({
-      map: earthTexture,
-      transparent: false,
+    const earthMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        map: { value: earthTexture },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+
+        void main() {
+          vec3 normal = normalize(vNormal);
+          vec3 viewDir = normalize(-vPosition);
+          
+          vec4 tex = texture2D(map, vUv);
+          
+          // Crisp, natural photorealistic Earth terrain & warm golden city lights
+          vec3 earthBase = tex.rgb * 1.45;
+          
+          // Subtle, delicate natural blue edge rim (reduced and tight)
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 5.0);
+          vec3 blueAtmosphereRim = vec3(0.18, 0.48, 0.9) * fresnel * 0.32;
+          
+          vec3 finalColor = earthBase + blueAtmosphereRim;
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
     });
 
     const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
     earthGroup.add(earthMesh);
     earthMeshRef.current = earthMesh;
 
-    // 6. SUBTLE CELESTIAL BACKGROUND STARS (Clean & Natural)
+    // 6. NATURAL EARTH ATMOSPHERIC BLUE CORONA (Subtle & Tight)
+    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.008, 96, 96);
+    const atmosphereMaterial = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+
+        void main() {
+          vec3 normal = normalize(vNormal);
+          vec3 viewDir = normalize(-vPosition);
+          
+          float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 5.5);
+          
+          // Subtle, delicate blue atmospheric edge
+          vec3 naturalBlue = vec3(0.2, 0.5, 0.95);
+          float intensity = fresnel * 0.38;
+          
+          gl_FragColor = vec4(naturalBlue, intensity);
+        }
+      `,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      transparent: true,
+      depthWrite: false,
+    });
+
+    const atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+    earthGroup.add(atmosphereMesh);
+    atmosphereMeshRef.current = atmosphereMesh;
+
+    // 7. SUBTLE CELESTIAL BACKGROUND STARS
     const starCount = 120;
     const starPositions = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
 
     for (let i = 0; i < starCount; i++) {
-      const radius = earthRadius + 0.6 + Math.random() * 2.5;
+      const radius = earthRadius + 0.6 + Math.random() * 2.0;
       const theta = Math.PI * 0.05 + Math.random() * Math.PI * 1.9;
       const phi = (Math.random() - 0.5) * Math.PI * 1.1;
 
@@ -114,7 +189,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       size: 0.02,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.65,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -138,7 +213,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       renderer.setSize(w, h);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      earthGroupRef.current.position.set(isD ? 1.05 : 0, isD ? 0.0 : -0.35, 0);
+      earthGroupRef.current.position.set(isD ? 0.95 : 0, isD ? 0.0 : -0.22, 0);
     };
     window.addEventListener('resize', handleResize);
 
@@ -211,7 +286,7 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
-    // 7. RENDER & NATURAL CELESTIAL DRIFT
+    // 8. RENDER & NATURAL CELESTIAL DRIFT
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -251,6 +326,8 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       renderer.dispose();
       earthGeometry.dispose();
       earthMaterial.dispose();
+      atmosphereGeometry.dispose();
+      atmosphereMaterial.dispose();
       starGeometry.dispose();
       starMaterial.dispose();
     };

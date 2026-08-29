@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Flame, ArrowRight, Menu } from 'lucide-react';
+import gsap from 'gsap';
 
 // Dynamic import for Three.js WebGL Earth with SSR disabled
 const CinematicEarth = dynamic(
@@ -19,10 +20,31 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
   isTransitioning,
   onExplore,
 }) => {
+  const [hasStartedDive, setHasStartedDive] = useState(false);
+
+  const heroStackRef = useRef<HTMLDivElement>(null);
+  const flameEmblemRef = useRef<HTMLDivElement>(null);
+  const wordmarkRef = useRef<HTMLDivElement>(null);
+  const taglineRef = useRef<HTMLDivElement>(null);
   const exploreBtnRef = useRef<HTMLButtonElement>(null);
+  const darkTransitionOverlayRef = useRef<HTMLDivElement>(null);
 
   const handleExploreClick = () => {
-    onExplore();
+    if (hasStartedDive) return;
+    setHasStartedDive(true);
+
+    if (darkTransitionOverlayRef.current) {
+      gsap.to(darkTransitionOverlayRef.current, {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          onExplore();
+        },
+      });
+    } else {
+      onExplore();
+    }
   };
 
   // Keyboard shortcut: Space or Enter triggers explore
@@ -34,11 +56,11 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [hasStartedDive]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#07070b] text-white select-none">
-      {/* Deep Cosmic Background with Subtle Ambient Warmth */}
+      {/* Deep Cosmic Background */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -50,7 +72,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
 
       {/* Subtle Topographical Contour Line Overlay in Bottom-Left */}
       <svg
-        className="absolute bottom-0 left-0 w-[580px] h-[480px] opacity-[0.14] pointer-events-none stroke-[#ff5722] z-5"
+        className="absolute bottom-0 left-0 w-[560px] h-[460px] opacity-[0.12] pointer-events-none stroke-[#ff5722] z-5"
         viewBox="0 0 500 500"
         fill="none"
       >
@@ -59,7 +81,6 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
         <path d="M-60,360 C80,330 140,370 240,310 C320,250 370,150 540,100" strokeWidth="1.2" />
         <path d="M-60,310 C90,280 130,320 220,270 C290,220 350,120 540,70" strokeWidth="1.2" />
         <path d="M-60,260 C100,230 120,270 200,230 C260,190 330,90 540,40" strokeWidth="1.2" />
-        <path d="M-60,210 C110,180 110,220 180,190 C230,160 310,60 540,10" strokeWidth="1.2" />
       </svg>
 
       {/* TOP HEADER */}
@@ -85,16 +106,25 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
         </button>
       </header>
 
-      {/* 3D High-Clarity WebGL Earth (Seamless in space with zero border) */}
+      {/* 3D High-Clarity WebGL Earth (Positioned on the Right Side) */}
       <div className="absolute inset-0 z-10">
-        <CinematicEarth isTransitioning={isTransitioning} />
+        <CinematicEarth isTransitioning={hasStartedDive || isTransitioning} />
       </div>
 
-      {/* FOREGROUND HERO CONTENT (Left Aligned matching the image) */}
+      {/* Atmospheric Vignette */}
+      <div className="absolute inset-0 z-15 pointer-events-none bg-[radial-gradient(ellipse_at_center,_transparent_60%,_rgba(7,7,11,0.7)_100%)]" />
+
+      {/* FOREGROUND HERO CONTENT (Left Aligned) */}
       <div className="relative z-20 flex flex-col justify-center w-full h-full px-8 md:px-16 lg:px-24 pointer-events-none">
-        <div className="flex flex-col items-start text-left max-w-xl w-full">
+        <div
+          ref={heroStackRef}
+          className="flex flex-col items-start text-left max-w-xl w-full"
+        >
           {/* Flame Icon above Title */}
-          <div className="relative mb-3 flex items-center justify-center pointer-events-auto">
+          <div
+            ref={flameEmblemRef}
+            className="relative mb-3 flex items-center justify-center pointer-events-auto"
+          >
             <div className="absolute w-12 h-12 rounded-full bg-[#ff5722]/30 blur-xl animate-pulse" />
             <Flame
               size={32}
@@ -102,8 +132,11 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
             />
           </div>
 
-          {/* Massive FLAREX Wordmark: FLARE in pure White + X in Fiery Orange */}
-          <div className="select-none text-left pointer-events-auto my-1">
+          {/* Massive FLAREX Wordmark */}
+          <div
+            ref={wordmarkRef}
+            className="select-none text-left transform transition-all duration-300 pointer-events-auto my-1"
+          >
             <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[6.2rem] font-black tracking-[0.16em] uppercase flex items-center leading-none">
               <span className="text-white drop-shadow-[0_4px_30px_rgba(255,255,255,0.15)]">FLARE</span>
               <span className="text-[#ff5722] drop-shadow-[0_0_35px_rgba(255,87,34,0.7)] ml-0.5">X</span>
@@ -111,7 +144,10 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
           </div>
 
           {/* Clean Uppercase Sub-headline */}
-          <div className="mt-4 text-[11px] sm:text-[12px] md:text-[13px] font-bold tracking-[0.24em] text-[#e2e8f0] uppercase font-sans">
+          <div
+            ref={taglineRef}
+            className="mt-4 text-[11px] sm:text-[12px] md:text-[13px] font-bold tracking-[0.24em] text-[#e2e8f0] uppercase font-sans"
+          >
             IGNITING{' '}
             <span className="text-[#ff5722] font-extrabold drop-shadow-[0_0_12px_rgba(255,87,34,0.6)]">
               INTELLIGENCE.
@@ -128,6 +164,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
               ref={exploreBtnRef}
               type="button"
               onClick={handleExploreClick}
+              disabled={hasStartedDive}
               className="group relative px-8 py-3 rounded-xl text-xs sm:text-[13px] font-bold tracking-[0.26em] text-white uppercase bg-[#0c0a0c]/60 border border-[#ff5722]/45 backdrop-blur-md shadow-[0_0_20px_rgba(255,87,34,0.25)] hover:shadow-[0_0_35px_rgba(255,87,34,0.6)] hover:border-[#ff5722] hover:bg-[#180a06]/85 transition-all duration-300 transform hover:scale-[1.03] active:scale-95 flex items-center gap-3 cursor-pointer"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -139,6 +176,12 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Smooth Dark Transition Overlay */}
+      <div
+        ref={darkTransitionOverlayRef}
+        className="absolute inset-0 z-50 pointer-events-none bg-[#07070b] opacity-0"
+      />
     </div>
   );
 };
