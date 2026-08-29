@@ -287,7 +287,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             </div>
             <div>
               <h2>
-                Flame<span>X</span>
+                FLARE<span>X</span>
               </h2>
               <p>Thermal Intelligence Layer</p>
             </div>

@@ -91,7 +91,7 @@ export const RightIncidentPanel: React.FC = () => {
             ? 'bg-red-50/70 border-red-200'
             : isNormalFlare
             ? 'bg-emerald-50/60 border-emerald-200'
-            : 'bg-[#f0f7fd] border-[#cfe0f0]'
+            : 'bg-[#fff7ed] border-[#fed7aa]'
         }`}
       >
         <div className="flex items-center justify-between">
@@ -106,7 +106,7 @@ export const RightIncidentPanel: React.FC = () => {
                     ? 'bg-red-600'
                     : isNormalFlare
                     ? 'bg-emerald-600'
-                    : 'bg-[#0284c7]'
+                    : 'bg-[#ea580c]'
                 }`}
               />
             </span>
@@ -164,7 +164,7 @@ export const RightIncidentPanel: React.FC = () => {
         <div className="mt-2 pt-2 border-t border-[#cfe0f0] flex flex-col gap-1 text-[11px]">
           <div className="flex items-center justify-between text-[#244265]">
             <span className="flex items-center gap-1 text-[#5b7596] font-medium">
-              <Building2 className="w-3.5 h-3.5 text-[#0284c7] shrink-0" />
+              <Building2 className="w-3.5 h-3.5 text-[#ea580c] shrink-0" />
               {selectedHotspot.nearestFacility.distance} from {selectedHotspot.nearestFacility.name.split(' ')[0]}
             </span>
             <span className="text-[#0c2340] font-mono text-[10px] font-bold">
@@ -192,12 +192,12 @@ export const RightIncidentPanel: React.FC = () => {
           </div>
         </div>
 
-        {/* Map Focus Action */}
+        {/* Map Focus Action (Vibrant Flame Gradient) */}
         <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#cfe0f0]">
           <button
             type="button"
             onClick={() => flyToCoords(selectedHotspot.coordinates, 8.2, 30)}
-            className="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#0284c7] to-[#0369a1] hover:from-[#0369a1] hover:to-[#075985] text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+            className="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#ea580c] via-[#f97316] to-[#c2410c] hover:from-[#f97316] hover:to-[#ea580c] text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_10px_rgba(234,88,12,0.25)] transition-all cursor-pointer"
           >
             <Crosshair className="w-3.5 h-3.5" />
             <span>Focus on Map</span>
@@ -206,7 +206,7 @@ export const RightIncidentPanel: React.FC = () => {
           <button
             type="button"
             onClick={handleCopyCoords}
-            className="py-1.5 px-3 rounded-xl bg-white border border-[#cfe0f0] text-[#244265] hover:text-[#0c2340] hover:bg-[#f0f7fd] text-[10.5px] font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+            className="py-1.5 px-3 rounded-xl bg-white border border-[#cfe0f0] text-[#244265] hover:text-[#0c2340] hover:bg-[#fff7ed] text-[10.5px] font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs"
             title="Copy GIS Coordinates"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -218,16 +218,16 @@ export const RightIncidentPanel: React.FC = () => {
       {/* 2. PRIMARY TELEMETRY METRIC GRID */}
       <div className="grid grid-cols-2 gap-1.5">
         {/* Current FRP */}
-        <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Current FRP</span>
+            <span className="text-[10px] font-bold text-[#ea580c] uppercase tracking-wider">Current FRP</span>
             <Flame className="w-3.5 h-3.5 text-red-600" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
             <span className="text-[20px] font-black text-red-600 font-mono leading-none">
               {selectedHotspot.frp}
             </span>
-            <span className="text-[10px] font-bold text-[#7b95b3]">MW</span>
+            <span className="text-[10px] font-bold text-[#c2410c]">MW</span>
           </div>
         </div>
 
@@ -235,7 +235,7 @@ export const RightIncidentPanel: React.FC = () => {
         <div className="bg-[#f8fbfe] border border-[#cfe0f0] rounded-xl p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-[#5b7596] uppercase tracking-wider">Hist. Baseline</span>
-            <Clock className="w-3.5 h-3.5 text-[#0284c7]" />
+            <Clock className="w-3.5 h-3.5 text-[#ea580c]" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
             <span className="text-[20px] font-black text-[#0c2340] font-mono leading-none">
@@ -287,7 +287,7 @@ export const RightIncidentPanel: React.FC = () => {
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-1 px-1 rounded-lg text-[10px] font-bold transition-all duration-150 cursor-pointer whitespace-nowrap ${
               activeTab === tab
-                ? 'bg-white text-[#0284c7] shadow-xs border border-[#cfe0f0]'
+                ? 'bg-white text-[#ea580c] shadow-xs border border-[#fed7aa]'
                 : 'text-[#4e6b8c] hover:text-[#0c2340]'
             }`}
           >
@@ -300,10 +300,10 @@ export const RightIncidentPanel: React.FC = () => {
       <div className="flex flex-col gap-2">
         {/* WHY? EXPLAINABILITY TAB (THE HERO FEATURE) */}
         {activeTab === 'Why?' && (
-          <div className="bg-[#f0f7fd] border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-[#cfe0f0]">
+          <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+            <div className="flex items-center justify-between pb-1.5 border-b border-[#fed7aa]">
               <div className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-[#0284c7]" />
+                <Cpu className="w-3.5 h-3.5 text-[#ea580c]" />
                 <span className="text-[11.5px] font-extrabold text-[#0c2340]">
                   Multi-Source Evidence Fusion
                 </span>
@@ -314,7 +314,7 @@ export const RightIncidentPanel: React.FC = () => {
             </div>
 
             <p className="text-[10.5px] text-[#3b5677] leading-snug">
-              Why did FlameX classify this as{' '}
+              Why did FLAREX classify this as{' '}
               <strong className="text-[#0c2340] font-bold">{selectedHotspot.classification}</strong>?
             </p>
 
@@ -377,7 +377,7 @@ export const RightIncidentPanel: React.FC = () => {
                   />
                   <ReferenceLine
                     y={selectedHotspot.baselineFrp}
-                    stroke="#0284C7"
+                    stroke="#EA580C"
                     strokeDasharray="3 3"
                     strokeWidth={1.5}
                   />
@@ -433,7 +433,7 @@ export const RightIncidentPanel: React.FC = () => {
           <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
             <div className="flex items-center justify-between pb-1 border-b border-[#cfe0f0]">
               <div className="flex items-center gap-1.5">
-                <Satellite className="w-3.5 h-3.5 text-[#0284c7]" />
+                <Satellite className="w-3.5 h-3.5 text-[#ea580c]" />
                 <span className="text-[11px] font-bold text-[#0c2340]">Sentinel-2 MSI Optical Verification</span>
               </div>
               <span className="text-[9px] font-mono text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded border border-emerald-200 font-bold">
@@ -442,13 +442,13 @@ export const RightIncidentPanel: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <div className="p-2 rounded-xl bg-[#f0f7fd] border border-[#cfe0f0]">
+              <div className="p-2 rounded-xl bg-[#fff7ed] border border-[#fed7aa]">
                 <span className="text-[9px] text-[#5b7596] block">Sentinel Tile</span>
                 <span className="font-mono font-bold text-[#0c2340]">
                   {selectedHotspot.sentinelImagery?.tileId || 'T43QBC'}
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-[#f0f7fd] border border-[#cfe0f0]">
+              <div className="p-2 rounded-xl bg-[#fff7ed] border border-[#fed7aa]">
                 <span className="text-[9px] text-[#5b7596] block">Cloud Cover</span>
                 <span className="font-mono font-bold text-emerald-700">
                   {selectedHotspot.sentinelImagery?.cloudCoverPct || 1.8}% (Clear)
@@ -456,9 +456,9 @@ export const RightIncidentPanel: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-[#e0f2fe]/60 border border-[#bae6fd] text-[10.5px]">
-              <div className="flex items-center gap-1 font-bold text-[#0369a1] mb-0.5">
-                <Eye size={13} className="text-[#0284c7]" />
+            <div className="p-2.5 rounded-xl bg-[#fff7ed] border border-[#fed7aa] text-[10.5px]">
+              <div className="flex items-center gap-1 font-bold text-[#c2410c] mb-0.5">
+                <Eye size={13} className="text-[#ea580c]" />
                 <span>Visual Optical Verification</span>
               </div>
               <p className="leading-snug text-[#244265]">
@@ -473,7 +473,7 @@ export const RightIncidentPanel: React.FC = () => {
           <div className="bg-white border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs">
             <div className="flex justify-between items-center text-[10.5px]">
               <span className="text-[#5b7596] flex items-center gap-1.5">
-                <Satellite className="w-3.5 h-3.5 text-[#0284c7]" /> Sensor Stream
+                <Satellite className="w-3.5 h-3.5 text-[#ea580c]" /> Sensor Stream
               </span>
               <span className="text-[#0c2340] font-semibold">{selectedHotspot.satellite}</span>
             </div>
@@ -501,31 +501,31 @@ export const RightIncidentPanel: React.FC = () => {
         )}
       </div>
 
-      {/* 5. OPERATIONAL EMERGENCY CONTEXT & PLUME DISPERSION (FILLS RIGHT SPACE CLEANLY) */}
-      <div className="bg-[#f0f7fd] border border-[#cfe0f0] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
-        <div className="flex items-center justify-between pb-1.5 border-b border-[#cfe0f0]">
+      {/* 5. OPERATIONAL EMERGENCY CONTEXT & PLUME DISPERSION (VIBRANT FLAME PALETTE) */}
+      <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-2xl p-3 flex flex-col gap-2 shadow-xs">
+        <div className="flex items-center justify-between pb-1.5 border-b border-[#fed7aa]">
           <div className="flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#0284c7]" />
+            <ShieldAlert className="w-3.5 h-3.5 text-[#ea580c]" />
             <span className="text-[11px] font-extrabold text-[#0c2340] uppercase tracking-wider">
               Emergency Units &amp; Plume
             </span>
           </div>
-          <span className="text-[9px] font-bold text-[#0369a1] bg-[#e0f2fe] px-2 py-0.5 rounded-full border border-[#bae6fd]">
+          <span className="text-[9px] font-bold text-[#c2410c] bg-[#ffedd5] px-2 py-0.5 rounded-full border border-[#fed7aa]">
             SOP Active
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
-          <div className="p-2 rounded-xl bg-white border border-[#cfe0f0]">
+          <div className="p-2 rounded-xl bg-white border border-[#fed7aa]">
             <span className="text-[9px] text-[#5b7596] block font-semibold">Nearest Station</span>
             <span className="font-bold text-[#0c2340] block truncate">
               {selectedHotspot.nearestFacility.name.split(' ')[0]} Fire Unit
             </span>
-            <span className="text-[9px] text-[#0284c7] font-mono font-bold">2.4 km (~5 mins)</span>
+            <span className="text-[9px] text-[#ea580c] font-mono font-bold">2.4 km (~5 mins)</span>
           </div>
-          <div className="p-2 rounded-xl bg-white border border-[#cfe0f0]">
+          <div className="p-2 rounded-xl bg-white border border-[#fed7aa]">
             <span className="text-[9px] text-[#5b7596] block font-semibold flex items-center gap-1">
-              <Wind size={10} className="text-[#0284c7]" /> Plume Vector
+              <Wind size={10} className="text-[#ea580c]" /> Plume Vector
             </span>
             <span className="font-bold text-[#0c2340] block truncate">
               12 km/h SW → NE
@@ -534,9 +534,9 @@ export const RightIncidentPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-[10px] text-[#3b5677] pt-1 border-t border-[#cfe0f0]/80">
+        <div className="flex items-center justify-between text-[10px] text-[#3b5677] pt-1 border-t border-[#fed7aa]/80">
           <span className="flex items-center gap-1 font-medium">
-            <Radio className="w-3 h-3 text-[#0284c7]" />
+            <Radio className="w-3 h-3 text-[#ea580c]" />
             SPCB Telemetry Ingestion:
           </span>
           <span className="font-mono font-bold text-emerald-700">ONLINE (Active)</span>

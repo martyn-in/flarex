@@ -168,10 +168,10 @@ button {
   display: grid;
   place-items: center;
   border-radius: 12px;
-  color: #0284c7;
-  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-  border: 1px solid #bae6fd;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.16);
+  color: #ea580c;
+  background: linear-gradient(135deg, #ffedd5 0%, #fee2e2 100%);
+  border: 1px solid #fed7aa;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2);
   transition: transform 0.2s ease;
 }
 
@@ -183,12 +183,12 @@ button {
   margin: 0;
   font-size: 20px;
   letter-spacing: -0.5px;
-  font-weight: 800;
+  font-weight: 900;
   color: #0c2340;
 }
 
 .brand h2 span {
-  color: #0284c7;
+  color: #ea580c;
 }
 
 .brand p {
@@ -475,9 +475,9 @@ button {
 }
 
 .stat-card.active-filter {
-  border-color: #0284c7;
-  background: #e0f2fe;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+  border-color: #ea580c;
+  background: #fff7ed;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.25);
 }
 
 .stat-icon {
@@ -490,9 +490,9 @@ button {
 }
 
 .stat-icon.radio-glow {
-  background: #e0f2fe;
-  color: #0284c7;
-  border: 1px solid #bae6fd;
+  background: #ffedd5;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
 }
 
 .stat-icon.flame-glow {

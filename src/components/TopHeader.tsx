@@ -36,8 +36,8 @@ export const TopHeader: React.FC = () => {
 
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-[17px] font-bold tracking-wider text-white font-sans bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
-              FlameX
+            <span className="text-[17px] font-black tracking-wider text-white font-sans">
+              FLAREX
             </span>
             <span className="text-[9.5px] font-semibold px-2 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 tracking-wider uppercase">
               COMMAND CENTER
