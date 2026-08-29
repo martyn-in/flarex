@@ -43,10 +43,13 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
     const particles: Array<{
       x: number;
       y: number;
+      baseX: number;
       size: number;
-      speedX: number;
       speedY: number;
-      opacity: number;
+      phase: number;
+      swayFreq: number;
+      swayAmp: number;
+      baseOpacity: number;
       color: string;
     }> = [];
 
@@ -57,36 +60,53 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
       'rgba(255, 215, 100, ',
     ];
 
-    for (let i = 0; i < 45; i++) {
+    for (let i = 0; i < 38; i++) {
+      const initialX = Math.random() * width * 0.65;
       particles.push({
-        x: Math.random() * width * 0.65,
+        x: initialX,
+        baseX: initialX,
         y: Math.random() * height,
-        size: Math.random() * 2.2 + 0.8,
-        speedX: (Math.random() - 0.4) * 0.35,
-        speedY: -(Math.random() * 0.55 + 0.2),
-        opacity: Math.random() * 0.7 + 0.2,
+        size: Math.random() * 1.8 + 0.7,
+        speedY: -(Math.random() * 0.12 + 0.04), // Slower, majestic cinematic upward drift
+        phase: Math.random() * Math.PI * 2,
+        swayFreq: Math.random() * 0.0006 + 0.0003, // Ultra-slow graceful organic lateral sway
+        swayAmp: Math.random() * 22 + 8,
+        baseOpacity: Math.random() * 0.5 + 0.25,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
 
-    const render = () => {
+    let startTime = performance.now();
+
+    const render = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
       ctx.clearRect(0, 0, width, height);
 
       particles.forEach((p) => {
-        p.x += p.speedX;
         p.y += p.speedY;
+        p.x = p.baseX + Math.sin(elapsed * p.swayFreq + p.phase) * p.swayAmp;
 
         if (p.y < -10) {
           p.y = height + 10;
-          p.x = Math.random() * width * 0.65;
+          p.baseX = Math.random() * width * 0.65;
+          p.x = p.baseX;
         }
-        if (p.x < -10) p.x = width * 0.65;
-        if (p.x > width * 0.65) p.x = 0;
+        if (p.x < -10) {
+          p.baseX = width * 0.65;
+          p.x = p.baseX;
+        }
+        if (p.x > width * 0.65) {
+          p.baseX = 0;
+          p.x = 0;
+        }
+
+        const dynamicOpacity =
+          p.baseOpacity * (0.82 + 0.18 * Math.sin(elapsed * 0.0009 + p.phase));
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + p.opacity + ')';
-        ctx.shadowBlur = 12;
+        ctx.fillStyle = p.color + dynamicOpacity + ')';
+        ctx.shadowBlur = 10;
         ctx.shadowColor = '#ff5722';
         ctx.fill();
       });
@@ -94,7 +114,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
       animId = requestAnimationFrame(render);
     };
 
-    render();
+    animId = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animId);
@@ -133,9 +153,9 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#06060a] text-white select-none">
-      {/* 100% Photorealistic Master Earth Background */}
+      {/* 100% Photorealistic Master Earth Background with Slow Cinematic Pan */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none bg-cover bg-no-repeat transition-transform duration-1000 ease-out"
+        className="absolute inset-0 z-0 pointer-events-none bg-cover bg-no-repeat animate-cinematic-earth"
         style={{
           backgroundImage: `url('/cinematic/flarex_master_globe_hero.jpg')`,
           backgroundPosition: 'right 28% center',
@@ -161,7 +181,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
 
       {/* Subtle Topographical Contour Line Overlay in Bottom-Left */}
       <svg
-        className="absolute bottom-0 left-0 w-[580px] h-[480px] opacity-[0.14] pointer-events-none stroke-[#ff5722] z-3"
+        className="absolute bottom-0 left-0 w-[580px] h-[480px] opacity-[0.14] pointer-events-none stroke-[#ff5722] z-3 animate-contour-shimmer"
         viewBox="0 0 500 500"
         fill="none"
       >
@@ -177,7 +197,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
         {/* Top-Left: Glowing Flame Emblem + Uppercase Geospatial Fire Intelligence */}
         <div className="flex items-center gap-3 pointer-events-auto">
           <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-black/40 border border-[#ff5722]/30 shadow-[0_0_12px_rgba(255,87,34,0.3)]">
-            <Flame size={17} className="text-[#ff5722] fill-[#ff5722] drop-shadow-[0_0_10px_#ff5722]" />
+            <Flame size={17} className="text-[#ff5722] fill-[#ff5722] drop-shadow-[0_0_10px_#ff5722] animate-cinematic-glow" />
           </div>
           <span className="text-[10px] font-bold tracking-[0.24em] text-[#d1b8af] uppercase font-sans">
             Geospatial Fire Intelligence
@@ -206,10 +226,10 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
             ref={flameEmblemRef}
             className="relative mb-3 flex items-center justify-center pointer-events-auto"
           >
-            <div className="absolute w-12 h-12 rounded-full bg-[#ff5722]/30 blur-xl animate-pulse" />
+            <div className="absolute w-12 h-12 rounded-full bg-[#ff5722]/30 blur-xl animate-cinematic-glow" />
             <Flame
               size={32}
-              className="text-[#ff5722] fill-[#ff5722] drop-shadow-[0_0_24px_#ff5722] animate-pulse"
+              className="text-[#ff5722] fill-[#ff5722] drop-shadow-[0_0_24px_#ff5722] animate-cinematic-glow"
             />
           </div>
 

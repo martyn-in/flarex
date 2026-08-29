@@ -749,3 +749,52 @@ button {
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
 }
+
+/* Slower Majestic Cinematic Background Animations */
+@keyframes cinematicEarthPan {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.035) translate3d(-0.8%, -0.4%, 0);
+  }
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+}
+
+.animate-cinematic-earth {
+  animation: cinematicEarthPan 36s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes cinematicGlowSlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+.animate-cinematic-glow {
+  animation: cinematicGlowSlow 6.5s ease-in-out infinite;
+}
+
+@keyframes contourShimmer {
+  0%, 100% {
+    opacity: 0.10;
+    transform: translateY(0px);
+  }
+  50% {
+    opacity: 0.18;
+    transform: translateY(-3px);
+  }
+}
+
+.animate-contour-shimmer {
+  animation: contourShimmer 14s ease-in-out infinite;
+}
+

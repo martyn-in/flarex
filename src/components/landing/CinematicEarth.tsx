@@ -292,11 +292,11 @@ export const CinematicEarth: React.FC<CinematicEarthProps> = ({ isTransitioning 
       animationFrameId = requestAnimationFrame(animate);
 
       if (isIdleRef.current && !isTransitioning) {
-        targetRotationRef.current.y += 0.0006;
+        targetRotationRef.current.y += 0.00015; // 4x slower celestial drift
       }
 
-      currentRotationRef.current.x += (targetRotationRef.current.x - currentRotationRef.current.x) * 0.05;
-      currentRotationRef.current.y += (targetRotationRef.current.y - currentRotationRef.current.y) * 0.05;
+      currentRotationRef.current.x += (targetRotationRef.current.x - currentRotationRef.current.x) * 0.03;
+      currentRotationRef.current.y += (targetRotationRef.current.y - currentRotationRef.current.y) * 0.03;
 
       if (earthGroupRef.current) {
         earthGroupRef.current.rotation.x = currentRotationRef.current.x;
