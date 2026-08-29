@@ -72,10 +72,10 @@ export const FlareXMap: React.FC = () => {
               <div class="selected-ring-2" style="position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}22; pointer-events: none;"></div>
               <div class="selected-ring-1" style="position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}33; pointer-events: none;"></div>
               <div style="position: relative; width: 14px; height: 14px; border-radius: 50%; background: ${dotColor}; border: 2px solid #ffffff; box-shadow: ${glowShadow}; z-index: 20;"></div>
-              <div style="position: absolute; top: -32px; left: 50%; transform: translateX(-50%); padding: 3px 8px; border-radius: 7px; background: rgba(14, 8, 6, 0.95); color: #fff; font-size: 10px; font-weight: 700; border: 1px solid rgba(255, 106, 61, 0.4); white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.7); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 5px;">
+              <div style="position: absolute; top: -34px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; background: #ffffff; color: #0f172a; font-size: 10.5px; font-weight: 800; border: 1px solid #cbd5e1; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 6px;">
                 <span>${spot.name.split(' ')[0]}</span>
-                <span style="color: ${dotColor}; font-family: monospace;">${spot.frp}MW</span>
-                <span style="color: #94a3b8; font-size: 9px;">(${spot.baselineRatio}×)</span>
+                <span style="color: ${dotColor}; font-family: monospace; font-weight: 900;">${spot.frp}MW</span>
+                <span style="color: #64748b; font-size: 9px; font-weight: 700;">(${spot.baselineRatio}×)</span>
               </div>
             </div>
           `;

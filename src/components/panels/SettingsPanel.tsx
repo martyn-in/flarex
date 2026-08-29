@@ -24,10 +24,10 @@ export default function SettingsPanel() {
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Layers size={14} className="text-[#ff7a45]" />
+              <Layers size={14} className="text-orange-600" />
               <div>
-                <span className="text-[11.5px] font-semibold text-white block">GIS State &amp; District Boundaries</span>
-                <span className="text-[9.5px] text-[#a3928c] block">Administrative boundary overlay</span>
+                <span className="text-[11.5px] font-bold text-slate-900 block">GIS State &amp; District Boundaries</span>
+                <span className="text-[9.5px] text-slate-500 block font-medium">Administrative boundary overlay</span>
               </div>
             </div>
             <button
@@ -35,24 +35,24 @@ export default function SettingsPanel() {
               onClick={() => toggleLayer('boundaries')}
               className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${
                 activeLayers.boundaries
-                  ? 'bg-gradient-to-r from-[#ff5a3c] to-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.5)]'
-                  : 'bg-[rgba(255,255,255,0.1)]'
+                  ? 'bg-orange-600'
+                  : 'bg-slate-200'
               }`}
             >
               <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${
                   activeLayers.boundaries ? 'left-5' : 'left-0.5'
                 }`}
               />
             </button>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,106,61,0.1)]">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
             <div className="flex items-center gap-2">
-              <MapPin size={14} className="text-[#ffa940]" />
+              <MapPin size={14} className="text-amber-600" />
               <div>
-                <span className="text-[11.5px] font-semibold text-white block">Industrial Facility Clusters</span>
-                <span className="text-[9.5px] text-[#a3928c] block">SEZ &amp; petrochemical landmarks</span>
+                <span className="text-[11.5px] font-bold text-slate-900 block">Industrial Facility Clusters</span>
+                <span className="text-[9.5px] text-slate-500 block font-medium">SEZ &amp; petrochemical landmarks</span>
               </div>
             </div>
             <button
@@ -60,12 +60,12 @@ export default function SettingsPanel() {
               onClick={() => toggleLayer('industrial')}
               className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${
                 activeLayers.industrial
-                  ? 'bg-gradient-to-r from-[#fa8c16] to-[#ffa940] shadow-[0_0_10px_rgba(250,140,22,0.5)]'
-                  : 'bg-[rgba(255,255,255,0.1)]'
+                  ? 'bg-orange-600'
+                  : 'bg-slate-200'
               }`}
             >
               <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${
                   activeLayers.industrial ? 'left-5' : 'left-0.5'
                 }`}
               />
@@ -80,8 +80,8 @@ export default function SettingsPanel() {
         <div className="flex flex-col gap-3">
           <div>
             <div className="flex items-center justify-between text-[11px] mb-1.5">
-              <span className="text-[#d1b8af]">Critical FRP Alert Trigger:</span>
-              <span className="font-mono font-bold text-[#ff505d]">{minFrpThreshold} MW</span>
+              <span className="text-slate-600 font-semibold">Critical FRP Alert Trigger:</span>
+              <span className="font-mono font-bold text-red-600">{minFrpThreshold} MW</span>
             </div>
             <input
               type="range"
@@ -93,16 +93,16 @@ export default function SettingsPanel() {
                 const val = Number(e.target.value);
                 setMinFrpThreshold(val);
               }}
-              className="w-full h-1.5 bg-[rgba(255,255,255,0.1)] rounded-lg appearance-none cursor-pointer accent-[#ff5a3c]"
+              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
             />
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,106,61,0.1)]">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
             <div className="flex items-center gap-2">
-              <Volume2 size={14} className="text-[#ff7a45]" />
+              <Volume2 size={14} className="text-orange-600" />
               <div>
-                <span className="text-[11.5px] font-semibold text-white block">Audio Alarm for Critical Incidents</span>
-                <span className="text-[9.5px] text-[#a3928c] block">Audible warning on FRP {'>'} 50MW</span>
+                <span className="text-[11.5px] font-bold text-slate-900 block">Audio Alarm for Critical Incidents</span>
+                <span className="text-[9.5px] text-slate-500 block font-medium">Audible warning on FRP {'>'} 50MW</span>
               </div>
             </div>
             <button
@@ -113,12 +113,12 @@ export default function SettingsPanel() {
               }}
               className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${
                 audioAlerts
-                  ? 'bg-gradient-to-r from-[#ff5a3c] to-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.5)]'
-                  : 'bg-[rgba(255,255,255,0.1)]'
+                  ? 'bg-orange-600'
+                  : 'bg-slate-200'
               }`}
             >
               <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-xs transition-transform ${
                   audioAlerts ? 'left-5' : 'left-0.5'
                 }`}
               />
@@ -132,15 +132,15 @@ export default function SettingsPanel() {
         <h3 className="flarex-section-title">Display &amp; Telemetry Stream</h3>
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-[#d1b8af]">Temperature Unit</span>
-            <div className="flex bg-[rgba(255,90,45,0.06)] p-0.5 rounded-lg border border-[rgba(255,106,61,0.2)]">
+            <span className="text-[11px] text-slate-700 font-semibold">Temperature Unit</span>
+            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
               <button
                 type="button"
                 onClick={() => setTempUnit('C')}
                 className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
                   tempUnit === 'C'
-                    ? 'bg-gradient-to-r from-[#ff5a3c] to-[#ff7a45] text-white shadow-[0_0_10px_rgba(255,90,60,0.4)]'
-                    : 'text-[#a3928c] hover:text-white'
+                    ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 °C (Celsius)
@@ -150,8 +150,8 @@ export default function SettingsPanel() {
                 onClick={() => setTempUnit('F')}
                 className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
                   tempUnit === 'F'
-                    ? 'bg-gradient-to-r from-[#ff5a3c] to-[#ff7a45] text-white shadow-[0_0_10px_rgba(255,90,60,0.4)]'
-                    : 'text-[#a3928c] hover:text-white'
+                    ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 °F (Fahrenheit)
@@ -159,15 +159,15 @@ export default function SettingsPanel() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,106,61,0.1)]">
-            <span className="text-[11px] text-[#d1b8af]">Satellite Cadence</span>
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+            <span className="text-[11px] text-slate-700 font-semibold">Satellite Cadence</span>
             <select
               value={syncCadence}
               onChange={(e) => {
                 setSyncCadence(e.target.value);
                 addToast(`Telemetry sync cadence set to ${e.target.value}`, 'info');
               }}
-              className="bg-[rgba(20,9,6,0.95)] text-white text-[10.5px] border border-[rgba(255,106,61,0.25)] rounded-lg px-2.5 py-1 focus:outline-none focus:border-[#ff5a3c] cursor-pointer"
+              className="bg-white text-slate-900 text-[10.5px] font-semibold border border-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:border-orange-500 cursor-pointer shadow-xs"
             >
               <option value="15s">15 Seconds (Rapid NRT)</option>
               <option value="30s">30 Seconds (Default)</option>
