@@ -15,7 +15,7 @@ export const TopHeader: React.FC = () => {
     resetMapView,
     addToast,
     calculatedStats,
-    syncDataSources,
+    refreshHotspots,
   } = useIntelligence();
 
   return (
@@ -86,7 +86,7 @@ export const TopHeader: React.FC = () => {
         {/* Refresh Sync Button */}
         <button
           type="button"
-          onClick={syncDataSources}
+          onClick={refreshHotspots}
           className="p-2 rounded-xl glass-pill text-slate-300 hover:text-white hover:border-white/20 transition-all cursor-pointer"
           title="Manual Telemetry Refresh"
         >

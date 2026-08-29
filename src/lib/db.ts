@@ -7,16 +7,14 @@ let dbInstance: Database.Database | null = null;
 export function getDb(): Database.Database {
   if (dbInstance) return dbInstance;
 
-  const isServerless = Boolean(process.env.VERCEL) || (process.env.NODE_ENV === 'production' && !fs.existsSync(path.join(process.cwd(), 'data')));
-  let dataDir = isServerless ? '/tmp/flamex-data' : path.join(process.cwd(), 'data');
+  const isVercel = Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
+  const dataDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
 
-  if (!fs.existsSync(dataDir)) {
-    try {
+  try {
+    if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
-    } catch {
-      dataDir = '/tmp';
     }
-  }
+  } catch {}
 
   const dbPath = path.join(dataDir, 'flarex.sqlite');
   const db = new Database(dbPath);
