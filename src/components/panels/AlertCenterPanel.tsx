@@ -63,7 +63,7 @@ export default function AlertCenterPanel() {
                         : 'bg-orange-500/20 border-orange-500/50 text-orange-400'
                     }`}
                   >
-                    {isCritical ? '🔴 CRITICAL' : '🟠 HIGH PRIORITY'}
+                    {isCritical ? 'CRITICAL' : 'HIGH PRIORITY'}
                   </span>
                   <span className="font-mono text-[10px] text-cyan-300 font-bold">
                     {spot.eventId}

@@ -125,7 +125,7 @@ export default function PersistentSourcesPanel() {
                       : 'bg-red-950/60 border-red-500/40 text-red-400 shadow-[0_0_8px_rgba(255,77,79,0.3)]'
                   }`}
                 >
-                  {isNormal ? '🟢 NORMAL' : '🔴 ABNORMAL'}
+                  {isNormal ? 'NORMAL' : 'ABNORMAL'}
                 </span>
               </div>
 

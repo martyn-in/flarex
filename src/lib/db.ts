@@ -348,7 +348,7 @@ export function seedCuratedRealThermalEvents(db: Database.Database) {
         { text: 'Refinery flare stack buffer perimeter', type: 'landcover', verified: true },
         { text: 'Current FRP: 112.0 MW vs 108.0 MW baseline (1.04× baseline)', type: 'baseline', verified: true },
         { text: 'Extremely high 28/30 days persistence — routine continuous flaring', type: 'recurrence', verified: true },
-        { text: '🟢 Normal operational flare status — no emergency alert required', type: 'intensity', verified: true },
+        { text: 'Normal operational flare status — no emergency alert required', type: 'intensity', verified: true },
       ]),
     },
     {

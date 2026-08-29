@@ -122,17 +122,17 @@ export const RightIncidentPanel: React.FC = () => {
           {selectedHotspot.baselineRatio >= 2.0 ? (
             <div className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-red-950/70 border border-red-500/40 text-red-300 text-[10.5px] font-bold shadow-[0_0_10px_rgba(255,77,79,0.2)]">
               <TrendingUp className="w-3.5 h-3.5 text-red-400 shrink-0" />
-              <span>⚠️ {selectedHotspot.baselineRatio}× ABOVE HISTORICAL BASELINE</span>
+              <span>{selectedHotspot.baselineRatio}× ABOVE HISTORICAL BASELINE</span>
             </div>
           ) : selectedHotspot.status === 'NORMAL' ? (
             <div className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30 text-emerald-300 text-[10.5px] font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>🟢 Normal recurring baseline ({selectedHotspot.baselineRatio}× typical)</span>
+              <span>Normal recurring baseline ({selectedHotspot.baselineRatio}× typical)</span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-orange-950/60 border border-orange-500/30 text-orange-300 text-[10.5px] font-semibold">
               <Activity className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-              <span>🟠 {selectedHotspot.baselineRatio}× elevated emission</span>
+              <span>{selectedHotspot.baselineRatio}× elevated emission</span>
             </div>
           )}
         </div>
