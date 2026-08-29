@@ -1,21 +1,21 @@
 'use client';
 
 import React from 'react';
-import { FileText, Download, FileSpreadsheet, Sparkles, Map, Flame } from 'lucide-react';
-import { REPORTS_LIST, HOTSPOTS_DATA } from '@/data/mockData';
+import { FileText, Download, FileSpreadsheet, Map } from 'lucide-react';
+import { REPORTS_LIST } from '@/data/mockData';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function ReportsPanel() {
-  const { addToast } = useIntelligence();
+  const { hotspots, addToast } = useIntelligence();
 
-  const handleDownload = (report: typeof REPORTS_LIST[0]) => {
+  const handleDownload = (report: (typeof REPORTS_LIST)[0]) => {
     addToast(`Generating and exporting ${report.name} (${report.type})...`, 'success');
   };
 
   const handleExportGeoJSON = () => {
     const geojson = {
       type: 'FeatureCollection',
-      features: HOTSPOTS_DATA.map((h) => ({
+      features: hotspots.map((h) => ({
         type: 'Feature',
         geometry: {
           type: 'Point',
@@ -23,12 +23,18 @@ export default function ReportsPanel() {
         },
         properties: {
           id: h.id,
+          eventId: h.eventId,
           name: h.name,
           location: h.location,
           severity: h.severity,
-          frp: h.frp,
-          temperature: h.temperature,
+          status: h.status,
+          classification: h.classification,
           confidence: h.confidence,
+          frp: h.frp,
+          baselineFrp: h.baselineFrp,
+          baselineRatio: h.baselineRatio,
+          temperature: h.temperature,
+          landCover: h.landCover,
           satellite: h.satellite,
           timestamp: h.timestamp,
         },
@@ -39,24 +45,27 @@ export default function ReportsPanel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flarex-hotspots-${new Date().toISOString().slice(0, 10)}.geojson`;
+    a.download = `flamex-hotspots-${new Date().toISOString().slice(0, 10)}.geojson`;
     a.click();
     URL.revokeObjectURL(url);
     addToast('GeoJSON export generated and downloaded successfully.', 'success');
   };
 
   const handleExportCSV = () => {
-    const headers = 'ID,Name,Location,State,Longitude,Latitude,Severity,FRP_MW,Temperature_C,Confidence,Satellite,Timestamp\n';
-    const rows = HOTSPOTS_DATA.map(
-      (h) =>
-        `"${h.id}","${h.name}","${h.location}","${h.state}",${h.coordinates[0]},${h.coordinates[1]},"${h.severity}",${h.frp},${h.temperature},${h.confidence},"${h.satellite}","${h.timestamp}"`
-    ).join('\n');
+    const headers =
+      'ID,Event_ID,Name,Location,State,Longitude,Latitude,Severity,Classification,Confidence,FRP_MW,Baseline_FRP,Baseline_Ratio,Temperature_C,Land_Cover,Satellite,Timestamp\n';
+    const rows = hotspots
+      .map(
+        (h) =>
+          `"${h.id}","${h.eventId}","${h.name}","${h.location}","${h.state}",${h.coordinates[0]},${h.coordinates[1]},"${h.severity}","${h.classification}",${h.confidence},${h.frp},${h.baselineFrp},${h.baselineRatio},${h.temperature},"${h.landCover}","${h.satellite}","${h.timestamp}"`
+      )
+      .join('\n');
 
     const blob = new Blob([headers + rows], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flarex-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `flamex-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     addToast('CSV manifest exported successfully.', 'success');

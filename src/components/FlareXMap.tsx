@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Plus, Minus, RotateCcw, Crosshair, Layers, Radio, Flame } from 'lucide-react';
+import { Plus, Minus, RotateCcw, Crosshair, Layers } from 'lucide-react';
 import { useIntelligence } from '../context/IntelligenceContext';
-import { INDUSTRIAL_FACILITIES, Hotspot } from '../data/mockData';
+import { INDUSTRIAL_FACILITIES } from '../data/mockData';
+import { Hotspot } from '../types';
 
 export const FlareXMap: React.FC = () => {
   const {
@@ -26,7 +27,6 @@ export const FlareXMap: React.FC = () => {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const facilityMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
 
   // Render Hotspot DOM Markers with real live coordinates & smooth ripple animations
   const renderHotspotMarkers = useCallback(
@@ -36,40 +36,46 @@ export const FlareXMap: React.FC = () => {
 
       list.forEach((spot) => {
         const isSelected = selected?.id === spot.id;
-        const isCritical = spot.severity === 'critical';
-        const isHigh = spot.severity === 'high';
-        const isMedium = spot.severity === 'medium';
-        const isPersistent = spot.classification === 'Persistent Thermal Source' || spot.persistenceScore > 50;
+        const isCritical = spot.severity === 'critical' || spot.status === 'CRITICAL_FIRE';
+        const isHigh = spot.severity === 'high' || spot.status === 'ABNORMAL';
+        const isNormalFlare = spot.classification === 'Gas Flare' && spot.status === 'NORMAL';
+        const isWildfire = spot.classification === 'Wildfire';
+        const isAgri = spot.classification === 'Agricultural Burning';
 
-        let dotColor = '#faad14'; // low
-        let glowShadow = '0 0 10px rgba(250, 173, 20, 0.6)';
+        let dotColor = '#ffa940'; // default
+        let glowShadow = '0 0 12px rgba(255, 169, 64, 0.7)';
+
         if (isCritical) {
           dotColor = '#ff4949';
-          glowShadow = '0 0 15px rgba(255, 73, 73, 0.9)';
-        } else if (isPersistent) {
+          glowShadow = '0 0 16px rgba(255, 73, 73, 0.95)';
+        } else if (isNormalFlare) {
+          dotColor = '#20c997';
+          glowShadow = '0 0 12px rgba(32, 201, 151, 0.7)';
+        } else if (isWildfire) {
           dotColor = '#fa8c16';
-          glowShadow = '0 0 12px rgba(250, 140, 22, 0.7)';
+          glowShadow = '0 0 14px rgba(250, 140, 22, 0.8)';
+        } else if (isAgri) {
+          dotColor = '#faad14';
+          glowShadow = '0 0 10px rgba(250, 173, 20, 0.6)';
         } else if (isHigh) {
           dotColor = '#ff7a45';
-          glowShadow = '0 0 12px rgba(255, 122, 69, 0.7)';
-        } else if (isMedium) {
-          dotColor = '#ffa940';
-          glowShadow = '0 0 10px rgba(255, 169, 64, 0.6)';
+          glowShadow = '0 0 14px rgba(255, 122, 69, 0.8)';
         }
 
         const el = document.createElement('div');
         el.className = 'relative flex items-center justify-center cursor-pointer pointer-events-auto select-none';
 
         if (isSelected) {
-          // Selected Marker: 2 Expanding Rings + Solid Core + Tooltip
+          // Selected Marker: 2 Expanding Rings + Solid Core + Rich Tooltip
           el.innerHTML = `
             <div style="position: relative; display: flex; align-items: center; justify-content: center;">
               <div class="selected-ring-2" style="position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}22; pointer-events: none;"></div>
               <div class="selected-ring-1" style="position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}33; pointer-events: none;"></div>
               <div style="position: relative; width: 14px; height: 14px; border-radius: 50%; background: ${dotColor}; border: 2px solid #ffffff; box-shadow: ${glowShadow}; z-index: 20;"></div>
-              <div style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); padding: 2px 7px; border-radius: 6px; background: rgba(24, 10, 6, 0.95); color: #fff; font-size: 10px; font-weight: 700; border: 1px solid rgba(255, 106, 61, 0.35); white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.6); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 4px;">
-                <span>${spot.name}</span>
+              <div style="position: absolute; top: -32px; left: 50%; transform: translateX(-50%); padding: 3px 8px; border-radius: 7px; background: rgba(14, 8, 6, 0.95); color: #fff; font-size: 10px; font-weight: 700; border: 1px solid rgba(255, 106, 61, 0.4); white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.7); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 5px;">
+                <span>${spot.name.split(' ')[0]}</span>
                 <span style="color: ${dotColor}; font-family: monospace;">${spot.frp}MW</span>
+                <span style="color: #94a3b8; font-size: 9px;">(${spot.baselineRatio}×)</span>
               </div>
             </div>
           `;
@@ -141,7 +147,7 @@ export const FlareXMap: React.FC = () => {
     });
   }, [addToast]);
 
-  // Initialize MapLibre with High-Res Satellite, Inertia & Smooth Physics
+  // Initialize MapLibre with High-Res Satellite
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -205,15 +211,6 @@ export const FlareXMap: React.FC = () => {
       maxPitch: 60,
       minZoom: 3.5,
       maxZoom: 16,
-      // Fluid kinetic panning & zooming
-      dragPan: {
-        linearity: 0.25,
-        maxSpeed: 1600,
-        deceleration: 2400,
-      } as unknown as boolean,
-      scrollZoom: {
-        around: 'center',
-      } as unknown as boolean,
     });
 
     map.on('load', () => {
@@ -266,30 +263,17 @@ export const FlareXMap: React.FC = () => {
       {/* Live Map Telemetry Badge */}
       <div className="live-map-indicator">
         <span className="live-dot" />
-        <span>LIVE SATELLITE RADAR • PAN-INDIA</span>
+        <span>FLAMEX LIVE SATELLITE RADAR • PAN-INDIA</span>
       </div>
 
       {/* Floating Map Controls */}
       <div className="map-controls">
-        {/* Zoom In */}
-        <button
-          type="button"
-          onClick={zoomIn}
-          title="Zoom In (+)"
-        >
+        <button type="button" onClick={zoomIn} title="Zoom In (+)">
           <Plus size={16} />
         </button>
-
-        {/* Zoom Out */}
-        <button
-          type="button"
-          onClick={zoomOut}
-          title="Zoom Out (-)"
-        >
+        <button type="button" onClick={zoomOut} title="Zoom Out (-)">
           <Minus size={16} />
         </button>
-
-        {/* Focus on Selected Incident */}
         <button
           type="button"
           onClick={focusActiveIncident}
@@ -298,22 +282,12 @@ export const FlareXMap: React.FC = () => {
         >
           <Crosshair size={16} />
         </button>
-
-        {/* Reset Camera */}
-        <button
-          type="button"
-          onClick={resetMapView}
-          title="Reset Camera View to India Overview"
-        >
+        <button type="button" onClick={resetMapView} title="Reset Camera View to India Overview">
           <RotateCcw size={16} />
         </button>
-
-        {/* Layer Toggle */}
         <button
           type="button"
-          onClick={() => {
-            toggleLayer('boundaries');
-          }}
+          onClick={() => toggleLayer('boundaries')}
           className={activeLayers.boundaries ? 'active' : ''}
           title="Toggle GIS Borders & Infrastructure Layer"
         >

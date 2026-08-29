@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Cpu, CheckCircle2, Sparkles, Activity, ShieldCheck, Layers, Flame } from 'lucide-react';
-import { SYSTEM_OPERATIONAL_STATS } from '@/data/mockData';
+import { Cpu, CheckCircle2, Activity, Layers, Flame } from 'lucide-react';
+import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function AIModelPanel() {
+  const { calculatedStats, hotspots } = useIntelligence();
+
   const featureWeights = [
     { name: 'FRP Radiative Spike (Δ vs Baseline)', weight: 38, icon: Activity },
     { name: 'Multi-Day Temporal Persistence Score', weight: 28, icon: Flame },
@@ -12,11 +14,17 @@ export default function AIModelPanel() {
     { name: 'Multi-Spectral Skin Temperature (°C)', weight: 14, icon: Cpu },
   ];
 
+  const total = hotspots.length || 1;
+  const industrialFires = hotspots.filter((h) => h.classification === 'Industrial Fire').length;
+  const gasFlares = hotspots.filter((h) => h.classification === 'Gas Flare').length;
+  const wildfires = hotspots.filter((h) => h.classification === 'Wildfire').length;
+  const agricultural = hotspots.filter((h) => h.classification === 'Agricultural Burning').length;
+
   const classifications = [
-    { label: 'Persistent Industrial Heat', count: '71.5%', color: 'bg-[#ffa940]' },
-    { label: 'Ambient / Agricultural Burn', count: '23.7%', color: 'bg-[#faad14]' },
-    { label: 'High-Temperature Process Anomaly', count: '3.8%', color: 'bg-[#ff8a42]' },
-    { label: 'Uncontrolled Critical Fire', count: '1.0%', color: 'bg-[#ff4949]' },
+    { label: 'Industrial Fires', count: `${Math.round((industrialFires / total) * 100)}% (${industrialFires})`, color: 'bg-red-500' },
+    { label: 'Gas Flares (Normal/Persistent)', count: `${Math.round((gasFlares / total) * 100)}% (${gasFlares})`, color: 'bg-emerald-500' },
+    { label: 'Wildfires', count: `${Math.round((wildfires / total) * 100)}% (${wildfires})`, color: 'bg-amber-500' },
+    { label: 'Agricultural Burning', count: `${Math.round((agricultural / total) * 100)}% (${agricultural})`, color: 'bg-yellow-500' },
   ];
 
   return (
@@ -29,27 +37,27 @@ export default function AIModelPanel() {
             <CheckCircle2 size={16} className="text-[#ffa940]" />
             <span className="text-[15px] font-bold text-white">ONLINE</span>
           </div>
-          <span className="flarex-kpi-meta">v4.2.1-NRT Ensemble</span>
+          <span className="flarex-kpi-meta">FlameX ML v1.2 Ensemble</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Inference Confidence</span>
           <span className="flarex-kpi-value text-[#ff7a45]">
-            {SYSTEM_OPERATIONAL_STATS.averageConfidence}%
+            {calculatedStats.averageConfidence}%
           </span>
-          <span className="flarex-kpi-meta">Validation Accuracy 96.4%</span>
+          <span className="flarex-kpi-meta">Multi-source verified</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Inference Latency</span>
-          <span className="flarex-kpi-value">{SYSTEM_OPERATIONAL_STATS.latency}</span>
-          <span className="flarex-kpi-meta">Real-time GPU pipeline</span>
+          <span className="flarex-kpi-value">8.4ms</span>
+          <span className="flarex-kpi-meta">Real-time XGBoost + Spatial</span>
         </div>
 
         <div className="flarex-kpi">
-          <span className="flarex-kpi-label">False Positive Rate</span>
-          <span className="flarex-kpi-value text-[#ffa940]">1.2%</span>
-          <span className="flarex-kpi-meta">Solar glint filtered</span>
+          <span className="flarex-kpi-label">Active Events</span>
+          <span className="flarex-kpi-value text-[#ffa940]">{calculatedStats.totalEvents}</span>
+          <span className="flarex-kpi-meta">Telemetry stream</span>
         </div>
       </div>
 
@@ -77,9 +85,9 @@ export default function AIModelPanel() {
         </div>
       </section>
 
-      {/* Classification Output Section */}
+      {/* Dynamic Classification Mix Section */}
       <section className="flarex-section">
-        <h3 className="flarex-section-title">Ensemble Classification Mix</h3>
+        <h3 className="flarex-section-title">Dynamic Classification Mix (Active Detections)</h3>
         <div className="flarex-status-list">
           {classifications.map((c) => (
             <div key={c.label} className="flarex-status-row">

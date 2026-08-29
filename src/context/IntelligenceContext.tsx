@@ -1,9 +1,11 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type * as maplibregl from 'maplibre-gl';
-import { HOTSPOTS_DATA, Hotspot } from '../data/mockData';
+import { HOTSPOTS_DATA } from '../data/mockData';
+import { Hotspot, AIAssistantMessage } from '../types';
 import { mapThermalEventToHotspot } from '../lib/adapters';
+import { generateAssistantResponse } from '../services/intelligence/assistant';
 
 export interface Toast {
   id: string;
@@ -13,12 +15,25 @@ export interface Toast {
 
 export type ActiveDrawerType =
   | 'incidents'
+  | 'industrial_fires'
+  | 'persistent_sources'
+  | 'alerts'
   | 'analytics'
   | 'datasources'
   | 'data'
   | 'reports'
   | 'ai'
   | 'settings'
+  | null;
+
+export type HotspotFilterType =
+  | 'all'
+  | 'industrial_fires'
+  | 'persistent_sources'
+  | 'critical'
+  | 'high'
+  | 'wildfires'
+  | 'agricultural'
   | null;
 
 export interface MapLayersState {
@@ -28,14 +43,26 @@ export interface MapLayersState {
   boundaries: boolean;
 }
 
+export interface CalculatedStats {
+  totalEvents: number;
+  industrialFires: number;
+  persistentSources: number;
+  criticalAlerts: number;
+  abnormalSources: number;
+  averageConfidence: number;
+  totalFrp: number;
+  lastSyncTime: string;
+}
+
 interface IntelligenceContextType {
   selectedHotspot: Hotspot | null;
   selectHotspot: (hotspot: Hotspot | null, fly?: boolean) => void;
   focusActiveIncident: () => void;
   hotspots: Hotspot[];
   filteredHotspots: Hotspot[];
-  activeFilter: 'all' | 'critical' | 'persistent' | 'high' | null;
-  setFilter: (filter: 'all' | 'critical' | 'persistent' | 'high' | null) => void;
+  activeFilter: HotspotFilterType;
+  setFilter: (filter: HotspotFilterType) => void;
+  calculatedStats: CalculatedStats;
   activeDrawer: ActiveDrawerType;
   openDrawer: (drawerId: ActiveDrawerType) => void;
   closeDrawer: () => void;
@@ -60,14 +87,31 @@ interface IntelligenceContextType {
   resetMapView: () => void;
   refreshHotspots: () => Promise<void>;
   dataSourceMode: 'LIVE' | 'CACHED' | 'SYNCING';
+  chatMessages: AIAssistantMessage[];
+  sendChatMessage: (text: string) => void;
+  isAITyping: boolean;
 }
 
 const IntelligenceContext = createContext<IntelligenceContextType | undefined>(undefined);
 
+const INITIAL_AI_MESSAGES: AIAssistantMessage[] = [
+  {
+    id: 'msg-0',
+    sender: 'assistant',
+    timestamp: '18:50',
+    text: `👋 Hello! I am the **FlameX AI Copilot**, grounded directly in our active NASA FIRMS satellite feed, OpenStreetMap industrial corridors, and ESA WorldCover baseline database.\n\nAsk me anything about current thermal anomalies or abnormal industrial facility emissions.`,
+    suggestedActions: [
+      { label: 'Which facilities are abnormal?', actionKey: 'QUERY_ABNORMAL' },
+      { label: 'Summarize Industrial Fires', actionKey: 'FILTER_FIRES' },
+      { label: 'Check Persistent Sources', actionKey: 'FILTER_PERSISTENT' },
+    ],
+  },
+];
+
 export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [hotspots, setHotspots] = useState<Hotspot[]>(HOTSPOTS_DATA);
   const [selectedHotspot, setSelectedHotspotState] = useState<Hotspot | null>(HOTSPOTS_DATA[0]);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'critical' | 'persistent' | 'high' | null>(null);
+  const [activeFilter, setActiveFilter] = useState<HotspotFilterType>(null);
   const [activeDrawer, setActiveDrawer] = useState<ActiveDrawerType>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
@@ -82,6 +126,8 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   });
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
+  const [chatMessages, setChatMessages] = useState<AIAssistantMessage[]>(INITIAL_AI_MESSAGES);
+  const [isAITyping, setIsAITyping] = useState<boolean>(false);
 
   // Toast feedback
   const addToast = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
@@ -108,7 +154,6 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setHotspots(adapted);
           setDataSourceMode(json.source === 'NASA_FIRMS_LIVE' ? 'LIVE' : 'CACHED');
 
-          // Keep selected hotspot or set to most severe
           setSelectedHotspotState((prev) => {
             if (!prev) return adapted[0];
             const match = adapted.find((h: Hotspot) => h.id === prev.id);
@@ -126,21 +171,57 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     refreshHotspots();
   }, [refreshHotspots]);
 
+  // Dynamically compute real stats from active data
+  const calculatedStats = useMemo<CalculatedStats>(() => {
+    const totalEvents = hotspots.length;
+    const industrialFires = hotspots.filter((h) => h.classification === 'Industrial Fire').length;
+    const persistentSources = hotspots.filter(
+      (h) => h.classification === 'Gas Flare' || h.classification === 'Mining / Furnace Activity' || h.persistenceScore >= 50
+    ).length;
+    const criticalAlerts = hotspots.filter((h) => h.severity === 'critical' || h.status === 'CRITICAL_FIRE' || h.status === 'ABNORMAL').length;
+    const abnormalSources = hotspots.filter((h) => h.status === 'ABNORMAL' || h.baselineRatio >= 2.0).length;
+    const totalConf = hotspots.reduce((acc, h) => acc + h.confidence, 0);
+    const averageConfidence = totalEvents > 0 ? Math.round(totalConf / totalEvents) : 92;
+    const totalFrp = hotspots.reduce((acc, h) => acc + h.frp, 0);
+
+    return {
+      totalEvents,
+      industrialFires,
+      persistentSources,
+      criticalAlerts,
+      abnormalSources,
+      averageConfidence,
+      totalFrp: Math.round(totalFrp * 10) / 10,
+      lastSyncTime: '18:57 IST',
+    };
+  }, [hotspots]);
+
   // Compute filtered hotspots
-  const filteredHotspots = React.useMemo(() => {
+  const filteredHotspots = useMemo(() => {
+    if (activeFilter === 'industrial_fires') {
+      return hotspots.filter((h) => h.classification === 'Industrial Fire');
+    }
+    if (activeFilter === 'persistent_sources') {
+      return hotspots.filter(
+        (h) => h.classification === 'Gas Flare' || h.classification === 'Mining / Furnace Activity' || h.persistenceScore >= 50
+      );
+    }
     if (activeFilter === 'critical') {
-      return hotspots.filter((h) => h.severity === 'critical');
+      return hotspots.filter((h) => h.severity === 'critical' || h.status === 'CRITICAL_FIRE');
     }
     if (activeFilter === 'high') {
-      return hotspots.filter((h) => h.severity === 'high');
+      return hotspots.filter((h) => h.severity === 'high' || h.status === 'ABNORMAL');
     }
-    if (activeFilter === 'persistent') {
-      return hotspots.filter((h) => h.classification === 'Persistent Thermal Source' || h.persistenceScore > 50);
+    if (activeFilter === 'wildfires') {
+      return hotspots.filter((h) => h.classification === 'Wildfire');
+    }
+    if (activeFilter === 'agricultural') {
+      return hotspots.filter((h) => h.classification === 'Agricultural Burning');
     }
     return hotspots;
   }, [hotspots, activeFilter]);
 
-  // Map camera controls with fluid kinetic transitions
+  // Map camera controls
   const flyToCoords = useCallback((coords: [number, number], zoom = 7.5, pitch = 25) => {
     if (!mapInstance) return;
     mapInstance.flyTo({
@@ -188,7 +269,6 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [flyToCoords, addToast]);
 
-  // Focus active incident button handler
   const focusActiveIncident = useCallback(() => {
     if (selectedHotspot) {
       flyToCoords(selectedHotspot.coordinates, 8.2, 30);
@@ -196,19 +276,21 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [selectedHotspot, flyToCoords, addToast]);
 
-  // Quick scenario triggers
-  const setFilter = useCallback((filter: 'all' | 'critical' | 'persistent' | 'high' | null) => {
+  // Filter selection
+  const setFilter = useCallback((filter: HotspotFilterType) => {
     setActiveFilter(filter);
-    if (filter === 'critical') {
+    if (filter === 'industrial_fires') {
+      const fire = hotspots.find((h) => h.classification === 'Industrial Fire');
+      if (fire) selectHotspot(fire, true);
+      addToast('Filter: Showing Confirmed Industrial Fires', 'warning');
+    } else if (filter === 'persistent_sources') {
+      const pers = hotspots.find((h) => h.classification === 'Gas Flare' || h.persistenceScore >= 50);
+      if (pers) selectHotspot(pers, true);
+      addToast('Filter: Showing Persistent Industrial Heat Flares', 'info');
+    } else if (filter === 'critical') {
       const crit = hotspots.find((h) => h.severity === 'critical');
       if (crit) selectHotspot(crit, true);
       addToast('Filter: Showing Critical Fire Alerts', 'warning');
-    } else if (filter === 'high') {
-      addToast('Filter: Showing High Severity Incidents', 'warning');
-    } else if (filter === 'persistent') {
-      const pers = hotspots.find((h) => h.classification === 'Persistent Thermal Source' || h.persistenceScore > 50);
-      if (pers) selectHotspot(pers, true);
-      addToast('Filter: Showing Persistent Industrial Heat Flares', 'info');
     } else {
       resetMapView();
       addToast('Showing all thermal detections', 'info');
@@ -226,7 +308,6 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setActiveDrawer(null);
   }, []);
 
-  // Layer toggle
   const toggleLayer = useCallback((layerKey: keyof MapLayersState) => {
     setActiveLayers((prev) => {
       const next = { ...prev, [layerKey]: !prev[layerKey] };
@@ -251,6 +332,31 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   }, [addToast]);
 
+  // AI Assistant Chat function
+  const sendChatMessage = useCallback((text: string) => {
+    if (!text.trim()) return;
+
+    const userMsg: AIAssistantMessage = {
+      id: `msg-user-${Date.now()}`,
+      sender: 'user',
+      text,
+      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setChatMessages((prev) => [...prev, userMsg]);
+    setIsAITyping(true);
+
+    setTimeout(() => {
+      const botResponse = generateAssistantResponse(text, {
+        hotspots,
+        selectedHotspot,
+      });
+
+      setChatMessages((prev) => [...prev, botResponse]);
+      setIsAITyping(false);
+    }, 450);
+  }, [hotspots, selectedHotspot]);
+
   return (
     <IntelligenceContext.Provider
       value={{
@@ -261,6 +367,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         filteredHotspots,
         activeFilter,
         setFilter,
+        calculatedStats,
         activeDrawer,
         openDrawer,
         closeDrawer,
@@ -285,6 +392,9 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         resetMapView,
         refreshHotspots,
         dataSourceMode,
+        chatMessages,
+        sendChatMessage,
+        isAITyping,
       }}
     >
       {children}

@@ -3,10 +3,9 @@
 import React from 'react';
 import { Radio, Database, Cpu, Globe, Flame, ShieldCheck } from 'lucide-react';
 import { useIntelligence } from '../context/IntelligenceContext';
-import { SYSTEM_OPERATIONAL_STATS } from '../data/mockData';
 
 export const BottomStatusStrip: React.FC = () => {
-  const { isPresentationMode, setFilter } = useIntelligence();
+  const { isPresentationMode, setFilter, calculatedStats } = useIntelligence();
 
   if (isPresentationMode) {
     return null;
@@ -48,7 +47,7 @@ export const BottomStatusStrip: React.FC = () => {
         {/* AI Engine */}
         <div className="flex items-center gap-1.5">
           <Cpu className="w-3 h-3 text-purple-400" />
-          <span>FlareX AI Engine:</span>
+          <span>FlameX AI Engine:</span>
           <span className="font-semibold text-emerald-400">Operational</span>
         </div>
       </div>
@@ -63,7 +62,7 @@ export const BottomStatusStrip: React.FC = () => {
         >
           <span className="text-slate-400">Critical Incidents:</span>
           <span className="font-bold text-red-400 px-1.5 py-0.2 rounded bg-red-950/60 border border-red-500/30">
-            {SYSTEM_OPERATIONAL_STATS.criticalAlerts} Active
+            {calculatedStats.criticalAlerts} Active
           </span>
         </button>
 
@@ -73,9 +72,11 @@ export const BottomStatusStrip: React.FC = () => {
         <div className="flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           <span>Integrity:</span>
-          <span className="font-mono font-bold text-emerald-400">{SYSTEM_OPERATIONAL_STATS.systemHealth}%</span>
+          <span className="font-mono font-bold text-emerald-400">99.8%</span>
         </div>
       </div>
     </footer>
   );
 };
+
+export default BottomStatusStrip;

@@ -3,10 +3,9 @@
 import React from 'react';
 import { Flame, ShieldAlert, Cpu, CheckCircle2, Activity } from 'lucide-react';
 import { useIntelligence } from '../context/IntelligenceContext';
-import { SYSTEM_OPERATIONAL_STATS } from '../data/mockData';
 
 export const TopMapSummary: React.FC = () => {
-  const { activeFilter, setFilter } = useIntelligence();
+  const { activeFilter, setFilter, calculatedStats } = useIntelligence();
 
   return (
     <div className="absolute top-3 left-4 right-4 z-20 pointer-events-auto flex justify-center">
@@ -27,11 +26,11 @@ export const TopMapSummary: React.FC = () => {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10.5px] font-semibold text-slate-400 tracking-wide uppercase">
-              Active Hotspots
+              Active Events
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-[20px] font-bold text-white font-mono leading-none">
-                {SYSTEM_OPERATIONAL_STATS.activeHotspots.toLocaleString()}
+                {calculatedStats.totalEvents.toLocaleString()}
               </span>
               <span className="text-[10px] text-cyan-400 font-medium">Pan-India</span>
             </div>
@@ -57,11 +56,11 @@ export const TopMapSummary: React.FC = () => {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10.5px] font-bold text-red-400 tracking-wide uppercase flex items-center gap-1">
-              Critical Fire
+              Critical Alerts
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-[20px] font-extrabold text-red-400 font-mono leading-none">
-                {SYSTEM_OPERATIONAL_STATS.criticalAlerts}
+                {calculatedStats.criticalAlerts}
               </span>
               <span className="text-[10px] text-red-300 font-semibold px-1.5 py-0.2 rounded bg-red-950/60 border border-red-500/30">
                 Action Req.
@@ -75,9 +74,9 @@ export const TopMapSummary: React.FC = () => {
         {/* KPI 3: Persistent Industrial Sources */}
         <button
           type="button"
-          onClick={() => setFilter('persistent')}
+          onClick={() => setFilter('persistent_sources')}
           className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
-            activeFilter === 'persistent'
+            activeFilter === 'persistent_sources'
               ? 'bg-purple-950/40 border border-purple-500/50 shadow-[0_0_18px_rgba(165,110,255,0.3)] scale-[1.02]'
               : 'hover:bg-purple-950/20 border border-transparent opacity-85 hover:opacity-100'
           }`}
@@ -88,13 +87,13 @@ export const TopMapSummary: React.FC = () => {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10.5px] font-semibold text-purple-300 tracking-wide uppercase">
-              Persistent Flare
+              Persistent Flares
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-[20px] font-bold text-purple-300 font-mono leading-none">
-                {SYSTEM_OPERATIONAL_STATS.persistentSources}
+                {calculatedStats.persistentSources}
               </span>
-              <span className="text-[10px] text-slate-400">Industrial Baseline</span>
+              <span className="text-[10px] text-slate-400">Recurring</span>
             </div>
           </div>
         </button>
@@ -112,10 +111,10 @@ export const TopMapSummary: React.FC = () => {
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-[20px] font-bold text-emerald-400 font-mono leading-none">
-                {SYSTEM_OPERATIONAL_STATS.averageConfidence}%
+                {calculatedStats.averageConfidence}%
               </span>
               <span className="text-[10px] text-emerald-300 flex items-center gap-0.5">
-                <CheckCircle2 className="w-2.5 h-2.5" /> High
+                <CheckCircle2 className="w-2.5 h-2.5" /> Ensemble
               </span>
             </div>
           </div>
@@ -124,3 +123,5 @@ export const TopMapSummary: React.FC = () => {
     </div>
   );
 };
+
+export default TopMapSummary;

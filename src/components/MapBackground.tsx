@@ -32,7 +32,7 @@ export const MapBackground: React.FC = () => {
         const isCritical = spot.severity === 'critical';
         const isHigh = spot.severity === 'high';
         const isMedium = spot.severity === 'medium';
-        const isPersistent = spot.classification === 'Persistent Thermal Source' || spot.persistenceScore > 60;
+        const isPersistent = spot.classification === 'Gas Flare' || spot.classification === 'Mining / Furnace Activity' || spot.persistenceScore > 60;
 
         // Color mapping
         let dotColor = '#20C997'; // low

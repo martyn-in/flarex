@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const confidenceMin = searchParams.get('confidence') ? parseFloat(searchParams.get('confidence')!) : undefined;
     const riskLevel = searchParams.get('risk_level') || undefined;
     const classification = searchParams.get('classification') || undefined;
+    const status = searchParams.get('status') || undefined;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : 50;
     const autoSync = searchParams.get('sync') === 'true';
 
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
       confidenceMin,
       riskLevel,
       classification,
+      status,
       limit,
     });
 

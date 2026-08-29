@@ -3,7 +3,6 @@
 import React from 'react';
 import { Bell, Monitor, Flame, Radio, Activity, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useIntelligence } from '../context/IntelligenceContext';
-import { SYSTEM_OPERATIONAL_STATS } from '../data/mockData';
 
 export const TopHeader: React.FC = () => {
   const {
@@ -15,6 +14,8 @@ export const TopHeader: React.FC = () => {
     setIsNotificationsOpen,
     resetMapView,
     addToast,
+    calculatedStats,
+    syncDataSources,
   } = useIntelligence();
 
   return (
@@ -36,7 +37,7 @@ export const TopHeader: React.FC = () => {
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="text-[17px] font-bold tracking-wider text-white font-sans bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
-              FlareX
+              FlameX
             </span>
             <span className="text-[9.5px] font-semibold px-2 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 tracking-wider uppercase">
               COMMAND CENTER
@@ -65,18 +66,18 @@ export const TopHeader: React.FC = () => {
 
         <div className="w-[1px] h-3 bg-white/10" />
 
-        {/* Last Sync */}
+        {/* Events Count */}
         <div className="flex items-center gap-1.5">
-          <span className="text-slate-400">Last Sync:</span>
-          <span className="text-slate-200 font-mono font-medium">{SYSTEM_OPERATIONAL_STATS.lastSync}</span>
+          <span className="text-slate-400">Active Events:</span>
+          <span className="text-slate-200 font-mono font-medium">{calculatedStats.totalEvents}</span>
         </div>
 
         <div className="w-[1px] h-3 bg-white/10" />
 
         {/* Ingestion Latency */}
         <div className="flex items-center gap-1.5">
-          <span className="text-slate-400">Latency:</span>
-          <span className="text-emerald-400 font-mono font-semibold">{SYSTEM_OPERATIONAL_STATS.latency}</span>
+          <span className="text-slate-400">AI Confidence:</span>
+          <span className="text-emerald-400 font-mono font-semibold">{calculatedStats.averageConfidence}%</span>
         </div>
       </div>
 
@@ -85,7 +86,7 @@ export const TopHeader: React.FC = () => {
         {/* Refresh Sync Button */}
         <button
           type="button"
-          onClick={() => addToast('Synchronizing latest VIIRS/MODIS thermal pass data...', 'info')}
+          onClick={syncDataSources}
           className="p-2 rounded-xl glass-pill text-slate-300 hover:text-white hover:border-white/20 transition-all cursor-pointer"
           title="Manual Telemetry Refresh"
         >
@@ -101,12 +102,14 @@ export const TopHeader: React.FC = () => {
               ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_12px_rgba(56,189,248,0.25)]'
               : 'text-slate-300 hover:text-white'
           }`}
-          title="Active Incident Alerts (12 Urgent)"
+          title={`Active Incident Alerts (${calculatedStats.criticalAlerts} Critical)`}
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9.5px] font-bold flex items-center justify-center shadow-[0_0_8px_rgba(255,77,79,0.6)]">
-            12
-          </span>
+          {calculatedStats.criticalAlerts > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9.5px] font-bold flex items-center justify-center shadow-[0_0_8px_rgba(255,77,79,0.6)]">
+              {calculatedStats.criticalAlerts}
+            </span>
+          )}
         </button>
 
         {/* Presentation Mode Toggle */}
@@ -149,3 +152,5 @@ export const TopHeader: React.FC = () => {
     </header>
   );
 };
+
+export default TopHeader;

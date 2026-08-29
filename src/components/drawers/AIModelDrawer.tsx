@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FlareXFeatureDrawer from '@/components/FlareXFeatureDrawer';
-import AIModelPanel from '@/components/panels/AIModelPanel';
+import AIAssistantPanel from '@/components/panels/AIAssistantPanel';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export interface AIModelDrawerProps {
@@ -19,11 +19,11 @@ export default function AIModelDrawer({ open, onClose }: AIModelDrawerProps) {
     <FlareXFeatureDrawer
       open={isOpen}
       feature="ai"
-      title="AI INTELLIGENCE MODEL"
-      subtitle="Inference health, confidence and classification"
+      title="FLAMEX AI INTELLIGENCE ASSISTANT"
+      subtitle="Grounded querying across live thermal database & facilities"
       onClose={handleClose}
     >
-      <AIModelPanel />
+      <AIAssistantPanel />
     </FlareXFeatureDrawer>
   );
 }

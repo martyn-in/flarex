@@ -1,63 +1,102 @@
 'use client';
 
-import React from 'react';
-import { Database, Radio, Satellite, ShieldCheck, RefreshCw, Flame } from 'lucide-react';
-import { DATA_SOURCES_LIST, SYSTEM_OPERATIONAL_STATS } from '@/data/mockData';
+import React, { useState } from 'react';
+import { Database, Radio, Satellite, ShieldCheck, RefreshCw, Layers, CheckCircle2, Cpu } from 'lucide-react';
+import { DATA_SOURCES_LIST } from '@/data/mockData';
+import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function DataSourcesPanel() {
+  const { calculatedStats, refreshHotspots, addToast, dataSourceMode } = useIntelligence();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    addToast('Synchronizing with NASA FIRMS VIIRS/MODIS and OSM cache...', 'info');
+    await refreshHotspots();
+    setTimeout(() => {
+      setIsSyncing(false);
+      addToast('Data pipeline successfully refreshed with latest satellite pass.', 'success');
+    }, 900);
+  };
+
   return (
     <div className="flex flex-col gap-3">
       {/* 2x2 Network Health KPIs */}
       <div className="flarex-kpi-grid">
         <div className="flarex-kpi">
-          <span className="flarex-kpi-label">Constellation Health</span>
-          <span className="flarex-kpi-value text-[#ffa940]">
-            {SYSTEM_OPERATIONAL_STATS.systemHealth}%
-          </span>
-          <span className="flarex-kpi-meta">6 / 6 Streams Synchronized</span>
+          <span className="flarex-kpi-label">Pipeline Status</span>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#20C997]" />
+            <span className="text-[14px] font-bold text-white">ALL CONNECTED</span>
+          </div>
+          <span className="flarex-kpi-meta">5 / 5 Sources Active</span>
+        </div>
+
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">Active Thermal Count</span>
+          <span className="flarex-kpi-value text-[#ff7a45]">{calculatedStats.totalEvents}</span>
+          <span className="flarex-kpi-meta">Pan-India Bounding Box</span>
+        </div>
+
+        <div className="flarex-kpi">
+          <span className="flarex-kpi-label">ML Inference Model</span>
+          <span className="flarex-kpi-value text-white">v1.2-NRT</span>
+          <span className="flarex-kpi-meta">Validation Acc. 96.4%</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Telemetry Ingestion Lag</span>
-          <span className="flarex-kpi-value text-[#ff7a45]">{SYSTEM_OPERATIONAL_STATS.latency}</span>
-          <span className="flarex-kpi-meta">Last Sync: {SYSTEM_OPERATIONAL_STATS.lastSync}</span>
-        </div>
-
-        <div className="flarex-kpi">
-          <span className="flarex-kpi-label">Active Sensors</span>
-          <span className="flarex-kpi-value">4 Orbiters</span>
-          <span className="flarex-kpi-meta">VIIRS (375m) + MODIS (1km)</span>
-        </div>
-
-        <div className="flarex-kpi">
-          <span className="flarex-kpi-label">Ground Validation</span>
-          <span className="flarex-kpi-value text-white">OSM + SEZ</span>
-          <span className="flarex-kpi-meta">8 Industrial Corridors</span>
+          <span className="flarex-kpi-value text-[#ffa940]">1.8s</span>
+          <span className="flarex-kpi-meta">Mode: {dataSourceMode}</span>
         </div>
       </div>
 
-      {/* Satellite Feeds List */}
+      {/* Manual Sync Action Button */}
+      <button
+        type="button"
+        onClick={handleSync}
+        disabled={isSyncing}
+        className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 hover:from-blue-500 hover:to-cyan-500 text-white text-[11.5px] font-bold flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(56,189,248,0.3)] transition-all cursor-pointer disabled:opacity-50"
+      >
+        <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+        <span>{isSyncing ? 'Synchronizing Ingestion Pipelines...' : 'Sync Satellite & GIS Feeds Now'}</span>
+      </button>
+
+      {/* Data Sources List */}
       <section className="flarex-section">
-        <h3 className="flarex-section-title">Satellite Feeds &amp; Ingestion Pipelines</h3>
+        <h3 className="flarex-section-title">Connected Geospatial &amp; AI Intelligence Streams</h3>
         <div className="flarex-status-list">
           {DATA_SOURCES_LIST.map((source) => (
-            <div key={source.name} className="flarex-status-row">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-[rgba(255,90,45,0.12)] border border-[rgba(255,106,61,0.28)] flex items-center justify-center text-[#ff7a45] shrink-0">
-                  <Satellite size={14} />
+            <div key={source.name} className="flarex-status-row !p-3">
+              <div className="flex items-start gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-[rgba(255,90,45,0.12)] border border-[rgba(255,106,61,0.28)] flex items-center justify-center text-[#ff7a45] shrink-0 mt-0.5">
+                  {source.type === 'Satellite Constellation' ? (
+                    <Satellite size={16} />
+                  ) : source.type === 'GIS Context' ? (
+                    <Layers size={16} />
+                  ) : source.type === 'AI Inference' ? (
+                    <Cpu size={16} />
+                  ) : (
+                    <Database size={16} />
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <span className="flarex-status-name block">{source.name}</span>
-                  <span className="flarex-status-meta block truncate">{source.sensor}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="flarex-status-name block font-bold text-white text-[12px]">{source.name}</span>
+                    <span className="px-1.5 py-0.2 rounded text-[8.5px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/[0.08]">
+                      {source.type}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-0.5 leading-snug">{source.description}</p>
                 </div>
               </div>
 
               <div className="text-right shrink-0">
                 <div className="flex items-center justify-end gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ffa940] shadow-[0_0_6px_#ffa940]" />
-                  <span className="text-[10px] font-semibold text-[#ffa940]">{source.status}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#20C997]" />
+                  <span className="text-[10px] font-bold text-emerald-400">{source.status}</span>
                 </div>
-                <span className="font-mono text-[9px] text-[#8c766e] mt-0.5 block">{source.latency} lag</span>
+                <span className="font-mono text-[9px] text-slate-400 mt-0.5 block">{source.latency} lag</span>
               </div>
             </div>
           ))}

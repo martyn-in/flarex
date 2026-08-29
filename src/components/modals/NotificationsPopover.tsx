@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { Bell, Flame, X, Crosshair, MapPin } from 'lucide-react';
+import { Bell, Flame, X, MapPin } from 'lucide-react';
 import { useIntelligence } from '../../context/IntelligenceContext';
-import { HOTSPOTS_DATA } from '../../data/mockData';
 
 export const NotificationsPopover: React.FC = () => {
-  const { isNotificationsOpen, setIsNotificationsOpen, selectHotspot } = useIntelligence();
+  const { isNotificationsOpen, setIsNotificationsOpen, selectHotspot, hotspots } = useIntelligence();
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +22,9 @@ export const NotificationsPopover: React.FC = () => {
 
   if (!isNotificationsOpen) return null;
 
-  const urgentAlerts = HOTSPOTS_DATA.filter((h) => h.severity === 'critical' || h.severity === 'high');
+  const urgentAlerts = hotspots.filter(
+    (h) => h.severity === 'critical' || h.severity === 'high' || h.status === 'CRITICAL_FIRE' || h.status === 'ABNORMAL'
+  );
 
   return (
     <div
@@ -39,7 +40,9 @@ export const NotificationsPopover: React.FC = () => {
             <span className="text-[12.5px] font-bold text-white tracking-wider uppercase">
               Urgent Incident Alerts
             </span>
-            <span className="text-[10px] text-red-400 font-semibold block">{urgentAlerts.length} Confirmed Thermal Corridors</span>
+            <span className="text-[10px] text-red-400 font-semibold block">
+              {urgentAlerts.length} Active High-Priority Incidents
+            </span>
           </div>
         </div>
         <button
@@ -67,7 +70,9 @@ export const NotificationsPopover: React.FC = () => {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <span className="text-[12px] font-bold text-white truncate">{alert.name}</span>
-                <span className="text-[10px] font-mono text-slate-400 shrink-0">{alert.timestamp.split(' ')[1]}</span>
+                <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                  {alert.timestamp.includes(' ') ? alert.timestamp.split(' ')[1] : alert.timestamp}
+                </span>
               </div>
               <p className="text-[11px] text-[#d1b8af] truncate flex items-center gap-1 mt-0.5">
                 <MapPin className="w-3 h-3 text-[#ff7a45]" />
@@ -87,3 +92,5 @@ export const NotificationsPopover: React.FC = () => {
     </div>
   );
 };
+
+export default NotificationsPopover;

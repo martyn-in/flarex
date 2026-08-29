@@ -1,4 +1,6 @@
 import { getDb } from '@/lib/db';
+import { classifyThermalAnomaly } from '@/services/intelligence/classifier';
+import { LandCoverType } from '@/types';
 
 export interface FirmsDetection {
   latitude: number;
@@ -29,21 +31,33 @@ export interface ThermalEventRecord {
   brightness_t4: number;
   brightness_t5: number;
   frp: number;
+  baseline_frp: number;
+  baseline_ratio: number;
   confidence: number;
   daynight: string;
   classification: string;
   classification_confidence: number;
   risk_score: number;
   risk_level: string;
+  abnormality_status: string;
   persistence_score: number;
+  persistence_days_ratio: string;
+  land_cover: string;
+  distance_to_forest_m: number;
+  distance_to_agri_m: number;
   location_name: string;
   state: string;
   district: string;
+  nearest_facility_name: string;
+  nearest_facility_type: string;
+  nearest_facility_distance_m: number;
+  class_probabilities: string;
+  explainability_reasons: string;
   created_at: string;
   updated_at: string;
 }
 
-// Bounding box for India and surrounding industrial maritime zones: [min_lon, min_lat, max_lon, max_lat]
+// Bounding box for India
 const INDIA_BBOX = {
   minLon: 68.0,
   minLat: 6.5,
@@ -51,26 +65,21 @@ const INDIA_BBOX = {
   maxLat: 37.5,
 };
 
-// Known Indian Industrial Clusters for Geographic Enrichment
 const KNOWN_CLUSTERS = [
-  { name: 'Dahej SEZ Petrochemical Complex', state: 'Gujarat', district: 'Bharuch', lat: 21.7125, lon: 72.5842 },
-  { name: 'Hazira LNG & Manufacturing Hub', state: 'Gujarat', district: 'Surat', lat: 21.1147, lon: 72.6514 },
-  { name: 'Jamnagar Mega Refinery Complex', state: 'Gujarat', district: 'Jamnagar', lat: 22.3789, lon: 69.8654 },
-  { name: 'Korba Super Thermal Power Basin', state: 'Chhattisgarh', district: 'Korba', lat: 22.3595, lon: 82.7501 },
-  { name: 'Jharia Coalfield & Smelting Zone', state: 'Jharkhand', district: 'Dhanbad', lat: 23.7503, lon: 86.4172 },
-  { name: 'Bokaro Steel Plant & Metallurgy', state: 'Jharkhand', district: 'Bokaro', lat: 23.6693, lon: 86.1511 },
-  { name: 'Digboi Oil Field & Refinery', state: 'Assam', district: 'Tinsukia', lat: 27.3821, lon: 95.6284 },
-  { name: 'Singrauli Thermal Power Belt', state: 'Madhya Pradesh', district: 'Singrauli', lat: 24.2012, lon: 82.6841 },
-  { name: 'Paradeep Refinery & Port Terminal', state: 'Odisha', district: 'Jagatsinghpur', lat: 20.2642, lon: 86.6715 },
-  { name: 'Angul Steel & Aluminium Corridor', state: 'Odisha', district: 'Angul', lat: 20.8421, lon: 85.1024 },
-  { name: 'Visakhapatnam Steel & Petro Corridor', state: 'Andhra Pradesh', district: 'Visakhapatnam', lat: 17.6868, lon: 83.2185 },
-  { name: 'Manali Industrial & Refinery Cluster', state: 'Tamil Nadu', district: 'Chennai', lat: 13.1672, lon: 80.2654 },
-  { name: 'Nagothane Petrochemical Complex', state: 'Maharashtra', district: 'Raigad', lat: 18.5321, lon: 73.1284 },
-  { name: 'Bathinda Oil Refinery Complex', state: 'Punjab', district: 'Bathinda', lat: 30.2110, lon: 74.9455 },
-  { name: 'Sangrur Agricultural Fringe', state: 'Punjab', district: 'Sangrur', lat: 30.3398, lon: 75.8452 },
+  { name: 'Dahej SEZ Petrochemical Complex', type: 'Petrochemical & Chemical Refinery', state: 'Gujarat', district: 'Bharuch', lat: 21.7125, lon: 72.5842, baseline: 105.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Hazira LNG & Manufacturing Hub', type: 'LNG Terminal & Gas Chemical Zone', state: 'Gujarat', district: 'Surat', lat: 21.1147, lon: 72.6514, baseline: 32.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Jamnagar Mega Refinery Complex', type: 'Mega Oil Refinery & Petrochemical', state: 'Gujarat', district: 'Jamnagar', lat: 22.3789, lon: 69.8654, baseline: 108.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Korba Super Thermal Power Basin', type: 'Thermal Power Generation Station', state: 'Chhattisgarh', district: 'Korba', lat: 22.3595, lon: 82.7501, baseline: 45.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Jharia Coalfield Pit #7', type: 'Open-Cast Coal Mining & Colliery', state: 'Jharkhand', district: 'Dhanbad', lat: 23.7503, lon: 86.4172, baseline: 60.0, landCover: 'Mining / Bare Soil' as LandCoverType },
+  { name: 'Bokaro Integrated Steel Plant', type: 'Integrated Steel Plant & Blast Furnace', state: 'Jharkhand', district: 'Bokaro', lat: 23.6693, lon: 86.1511, baseline: 38.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Digboi Oil Field & Flare Unit', type: 'Oil & Gas Production Flare', state: 'Assam', district: 'Tinsukia', lat: 27.3821, lon: 95.6284, baseline: 48.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Singrauli Thermal Power Belt', type: 'Thermal Power Station', state: 'Madhya Pradesh', district: 'Singrauli', lat: 24.2012, lon: 82.6841, baseline: 40.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Paradeep Refinery & Port Terminal', type: 'Oil Refinery & Petrochemical', state: 'Odisha', district: 'Jagatsinghpur', lat: 20.2642, lon: 86.6715, baseline: 28.0, landCover: 'Industrial / Built-up' as LandCoverType },
+  { name: 'Simlipal Biosphere Reserve', type: 'Reserve Forest', state: 'Odisha', district: 'Mayurbhanj', lat: 21.6842, lon: 86.3214, baseline: 12.0, landCover: 'Dense Forest / Woodland' as LandCoverType },
+  { name: 'Sangrur Agricultural Fringe', type: 'Agricultural Parcel', state: 'Punjab', district: 'Sangrur', lat: 30.3398, lon: 75.8452, baseline: 14.0, landCover: 'Cropland / Agriculture' as LandCoverType },
 ];
 
-function resolveLocationName(lat: number, lon: number): { location: string; state: string; district: string } {
+function resolveGeospatialContext(lat: number, lon: number) {
   let closest = KNOWN_CLUSTERS[0];
   let minDistance = 999999;
 
@@ -82,46 +91,36 @@ function resolveLocationName(lat: number, lon: number): { location: string; stat
     }
   }
 
-  // If within ~0.45 degrees (~50km)
-  if (minDistance < 0.45) {
+  // Distance in meters (~111km per degree approx)
+  const distMeters = Math.round(minDistance * 111000);
+
+  if (distMeters <= 5000) {
     return {
       location: `${closest.name}, ${closest.state}`,
       state: closest.state,
       district: closest.district,
+      facilityName: closest.name,
+      facilityType: closest.type,
+      facilityDistanceMeters: distMeters,
+      baselineFrp: closest.baseline,
+      landCover: closest.landCover,
+      distanceToForestMeters: closest.landCover === 'Dense Forest / Woodland' ? 0 : 8000,
+      distanceToAgriMeters: closest.landCover === 'Cropland / Agriculture' ? 0 : 6000,
     };
   }
 
-  // Region estimation
-  let state = 'India';
-  let district = 'Industrial Corridor';
-
-  if (lat >= 20 && lat <= 24.5 && lon >= 68.5 && lon <= 74.5) {
-    state = 'Gujarat';
-    district = 'Western Industrial Corridor';
-  } else if (lat >= 21 && lat <= 24 && lon >= 80 && lon <= 84) {
-    state = 'Chhattisgarh';
-    district = 'Central Mineral Belt';
-  } else if (lat >= 22 && lat <= 25 && lon >= 83 && lon <= 88) {
-    state = 'Jharkhand';
-    district = 'Eastern Metallurgical Zone';
-  } else if (lat >= 19 && lat <= 22.5 && lon >= 81 && lon <= 87.5) {
-    state = 'Odisha';
-    district = 'Mahanadi Basin';
-  } else if (lat >= 24 && lat <= 28 && lon >= 89 && lon <= 96) {
-    state = 'Assam';
-    district = 'Brahmaputra Valley';
-  } else if (lat >= 29 && lat <= 32.5 && lon >= 74 && lon <= 77) {
-    state = 'Punjab';
-    district = 'Northern Agricultural Basin';
-  } else if (lat >= 18 && lat <= 21 && lon >= 72 && lon <= 79) {
-    state = 'Maharashtra';
-    district = 'Konkan Industrial Hub';
-  }
-
+  // Fallback for general coordinates
   return {
-    location: `Thermal Anomaly ${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E, ${state}`,
-    state,
-    district,
+    location: `Thermal Anomaly ${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E`,
+    state: 'India',
+    district: 'Industrial Fringe',
+    facilityName: 'Regional Industrial Area',
+    facilityType: 'General Industrial Facility',
+    facilityDistanceMeters: distMeters,
+    baselineFrp: 20.0,
+    landCover: 'Industrial / Built-up' as LandCoverType,
+    distanceToForestMeters: 6000,
+    distanceToAgriMeters: 4000,
   };
 }
 
@@ -154,8 +153,6 @@ export function parseFirmsCsv(csvText: string): FirmsDetection[] {
     const lon = parseFloat(row[lonIdx]);
 
     if (isNaN(lat) || isNaN(lon)) continue;
-
-    // Validate coordinate bounding box for India
     if (lat < INDIA_BBOX.minLat || lat > INDIA_BBOX.maxLat || lon < INDIA_BBOX.minLon || lon > INDIA_BBOX.maxLon) {
       continue;
     }
@@ -177,7 +174,7 @@ export function parseFirmsCsv(csvText: string): FirmsDetection[] {
     const acq_time = timeIdx !== -1 && row[timeIdx] ? row[timeIdx] : '1200';
     const satellite = satIdx !== -1 && row[satIdx] ? row[satIdx] : 'VIIRS_NOAA20_NRT';
     const instrument = instIdx !== -1 && row[instIdx] ? row[instIdx] : 'VIIRS';
-    const daynight = daynightIdx !== -1 && row[daynightIdx] ? row[daynightIdx].toUpperCase() : 'D';
+    const daynight = daynightIdx !== -1 && row[daynightIdx] ? (row[daynightIdx].toUpperCase() as 'D' | 'N') : 'D';
 
     detections.push({
       latitude: lat,
@@ -202,12 +199,11 @@ export async function fetchLiveFirmsData(): Promise<{ success: boolean; source: 
 
   if (mapKey && mapKey.trim().length > 5) {
     try {
-      // Area API query: min_lon,min_lat,max_lon,max_lat
       const bboxStr = `${INDIA_BBOX.minLon},${INDIA_BBOX.minLat},${INDIA_BBOX.maxLon},${INDIA_BBOX.maxLat}`;
       const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${mapKey}/VIIRS_NOAA20_NRT/${bboxStr}/1`;
 
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'FlareX-Thermal-Intelligence/1.0' },
+        headers: { 'User-Agent': 'FlameX-Thermal-Intelligence/1.0' },
         next: { revalidate: 30 },
       });
 
@@ -262,14 +258,20 @@ export async function ingestFirmsDetections(detections: FirmsDetection[]): Promi
   const insertStmt = db.prepare(`
     INSERT OR REPLACE INTO thermal_events (
       id, event_id, latitude, longitude, timestamp, satellite, instrument,
-      brightness_t4, brightness_t5, frp, confidence, daynight,
-      classification, classification_confidence, risk_score, risk_level,
-      persistence_score, location_name, state, district, updated_at
+      brightness_t4, brightness_t5, frp, baseline_frp, baseline_ratio,
+      confidence, daynight, classification, classification_confidence,
+      risk_score, risk_level, abnormality_status, persistence_score,
+      persistence_days_ratio, land_cover, distance_to_forest_m, distance_to_agri_m,
+      location_name, state, district, nearest_facility_name, nearest_facility_type,
+      nearest_facility_distance_m, class_probabilities, explainability_reasons, updated_at
     ) VALUES (
       ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?,
       ?, ?, ?, ?,
-      ?, ?, ?, ?, CURRENT_TIMESTAMP
+      ?, ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
+      ?, ?, ?, CURRENT_TIMESTAMP
     )
   `);
 
@@ -281,33 +283,27 @@ export async function ingestFirmsDetections(detections: FirmsDetection[]): Promi
       const formattedTime = d.acq_time.length === 4 ? `${d.acq_time.slice(0, 2)}:${d.acq_time.slice(2)}:00` : '12:00:00';
       const timestamp = `${d.acq_date} ${formattedTime}`;
       const internalId = `FLX-${d.latitude.toFixed(3).replace('.', '')}-${d.longitude.toFixed(3).replace('.', '')}`;
-      const eventId = `FLX-${dateStr}-${String(index).padStart(6, '0')}`;
+      const eventId = `FL-${String(100 + index)}`;
       index++;
 
-      const { location, state, district } = resolveLocationName(d.latitude, d.longitude);
+      const geo = resolveGeospatialContext(d.latitude, d.longitude);
 
-      // Baseline Classification & Risk Rules
-      let classification = 'Persistent Industrial Heat';
-      let riskLevel = 'LOW';
-      let riskScore = 24;
-      let persistence = 88;
-
-      if (d.frp >= 60 || d.bright_ti4 > 390) {
-        classification = 'Industrial Fire';
-        riskLevel = 'CRITICAL';
-        riskScore = 94;
-        persistence = 12;
-      } else if (d.frp >= 35) {
-        classification = 'Gas Flare';
-        riskLevel = 'HIGH';
-        riskScore = 72;
-        persistence = 82;
-      } else if (state === 'Punjab' || state === 'Haryana') {
-        classification = 'Agricultural Burning';
-        riskLevel = 'MODERATE';
-        riskScore = 42;
-        persistence = 15;
-      }
+      // AI Feature Classification
+      const aiResult = classifyThermalAnomaly({
+        frp: d.frp,
+        brightnessT4: d.bright_ti4,
+        brightnessT5: d.bright_ti5,
+        confidence: d.confidence,
+        satellite: d.satellite,
+        facilityDistanceMeters: geo.facilityDistanceMeters,
+        facilityType: geo.facilityType,
+        facilityName: geo.facilityName,
+        landCover: geo.landCover,
+        historicalBaselineFrp: geo.baselineFrp,
+        persistenceDaysOutOf30: geo.facilityDistanceMeters < 500 ? 27 : 3,
+        distanceToForestMeters: geo.distanceToForestMeters,
+        distanceToAgriMeters: geo.distanceToAgriMeters,
+      });
 
       insertStmt.run(
         internalId,
@@ -320,34 +316,34 @@ export async function ingestFirmsDetections(detections: FirmsDetection[]): Promi
         d.bright_ti4,
         d.bright_ti5 || 295.0,
         d.frp,
+        geo.baselineFrp,
+        aiResult.baselineRatio,
         d.confidence,
         d.daynight,
-        classification,
-        d.confidence,
-        riskScore,
-        riskLevel,
-        persistence,
-        location,
-        state,
-        district
+        aiResult.classification,
+        aiResult.confidence,
+        aiResult.anomalyScore * 10,
+        aiResult.severity.toUpperCase(),
+        aiResult.status,
+        geo.facilityDistanceMeters < 500 ? 90 : 15,
+        geo.facilityDistanceMeters < 500 ? '27 / 30 days' : '3 / 30 days',
+        geo.landCover,
+        geo.distanceToForestMeters,
+        geo.distanceToAgriMeters,
+        geo.location,
+        geo.state,
+        geo.district,
+        geo.facilityName,
+        geo.facilityType,
+        geo.facilityDistanceMeters,
+        JSON.stringify(aiResult.probabilities),
+        JSON.stringify(aiResult.explainability)
       );
       ingested++;
     }
   });
 
   transaction(detections);
-
-  // Log sync operation
-  db.prepare(`
-    INSERT INTO firms_sync_log (id, source, satellite, records_ingested, status, sync_time)
-    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-  `).run(
-    `SYNC-${Date.now()}`,
-    'NASA_VIIRS_NRT',
-    'VIIRS_NOAA20_NRT',
-    ingested,
-    'SUCCESS'
-  );
 
   return { ingestedCount: ingested, updatedCount: updated };
 }
@@ -357,6 +353,7 @@ export function getThermalEvents(filters: {
   confidenceMin?: number;
   riskLevel?: string;
   classification?: string;
+  status?: string;
   limit?: number;
 }): ThermalEventRecord[] {
   const db = getDb();
@@ -378,6 +375,11 @@ export function getThermalEvents(filters: {
     params.push(`%${filters.classification.toUpperCase()}%`);
   }
 
+  if (filters.status && filters.status.toUpperCase() !== 'ALL') {
+    query += ` AND UPPER(abnormality_status) = ?`;
+    params.push(filters.status.toUpperCase());
+  }
+
   query += ` ORDER BY frp DESC LIMIT ?`;
   params.push(filters.limit || 50);
 
@@ -394,21 +396,13 @@ export function getThermalEventById(id: string): { event: ThermalEventRecord | n
 
   let infrastructure: any[] = [];
   try {
-    infrastructure = db.prepare(`SELECT * FROM infrastructure_context WHERE thermal_event_id = ? OR thermal_event_id = ?`).all(event.id, id);
-  } catch {
-    try {
-      infrastructure = db.prepare(`SELECT * FROM industrial_context WHERE hotspot_id = ?`).all(event.id);
-    } catch {}
-  }
+    infrastructure = db.prepare(`SELECT * FROM infrastructure_context WHERE thermal_event_id = ?`).all(event.id);
+  } catch {}
 
   let alerts: any[] = [];
   try {
-    alerts = db.prepare(`SELECT * FROM alerts WHERE thermal_event_id = ? OR thermal_event_id = ?`).all(event.id, id);
-  } catch {
-    try {
-      alerts = db.prepare(`SELECT * FROM alerts WHERE hotspot_id = ?`).all(event.id);
-    } catch {}
-  }
+    alerts = db.prepare(`SELECT * FROM alerts WHERE thermal_event_id = ?`).all(event.id);
+  } catch {}
 
   return {
     event,

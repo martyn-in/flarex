@@ -4,28 +4,32 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   LayoutDashboard,
-  Map as MapIcon,
   Flame,
+  Activity,
+  ShieldAlert,
   ChartNoAxesCombined,
-  Database,
   BrainCircuit,
+  Database,
   FileText,
   Settings,
   Bell,
   Search,
   Radio,
   Thermometer,
-  Activity,
   ShieldCheck,
   MapPin,
   Satellite,
   Clock3,
   ArrowUpRight,
   Globe,
+  TrendingUp,
+  Layers,
+  Trees,
 } from 'lucide-react';
 import { useIntelligence } from '@/context/IntelligenceContext';
-import { SYSTEM_OPERATIONAL_STATS } from '@/data/mockData';
 import { IncidentListDrawer } from '@/components/drawers/IncidentListDrawer';
+import { PersistentSourcesDrawer } from '@/components/drawers/PersistentSourcesDrawer';
+import { AlertCenterDrawer } from '@/components/drawers/AlertCenterDrawer';
 import { AnalyticsDrawer } from '@/components/drawers/AnalyticsDrawer';
 import { DataSourcesDrawer } from '@/components/drawers/DataSourcesDrawer';
 import { ReportsDrawer } from '@/components/drawers/ReportsDrawer';
@@ -33,6 +37,7 @@ import { AIModelDrawer } from '@/components/drawers/AIModelDrawer';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { NotificationsPopover } from '@/components/modals/NotificationsPopover';
 import { ToastContainer } from '@/components/ToastContainer';
+import { RightIncidentPanel } from '@/components/RightIncidentPanel';
 
 // Dynamically import FlareX MapLibre component with SSR disabled
 const FlareXMap = dynamic(
@@ -58,6 +63,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     hotspots,
     activeFilter,
     setFilter,
+    calculatedStats,
     activeDrawer,
     openDrawer,
     closeDrawer,
@@ -75,15 +81,15 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   // Active incident fallback
   const currentIncident = selectedHotspot || hotspots[0];
 
-  // Navigation Structure
+  // Navigation Structure matching exact Blueprint
   const menu = [
     {
       section: 'MONITORING',
       items: [
         {
-          name: 'Overview',
+          name: 'Dashboard',
           icon: LayoutDashboard,
-          active: !activeDrawer && !isSettingsOpen,
+          active: !activeDrawer && !isSettingsOpen && activeFilter === null,
           action: () => {
             closeDrawer();
             setIsSettingsOpen(false);
@@ -92,25 +98,46 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           },
         },
         {
-          name: 'Map View',
-          icon: MapIcon,
-          active: false,
+          name: 'Industrial Fires',
+          icon: Flame,
+          badge: `${calculatedStats.industrialFires}`,
+          active: activeDrawer === 'incidents' || activeFilter === 'industrial_fires',
           action: () => {
-            closeDrawer();
-            setIsSettingsOpen(false);
-            if (currentIncident) {
-              flyToCoords(currentIncident.coordinates, 7.5, 20);
+            if (activeDrawer === 'incidents') {
+              closeDrawer();
+            } else {
+              setFilter('industrial_fires');
+              openDrawer('incidents');
             }
           },
         },
         {
-          name: 'Incidents',
-          icon: Flame,
-          badge: '12',
-          active: activeDrawer === 'incidents',
+          name: 'Persistent Sources',
+          icon: Activity,
+          badge: `${calculatedStats.persistentSources}`,
+          active: activeDrawer === 'persistent_sources' || activeFilter === 'persistent_sources',
           action: () => {
-            if (activeDrawer === 'incidents') closeDrawer();
-            else openDrawer('incidents');
+            if (activeDrawer === 'persistent_sources') {
+              closeDrawer();
+            } else {
+              setFilter('persistent_sources');
+              openDrawer('persistent_sources');
+            }
+          },
+        },
+        {
+          name: 'Alert Center',
+          icon: ShieldAlert,
+          badge: `${calculatedStats.criticalAlerts}`,
+          badgeColor: 'bg-red-500',
+          active: activeDrawer === 'alerts' || activeFilter === 'critical',
+          action: () => {
+            if (activeDrawer === 'alerts') {
+              closeDrawer();
+            } else {
+              setFilter('critical');
+              openDrawer('alerts');
+            }
           },
         },
       ],
@@ -128,21 +155,22 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           },
         },
         {
-          name: 'Data Sources',
+          name: 'AI Assistant',
+          icon: BrainCircuit,
+          badge: 'Live',
+          active: activeDrawer === 'ai',
+          action: () => {
+            if (activeDrawer === 'ai') closeDrawer();
+            else openDrawer('ai');
+          },
+        },
+        {
+          name: 'Data & Model',
           icon: Database,
           active: activeDrawer === 'datasources' || activeDrawer === 'data',
           action: () => {
             if (activeDrawer === 'datasources' || activeDrawer === 'data') closeDrawer();
             else openDrawer('datasources');
-          },
-        },
-        {
-          name: 'AI Model',
-          icon: BrainCircuit,
-          active: activeDrawer === 'ai',
-          action: () => {
-            if (activeDrawer === 'ai') closeDrawer();
-            else openDrawer('ai');
           },
         },
       ],
@@ -177,14 +205,14 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     },
   ];
 
-  // 4 Top Stats
+  // 4 Top Stats (Calculated Dynamically!)
   const stats = [
     {
-      label: 'Active Hotspots',
-      value: SYSTEM_OPERATIONAL_STATS.activeHotspots.toLocaleString(),
-      sub: '+18 detected today',
-      icon: Flame,
-      className: 'orange',
+      label: 'Thermal Events',
+      value: `${calculatedStats.totalEvents}`,
+      sub: 'Pan-India Active Feeds',
+      icon: Radio,
+      className: 'blue',
       action: () => {
         setFilter(null);
         resetMapView();
@@ -192,44 +220,47 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       isActive: activeFilter === null,
     },
     {
-      label: 'Critical Incidents',
-      value: `${SYSTEM_OPERATIONAL_STATS.criticalAlerts}`,
-      sub: 'Requires immediate action',
-      icon: Radio,
+      label: 'Industrial Fires',
+      value: `${calculatedStats.industrialFires}`,
+      sub: 'Severe Radiance Surge',
+      icon: Flame,
       className: 'red',
-      action: () => setFilter('critical'),
-      isActive: activeFilter === 'critical',
+      action: () => setFilter('industrial_fires'),
+      isActive: activeFilter === 'industrial_fires',
     },
     {
-      label: 'AI Confidence',
-      value: `${SYSTEM_OPERATIONAL_STATS.averageConfidence}%`,
-      sub: 'XGBoost ensemble score',
-      icon: BrainCircuit,
-      className: 'blue',
-      action: () => openDrawer('ai'),
-      isActive: activeDrawer === 'ai',
+      label: 'Persistent Sources',
+      value: `${calculatedStats.persistentSources}`,
+      sub: 'Recurring Operational Flares',
+      icon: Activity,
+      className: 'orange',
+      action: () => setFilter('persistent_sources'),
+      isActive: activeFilter === 'persistent_sources',
     },
     {
-      label: 'System Health',
-      value: `${SYSTEM_OPERATIONAL_STATS.systemHealth}%`,
-      sub: 'All satellites operational',
-      icon: ShieldCheck,
-      className: 'green',
-      action: () => openDrawer('datasources'),
-      isActive: activeDrawer === 'datasources',
+      label: 'Critical Alerts',
+      value: `${calculatedStats.criticalAlerts}`,
+      sub: '> 2.0× Historical Baseline',
+      icon: ShieldAlert,
+      className: 'red',
+      action: () => openDrawer('alerts'),
+      isActive: activeDrawer === 'alerts' || activeFilter === 'critical',
     },
   ];
 
-  // Handle Search Execution
+  // Search
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
+    const q = searchQuery.toLowerCase();
     const match = hotspots.find(
       (h) =>
-        h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        h.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        h.state.toLowerCase().includes(searchQuery.toLowerCase())
+        h.name.toLowerCase().includes(q) ||
+        h.location.toLowerCase().includes(q) ||
+        h.eventId.toLowerCase().includes(q) ||
+        h.state.toLowerCase().includes(q) ||
+        h.classification.toLowerCase().includes(q)
     );
 
     if (match) {
@@ -241,131 +272,146 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   };
 
   return (
-    <main className="app-shell">
+    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#0a0706]">
       {/* 1. SIDEBAR */}
-      <aside className="sidebar glass-panel">
-        {/* Brand */}
-        <div
-          className="brand cursor-pointer"
-          onClick={() => {
-            if (onReturnToLanding) {
-              onReturnToLanding();
-            } else {
-              closeDrawer();
-              setIsSettingsOpen(false);
-              setFilter(null);
-              resetMapView();
-            }
-          }}
-          title="Return to Globe Intro"
-        >
-          <div className="brand-icon">
-            <Flame size={22} />
+      <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
+        <div>
+          {/* Brand */}
+          <div
+            className="brand cursor-pointer"
+            onClick={() => {
+              if (onReturnToLanding) {
+                onReturnToLanding();
+              } else {
+                closeDrawer();
+                setIsSettingsOpen(false);
+                setFilter(null);
+                resetMapView();
+              }
+            }}
+            title="Return to Globe Intro"
+          >
+            <div className="brand-icon">
+              <Flame size={22} />
+            </div>
+            <div>
+              <h2>
+                Flame<span>X</span>
+              </h2>
+              <p>Thermal Intelligence Layer</p>
+            </div>
           </div>
-          <div>
-            <h2>
-              Flare<span>X</span>
-            </h2>
-            <p>Geospatial Fire Intelligence</p>
-          </div>
+
+          {/* Grouped Navigation */}
+          <nav className="navigation">
+            {menu.map((group) => (
+              <div className="nav-group" key={group.section}>
+                <p className="nav-label">{group.section}</p>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.name}
+                      type="button"
+                      onClick={item.action}
+                      className={`nav-item ${item.active ? 'active' : ''}`}
+                    >
+                      <Icon size={17} />
+                      <span>{item.name}</span>
+                      {item.badge && <span className="nav-badge">{item.badge}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
         </div>
 
-        {/* Grouped Navigation */}
-        <nav className="navigation">
-          {menu.map((group) => (
-            <div className="nav-group" key={group.section}>
-              <p className="nav-label">{group.section}</p>
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={item.action}
-                    className={`nav-item ${item.active ? 'active' : ''}`}
-                  >
-                    <Icon size={18} />
-                    <span>{item.name}</span>
-                    {item.badge && <span className="nav-badge">{item.badge}</span>}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </nav>
+        <div>
+          {/* Cinematic Globe Switcher Button */}
+          {onReturnToLanding && (
+            <button
+              type="button"
+              onClick={onReturnToLanding}
+              className="flex items-center justify-center gap-2 w-full mb-3 py-2 px-3 rounded-xl text-[10px] font-bold tracking-wider text-[#d1b8af] bg-[#ff5533]/[0.06] border border-[#ff6a1a]/20 hover:bg-[#ff5533]/[0.15] hover:text-white transition-all cursor-pointer"
+              title="Switch to 3D Globe Overview"
+            >
+              <Globe size={14} className="text-[#ff7a45]" />
+              <span>3D EARTH GLOBE</span>
+            </button>
+          )}
 
-        {/* Cinematic Globe Switcher Button */}
-        {onReturnToLanding && (
-          <button
-            type="button"
-            onClick={onReturnToLanding}
-            className="flex items-center justify-center gap-2 mb-3 py-2 px-3 rounded-xl text-[10px] font-bold tracking-wider text-[#d1b8af] bg-[#ff5533]/[0.06] border border-[#ff6a1a]/20 hover:bg-[#ff5533]/[0.15] hover:text-white transition-all"
-            title="Switch to Cinematic 3D Earth Intro"
+          {/* Bottom System Status */}
+          <div
+            className="sidebar-status glass-card cursor-pointer"
+            onClick={() => openDrawer('datasources')}
+            title="View Data Ingestion Pipelines"
           >
-            <Globe size={14} className="text-[#ff7a45]" />
-            <span>CINEMATIC GLOBE</span>
-          </button>
-        )}
-
-        {/* Bottom System Status */}
-        <div
-          className="sidebar-status glass-card cursor-pointer"
-          onClick={() => openDrawer('datasources')}
-          title="View Data Ingestion Pipelines"
-        >
-          <div className="system-online">
-            <span className="live-dot" />
-            SYSTEM ONLINE
+            <div className="system-online">
+              <span className="live-dot" />
+              INTELLIGENCE ACTIVE
+            </div>
+            <p>NASA FIRMS + OSM + ESA WorldCover</p>
           </div>
-          <p>Satellite feeds synchronized ({SYSTEM_OPERATIONAL_STATS.latency} lag)</p>
         </div>
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
-      <section className="main-content">
+      <section className="main-content flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* TOPBAR */}
         <header className="topbar">
           <div>
-            <p className="page-eyebrow">COMMAND CENTER</p>
-            <h1>Fire Intelligence Overview</h1>
+            <p className="page-eyebrow">GEOSPATIAL INTELLIGENCE PLATFORM</p>
+            <h1>Thermal Anomaly Intelligence</h1>
           </div>
 
           <div className="header-actions">
             {/* Real Search Box */}
             <form onSubmit={handleSearchSubmit} className="search-box glass-card">
-              <Search size={17} className="shrink-0" />
+              <Search size={16} className="shrink-0" />
               <input
                 type="text"
-                placeholder="Search location or incident..."
+                placeholder="Search facility, SEZ, or Event ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
+
+            {/* AI Assistant Quick Launcher */}
+            <button
+              type="button"
+              onClick={() => openDrawer('ai')}
+              className="py-1.5 px-3 rounded-xl glass-pill text-cyan-300 hover:text-white text-[11px] font-bold flex items-center gap-1.5 border border-cyan-500/30 bg-cyan-950/30 cursor-pointer shadow-[0_0_10px_rgba(56,189,248,0.2)]"
+              title="Open Grounded AI Assistant"
+            >
+              <BrainCircuit size={15} />
+              <span>AI Copilot</span>
+            </button>
 
             {/* Notification Bell */}
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
               className={`icon-button glass-card ${isNotificationsOpen ? 'bg-white/10' : ''}`}
-              title="Active Notifications (12 Urgent Incidents)"
+              title="Active Critical Alerts"
             >
-              <Bell size={19} />
-              <span className="notification-dot" />
+              <Bell size={18} />
+              {calculatedStats.criticalAlerts > 0 && <span className="notification-dot" />}
             </button>
 
             {/* LIVE Pill */}
             <div
               className="live-pill cursor-pointer"
-              onClick={() => addToast('Live Satellite Feed active: VIIRS NOAA-20 & MODIS', 'success')}
+              onClick={() => addToast('Live Satellite Feed active: VIIRS NOAA-20/21 & MODIS', 'success')}
               title="Live Satellite Streaming"
             >
               <span className="live-dot" />
-              LIVE
+              LIVE NRT
             </div>
           </div>
         </header>
 
-        {/* 3. KPI STATS GRID */}
+        {/* 3. DYNAMIC KPI STATS GRID */}
         <section className="stats-grid">
           {stats.map((stat) => {
             const Icon = stat.icon;
@@ -373,7 +419,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               <article
                 key={stat.label}
                 onClick={stat.action}
-                className={`stat-card glass-card ${stat.isActive ? 'active-filter' : ''}`}
+                className={`stat-card glass-card cursor-pointer ${stat.isActive ? 'active-filter' : ''}`}
               >
                 <div className={`stat-icon ${stat.className}`}>
                   <Icon size={20} />
@@ -388,124 +434,49 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           })}
         </section>
 
-        {/* 4. COMMAND GRID: HERO MAP + CRITICAL ACTIVE INCIDENT */}
-        <section className="command-grid">
+        {/* 4. COMMAND GRID: HERO MAP */}
+        <section className="command-grid !grid-cols-1 flex-1">
           {/* MAP CARD */}
-          <article className="map-card glass-card">
+          <article className="map-card glass-card h-[600px] min-h-[500px]">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">GEOSPATIAL MONITOR</span>
-                <h2>Live Thermal Intelligence</h2>
+                <span className="eyebrow">GEOSPATIAL INFRASTRUCTURE CORRIDORS</span>
+                <h2>Pan-India Thermal Heat &amp; Anomaly Map</h2>
               </div>
-              <button
-                type="button"
-                onClick={resetMapView}
-                className="secondary-button"
-                title="Reset Camera View to Full India Extent"
-              >
-                Full Map
-                <ArrowUpRight size={16} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openDrawer('datasources')}
+                  className="secondary-button !text-[11px]"
+                >
+                  Data Sources
+                </button>
+                <button
+                  type="button"
+                  onClick={resetMapView}
+                  className="secondary-button"
+                  title="Reset Camera View to Full India Extent"
+                >
+                  Full Map
+                  <ArrowUpRight size={15} />
+                </button>
+              </div>
             </div>
 
             <div className="map-area">
               <FlareXMap />
             </div>
           </article>
-
-          {/* CRITICAL ACTIVE INCIDENT CARD */}
-          <article className="incident-card glass-card">
-            <div className="incident-top">
-              <div className="critical-badge">
-                <span className="pulse-dot" />
-                {currentIncident.severity.toUpperCase()}
-              </div>
-              <span className="incident-id">
-                {currentIncident.id.split('-').slice(-2).join('-')}
-              </span>
-            </div>
-
-            <div className="incident-title">
-              <div className="incident-flame">
-                <Flame size={26} />
-              </div>
-              <div>
-                <span>ACTIVE INCIDENT</span>
-                <h2>{currentIncident.name}</h2>
-              </div>
-            </div>
-
-            <div className="location">
-              <MapPin size={17} className="text-[#ff5a3c] shrink-0" />
-              <span>{currentIncident.location}</span>
-            </div>
-
-            <div className="incident-primary">
-              <div>
-                <span>TEMPERATURE</span>
-                <strong>{currentIncident.temperature}°C</strong>
-              </div>
-              <div>
-                <span>AI CONFIDENCE</span>
-                <strong>{currentIncident.confidence}%</strong>
-              </div>
-            </div>
-
-            <div className="confidence-bar">
-              <div style={{ width: `${currentIncident.confidence}%` }} />
-            </div>
-
-            <div className="incident-details">
-              <div>
-                <Thermometer size={17} className="text-[#ff5a3c]" />
-                <span>Thermal anomaly</span>
-                <strong>+{(currentIncident.anomalyScore * 1.8).toFixed(1)}°C</strong>
-              </div>
-              <div>
-                <Activity size={17} className="text-[#ff8a42]" />
-                <span>Fire Radiative Power</span>
-                <strong>{currentIncident.frp} MW</strong>
-              </div>
-              <div>
-                <Satellite size={17} className="text-[#ff7a45]" />
-                <span>Satellite Sensor</span>
-                <strong>{currentIncident.satellite.split(' ')[0]}</strong>
-              </div>
-              <div>
-                <Clock3 size={17} className="text-slate-400" />
-                <span>Detection Time</span>
-                <strong>{currentIncident.timestamp.split(' ')[1]} IST</strong>
-              </div>
-            </div>
-
-            <div className="incident-actions">
-              <button
-                type="button"
-                onClick={() => {
-                  flyToCoords(currentIncident.coordinates, 8.2, 30);
-                  addToast(`Camera focused on ${currentIncident.name}`, 'info');
-                }}
-                className="primary-action"
-              >
-                <MapPin size={17} />
-                Focus on Map
-              </button>
-
-              <button
-                type="button"
-                onClick={() => openDrawer('analytics')}
-                className="ghost-action"
-              >
-                Investigate
-                <ArrowUpRight size={16} />
-              </button>
-            </div>
-          </article>
         </section>
       </section>
 
+      {/* 5. RIGHT EVENT INVESTIGATION PANEL (SHOWCASE SCREEN) */}
+      <RightIncidentPanel />
+
       {/* 6. INTERACTIVE DRAWERS, MODALS & TOAST OVERLAYS */}
       <IncidentListDrawer />
+      <PersistentSourcesDrawer />
+      <AlertCenterDrawer />
       <AnalyticsDrawer />
       <DataSourcesDrawer />
       <ReportsDrawer />
@@ -516,3 +487,5 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     </main>
   );
 }
+
+export default FlareXDashboard;
