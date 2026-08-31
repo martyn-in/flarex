@@ -39,9 +39,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${oxanium.variable} ${orbitron.variable} dark h-full antialiased`}
+      data-theme="light"
+      className={`${geistSans.variable} ${geistMono.variable} ${oxanium.variable} ${orbitron.variable} light h-full antialiased`}
     >
-      <body className="w-full h-full min-h-screen bg-[#020202] text-[#F8FAFC] overflow-hidden flex flex-col selection:bg-orange-500/30 selection:text-orange-200">
+      <body className="w-full h-full min-h-screen bg-[#fff7ed] text-[#261006] overflow-hidden flex flex-col selection:bg-orange-500/30 selection:text-orange-900">
         {children}
       </body>
     </html>

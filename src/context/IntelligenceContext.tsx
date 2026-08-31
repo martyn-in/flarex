@@ -136,7 +136,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Sync theme with localStorage and documentElement data-theme / class
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('flarex_theme');
+      const saved = localStorage.getItem('flarex_theme_v3');
       if (saved === 'light' || saved === 'dark') {
         setThemeState(saved);
         document.documentElement.setAttribute('data-theme', saved);
@@ -144,7 +144,10 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         document.documentElement.classList.toggle('light', saved === 'light');
       } else {
         setThemeState('light');
+        localStorage.setItem('flarex_theme_v3', 'light');
+        localStorage.setItem('flarex_theme', 'light');
         document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.classList.remove('dark');
         document.documentElement.classList.add('light');
       }
     }
@@ -153,6 +156,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const setTheme = useCallback((newTheme: 'dark' | 'light') => {
     setThemeState(newTheme);
     if (typeof window !== 'undefined') {
+      localStorage.setItem('flarex_theme_v3', newTheme);
       localStorage.setItem('flarex_theme', newTheme);
       document.documentElement.setAttribute('data-theme', newTheme);
       document.documentElement.classList.toggle('dark', newTheme === 'dark');
@@ -164,6 +168,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setThemeState((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark';
       if (typeof window !== 'undefined') {
+        localStorage.setItem('flarex_theme_v3', next);
         localStorage.setItem('flarex_theme', next);
         document.documentElement.setAttribute('data-theme', next);
         document.documentElement.classList.toggle('dark', next === 'dark');

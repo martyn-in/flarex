@@ -5,41 +5,11 @@
    FLAREX DUAL-THEME ENGINE (DARK FLAME MODE & ARCTIC LIGHT MODE)
    ========================================================================== */
 
-/* 1. DARK FLAME THEME (WARM DARK MAHOGANY & FLAME PALETTE - ZERO BLACK) */
+/* 1. RADIANT ORANGE LIGHT THEME (PRIMARY DEFAULT PALETTE) */
 :root,
-[data-theme="dark"],
-body.dark-theme {
-  --flarex-nav-width: 72px;
-
-  /* Radiant Flame & Warm Espresso / Dark Mahogany Palette - ZERO BLACK */
-  --fx-bg-0: #120805;
-  --fx-bg-1: #1a0c08;
-  --fx-bg-2: #24110b;
-  --fx-surface: rgba(26, 12, 8, 0.94);
-  --fx-surface-elevated: rgba(36, 16, 10, 0.97);
-
-  --fx-border: rgba(255, 106, 61, 0.3);
-  --fx-border-strong: rgba(255, 106, 61, 0.45);
-  --fx-border-glow: rgba(255, 85, 45, 0.45);
-
-  --fx-text: #fef8f6;
-  --fx-text-muted: #ffeedd;
-  --fx-muted: #ffcaa6;
-
-  --fx-brand-primary: #ff5533;
-  --fx-brand-bright: #ff7a45;
-  --fx-brand-amber: #ffa940;
-  --fx-brand-dark: #b32400;
-  --fx-brand-glow: rgba(255, 85, 45, 0.35);
-
-  --fx-danger: #ff3b30;
-  --fx-warning: #faad14;
-  --fx-success: #20c997;
-}
-
-/* 2. RADIANT ORANGE LIGHT THEME (WARM AMBER CREAM & FLAME ACCENTS) */
 [data-theme="light"],
-body.light-theme {
+body.light-theme,
+html.light {
   --flarex-nav-width: 72px;
 
   /* Radiant Orange Lightish Palette */
@@ -68,6 +38,38 @@ body.light-theme {
   --fx-success: #059669;
 }
 
+/* 2. DARK FLAME THEME (WARM DARK MAHOGANY & FLAME PALETTE - ZERO BLACK) */
+[data-theme="dark"],
+body.dark-theme,
+html.dark {
+  --flarex-nav-width: 72px;
+
+  /* Radiant Flame & Warm Espresso / Dark Mahogany Palette - ZERO BLACK */
+  --fx-bg-0: #120805;
+  --fx-bg-1: #1a0c08;
+  --fx-bg-2: #24110b;
+  --fx-surface: rgba(26, 12, 8, 0.94);
+  --fx-surface-elevated: rgba(36, 16, 10, 0.97);
+
+  --fx-border: rgba(255, 106, 61, 0.3);
+  --fx-border-strong: rgba(255, 106, 61, 0.45);
+  --fx-border-glow: rgba(255, 85, 45, 0.45);
+
+  --fx-text: #fef8f6;
+  --fx-text-muted: #ffeedd;
+  --fx-muted: #ffcaa6;
+
+  --fx-brand-primary: #ff5533;
+  --fx-brand-bright: #ff7a45;
+  --fx-brand-amber: #ffa940;
+  --fx-brand-dark: #b32400;
+  --fx-brand-glow: rgba(255, 85, 45, 0.35);
+
+  --fx-danger: #ff3b30;
+  --fx-warning: #faad14;
+  --fx-success: #20c997;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -79,6 +81,8 @@ body,
   padding: 0;
   width: 100%;
   min-height: 100%;
+  background: #fff7ed !important;
+  color: #261006 !important;
   overflow-x: hidden;
   overflow-y: auto;
   scroll-behavior: smooth;
@@ -95,25 +99,30 @@ body,
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Remove the near-black corner background */
-html.dark body,
-body.dark-theme,
-[data-theme="dark"] body,
-html.dark main.app-shell,
-[data-theme="dark"] main.app-shell {
-  background: #120805 !important;
-  background-image: none !important;
-  color: #fef8f6;
-}
-
+/* Default & Light theme */
+body,
 [data-theme="light"] body,
 body.light-theme,
 html.light main.app-shell,
 [data-theme="light"] main.app-shell,
-[data-theme="light"] .dashboard-page {
+[data-theme="light"] .dashboard-page,
+main.app-shell,
+.dashboard-page {
   background: #fff7ed !important;
   background-image: none !important;
   color: #261006;
+}
+
+/* Dark theme overrides */
+html.dark body,
+body.dark-theme,
+[data-theme="dark"] body,
+html.dark main.app-shell,
+[data-theme="dark"] main.app-shell,
+[data-theme="dark"] .dashboard-page {
+  background: #120805 !important;
+  background-image: none !important;
+  color: #fef8f6 !important;
 }
 
 button,
