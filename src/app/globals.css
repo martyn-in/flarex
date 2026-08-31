@@ -73,9 +73,10 @@ body.light-theme {
 }
 
 html,
-body {
-  padding: 0;
+body,
+#root {
   margin: 0;
+  padding: 0;
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
@@ -94,33 +95,17 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Base Body Backgrounds */
+/* Base Body Backgrounds - Uniform full viewport background without corner vignette */
 body,
 body.dark-theme,
 [data-theme="dark"] body {
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(255, 75, 30, 0.12),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 85% 20%,
-      rgba(255, 130, 30, 0.08),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 50% 80%,
-      rgba(200, 30, 10, 0.06),
-      transparent 40%
-    ),
-    #060302;
+  background: #120704 !important;
   color: #fef8f6;
 }
 
 [data-theme="light"] body,
 body.light-theme {
-  background: #f0f5fa;
+  background: #f0f5fa !important;
   color: #0c2340;
 }
 
@@ -135,10 +120,11 @@ button {
 }
 
 /* ==========================================================================
-   APP SHELL
+   APP SHELL / DASHBOARD PAGE
    ========================================================================== */
 
-.app-shell {
+.app-shell,
+.dashboard-page {
   height: 100vh;
   max-height: 100vh;
   display: grid;
@@ -151,38 +137,39 @@ button {
   margin: 0;
   overflow: hidden;
   transition: background 0.25s ease, color 0.25s ease;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .app-shell,
-.dark .app-shell {
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(255, 75, 30, 0.12),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 85% 20%,
-      rgba(255, 130, 30, 0.08),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 50% 80%,
-      rgba(200, 30, 10, 0.06),
-      transparent 40%
-    ),
-    #060302;
+.dark .app-shell,
+[data-theme="dark"] .dashboard-page,
+.dark .dashboard-page {
+  background: #120704 !important;
   color: #fef8f6;
+  box-shadow: none !important;
 }
 
 [data-theme="light"] .app-shell,
-.light .app-shell {
-  background: #f0f5fa;
+.light .app-shell,
+[data-theme="light"] .dashboard-page,
+.light .dashboard-page {
+  background: #f0f5fa !important;
   color: #0c2340;
+  box-shadow: none !important;
+}
+
+/* Remove any corner vignette or shadow overlay */
+.app-shell::before,
+.app-shell::after,
+.dashboard-page::before,
+.dashboard-page::after {
+  content: none !important;
+  display: none !important;
 }
 
 @media (max-width: 1380px) {
-  .app-shell {
+  .app-shell,
+  .dashboard-page {
     grid-template-columns: 210px minmax(0, 1fr) 330px;
     gap: 10px;
     padding: 8px 10px;
