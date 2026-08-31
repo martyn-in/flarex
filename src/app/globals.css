@@ -1207,16 +1207,17 @@ button {
   overflow: hidden;
   position: relative;
   border: none;
-  background: #070302;
 }
 
 [data-theme="dark"] .map-area,
 .dark .map-area {
+  background: #070302;
   border: none;
 }
 
 [data-theme="light"] .map-area,
 .light .map-area {
+  background: #0d2137;
   border: none;
 }
 

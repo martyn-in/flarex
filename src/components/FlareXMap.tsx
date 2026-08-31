@@ -176,6 +176,13 @@ export const FlareXMap: React.FC = () => {
         },
         layers: [
           {
+            id: 'background',
+            type: 'background',
+            paint: {
+              'background-color': '#0d2137',
+            },
+          },
+          {
             id: 'satellite-layer',
             type: 'raster',
             source: 'esri-satellite',

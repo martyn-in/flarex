@@ -335,11 +335,11 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. INVESTIGATION TABS (HIGH CONTRAST & PERFECTLY VISIBLE) */}
+      {/* 3. INVESTIGATION TABS (HIGH CONTRAST & PERFECTLY VISIBLE IN BOTH MODES) */}
       <div className={`flex rounded-xl p-1.5 border overflow-x-auto gap-1.5 ${
         theme === 'dark'
           ? 'bg-[rgba(24,12,8,0.95)] border-[rgba(255,106,61,0.35)] shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]'
-          : 'bg-[#e6f0fa] border-[#cfe0f0]'
+          : 'bg-[#e2eaf2] border-[#b9d2eb] shadow-inner'
       }`}>
         {(['Why?', 'History', 'AI Probabilities', 'Sentinel-2', 'Overview'] as const).map((tab) => {
           const isActive = activeTab === tab;
@@ -348,14 +348,14 @@ export const RightIncidentPanel: React.FC = () => {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-[10.5px] transition-all duration-150 cursor-pointer whitespace-nowrap text-center font-extrabold ${
+              className={`flex-1 py-1.5 px-2.5 rounded-lg text-[11px] transition-all duration-150 cursor-pointer whitespace-nowrap text-center font-black ${
                 isActive
                   ? theme === 'dark'
                     ? 'bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] text-white shadow-[0_2px_12px_rgba(255,85,45,0.65)] border border-[#ff9166]'
-                    : 'bg-white text-[#ea580c] shadow-md border border-[#fed7aa]'
+                    : 'bg-[#ea580c] text-white shadow-md border border-[#c2410c]'
                   : theme === 'dark'
                   ? 'bg-white/[0.08] text-[#f2e2dc] hover:bg-[rgba(255,85,45,0.25)] hover:text-white border border-white/10'
-                  : 'bg-white/60 text-[#244265] hover:bg-white hover:text-[#0c2340] border border-transparent'
+                  : 'bg-white text-[#0c2340] border border-[#b4cde6] hover:bg-[#0284c7] hover:text-white hover:border-[#0284c7] shadow-xs'
               }`}
             >
               {tab}
@@ -418,15 +418,15 @@ export const RightIncidentPanel: React.FC = () => {
               <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>7-Day Radiative Power Curve</span>
               <div className="flex items-center gap-2">
                 <span className={`flex items-center gap-1 text-[9px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-                  <span className="w-2.5 h-0.5 border-t border-dashed border-current" /> Baseline ({selectedHotspot.baselineFrp} MW)
+                  <span className="w-2 h-2 rounded-full bg-[#FF4D4F]" /> FRP (MW)
                 </span>
-                <span className="flex items-center gap-1 text-[9px] text-red-500 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-red-500" /> FRP
+                <span className={`flex items-center gap-1 text-[9px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+                  <span className="w-2 h-0.5 bg-[#FF7A45]" /> Baseline
                 </span>
               </div>
             </div>
 
-            <div className="w-full h-[145px] mt-1">
+            <div className="h-[140px] w-full mt-1">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={selectedHotspot.history}
@@ -486,13 +486,13 @@ export const RightIncidentPanel: React.FC = () => {
           <div className={`border rounded-2xl p-3 flex flex-col gap-2 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.2)]'
-              : 'bg-white border-[#cfe0f0]'
+              : 'bg-[#ffffff] border-[#cfe0f0]'
           }`}>
-            <span className={`text-[10.5px] font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <span className={`text-[11.5px] font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               6-Class AI Classifier Output Distribution
             </span>
 
-            <div className="flex flex-col gap-1.5 mt-0.5">
+            <div className="flex flex-col gap-2 mt-1">
               {[
                 { label: 'Industrial Fire', val: selectedHotspot.probabilities.industrialFire, color: 'bg-red-500' },
                 { label: 'Gas Flare', val: selectedHotspot.probabilities.gasFlare, color: 'bg-orange-500' },
@@ -502,12 +502,12 @@ export const RightIncidentPanel: React.FC = () => {
                 { label: 'Unknown / Ambiguous', val: selectedHotspot.probabilities.unknown, color: 'bg-slate-400' },
               ].map((item) => (
                 <div key={item.label} className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center text-[10px]">
-                    <span className={`font-medium ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>{item.label}</span>
-                    <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{item.val}%</span>
+                  <div className="flex justify-between items-center text-[10.5px]">
+                    <span className={`font-bold ${theme === 'dark' ? 'text-[#e5d4ce]' : 'text-[#0c2340]'}`}>{item.label}</span>
+                    <span className={`font-mono font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{item.val}%</span>
                   </div>
-                  <div className={`w-full h-1.5 rounded-full overflow-hidden border ${
-                    theme === 'dark' ? 'bg-white/10 border-white/5' : 'bg-[#e6f0fa] border-[#cfe0f0]/60'
+                  <div className={`w-full h-2 rounded-full overflow-hidden border ${
+                    theme === 'dark' ? 'bg-white/10 border-white/5' : 'bg-[#e2eaf2] border-[#cfe0f0]'
                   }`}>
                     <div
                       className={`h-full ${item.color} rounded-full transition-all duration-300`}
