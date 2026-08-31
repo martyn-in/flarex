@@ -20,7 +20,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
   const wordmarkRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
   const exploreBtnRef = useRef<HTMLButtonElement>(null);
-  const darkTransitionOverlayRef = useRef<HTMLDivElement>(null);
+  const transitionOverlayRef = useRef<HTMLDivElement>(null);
 
   // Live drifting ambient space embers on canvas
   useEffect(() => {
@@ -126,8 +126,8 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
     if (hasStartedDive) return;
     setHasStartedDive(true);
 
-    if (darkTransitionOverlayRef.current) {
-      gsap.to(darkTransitionOverlayRef.current, {
+    if (transitionOverlayRef.current) {
+      gsap.to(transitionOverlayRef.current, {
         opacity: 1,
         duration: 0.3,
         ease: 'power2.inOut',
@@ -280,7 +280,7 @@ export const CinematicLanding: React.FC<CinematicLandingProps> = ({
 
       {/* Smooth Light Transition Overlay */}
       <div
-        ref={darkTransitionOverlayRef}
+        ref={transitionOverlayRef}
         className="absolute inset-0 z-50 pointer-events-none bg-[#fff7ed] opacity-0"
       />
     </div>

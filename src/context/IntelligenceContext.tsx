@@ -90,8 +90,8 @@ interface IntelligenceContextType {
   chatMessages: AIAssistantMessage[];
   sendChatMessage: (text: string) => void;
   isAITyping: boolean;
-  theme: 'dark' | 'light';
-  setTheme: (theme: 'dark' | 'light') => void;
+  theme: 'light';
+  setTheme: (theme: 'light') => void;
   toggleTheme: () => void;
 }
 
@@ -131,51 +131,23 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [chatMessages, setChatMessages] = useState<AIAssistantMessage[]>(INITIAL_AI_MESSAGES);
   const [isAITyping, setIsAITyping] = useState<boolean>(false);
-  const [theme, setThemeState] = useState<'dark' | 'light'>('light');
+  const theme = 'light' as const;
 
-  // Sync theme with localStorage and documentElement data-theme / class
+  // Ensure document always has light theme
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('flarex_theme_v3');
-      if (saved === 'light' || saved === 'dark') {
-        setThemeState(saved);
-        document.documentElement.setAttribute('data-theme', saved);
-        document.documentElement.classList.toggle('dark', saved === 'dark');
-        document.documentElement.classList.toggle('light', saved === 'light');
-      } else {
-        setThemeState('light');
-        localStorage.setItem('flarex_theme_v3', 'light');
-        localStorage.setItem('flarex_theme', 'light');
-        document.documentElement.setAttribute('data-theme', 'light');
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
-      }
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
   }, []);
 
-  const setTheme = useCallback((newTheme: 'dark' | 'light') => {
-    setThemeState(newTheme);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('flarex_theme_v3', newTheme);
-      localStorage.setItem('flarex_theme', newTheme);
-      document.documentElement.setAttribute('data-theme', newTheme);
-      document.documentElement.classList.toggle('dark', newTheme === 'dark');
-      document.documentElement.classList.toggle('light', newTheme === 'light');
-    }
+  const setTheme = useCallback((_newTheme: 'light') => {
+    // Single light theme only
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setThemeState((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('flarex_theme_v3', next);
-        localStorage.setItem('flarex_theme', next);
-        document.documentElement.setAttribute('data-theme', next);
-        document.documentElement.classList.toggle('dark', next === 'dark');
-        document.documentElement.classList.toggle('light', next === 'light');
-      }
-      return next;
-    });
+    // Single light theme only
   }, []);
 
   // Toast feedback

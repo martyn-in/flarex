@@ -6,7 +6,7 @@ import { REPORTS_LIST } from '@/data/mockData';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function ReportsPanel() {
-  const { hotspots, addToast, theme } = useIntelligence();
+  const { hotspots, addToast } = useIntelligence();
 
   const handleDownload = (report: (typeof REPORTS_LIST)[0]) => {
     addToast(`Generating and exporting ${report.name} (${report.type})...`, 'success');
@@ -78,7 +78,7 @@ export default function ReportsPanel() {
         <button
           type="button"
           onClick={handleExportGeoJSON}
-          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9"
+          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9 bg-white border border-[#fed7aa] text-[#7c2d12] hover:bg-[#ffedd5] hover:text-[#ea580c] rounded-xl font-bold text-[11px]"
         >
           <Map size={13} />
           <span>Export GeoJSON</span>
@@ -87,7 +87,7 @@ export default function ReportsPanel() {
         <button
           type="button"
           onClick={handleExportCSV}
-          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9"
+          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9 bg-white border border-[#fed7aa] text-[#7c2d12] hover:bg-[#ffedd5] hover:text-[#ea580c] rounded-xl font-bold text-[11px]"
         >
           <FileSpreadsheet size={13} />
           <span>Export CSV Manifest</span>
@@ -101,16 +101,12 @@ export default function ReportsPanel() {
           {REPORTS_LIST.map((rep) => (
             <div key={rep.id} className="flarex-status-row !items-start">
               <div className="flex items-start gap-2.5 min-w-0">
-                <div className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 ${
-                  theme === 'dark'
-                    ? 'bg-[rgba(255,90,45,0.12)] border-[rgba(255,106,61,0.28)] text-[#ff7a45]'
-                    : 'bg-orange-50 border-orange-200 text-orange-600'
-                }`}>
+                <div className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 bg-orange-50 border-orange-200 text-[#ea580c]">
                   <FileText size={14} />
                 </div>
                 <div className="min-w-0">
-                  <span className="flarex-status-name block">{rep.name}</span>
-                  <span className="flarex-status-meta block">
+                  <span className="flarex-status-name block text-[#261006]">{rep.name}</span>
+                  <span className="flarex-status-meta block text-[#7c2d12] text-[9.5px]">
                     {rep.type} • {rep.date} ({rep.size})
                   </span>
                 </div>
@@ -119,11 +115,7 @@ export default function ReportsPanel() {
               <button
                 type="button"
                 onClick={() => handleDownload(rep)}
-                className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
-                  theme === 'dark'
-                    ? 'bg-[rgba(255,90,45,0.06)] border-[rgba(255,106,61,0.2)] text-[#d1b8af] hover:text-white hover:border-[#ff5a3c] hover:bg-[rgba(255,90,45,0.15)]'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-orange-500 hover:bg-orange-50'
-                }`}
+                className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors cursor-pointer bg-[#ffedd5] border-[#fed7aa] text-[#7c2d12] hover:text-[#ea580c] hover:border-[#ea580c] hover:bg-[#fed7aa]"
                 title={`Download ${rep.name}`}
               >
                 <Download size={13} />
