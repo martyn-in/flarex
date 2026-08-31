@@ -90,6 +90,9 @@ interface IntelligenceContextType {
   chatMessages: AIAssistantMessage[];
   sendChatMessage: (text: string) => void;
   isAITyping: boolean;
+  theme: 'dark' | 'light';
+  setTheme: (theme: 'dark' | 'light') => void;
+  toggleTheme: () => void;
 }
 
 const IntelligenceContext = createContext<IntelligenceContextType | undefined>(undefined);
@@ -128,6 +131,46 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [chatMessages, setChatMessages] = useState<AIAssistantMessage[]>(INITIAL_AI_MESSAGES);
   const [isAITyping, setIsAITyping] = useState<boolean>(false);
+  const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
+
+  // Sync theme with localStorage and documentElement data-theme / class
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('flarex_theme');
+      if (saved === 'light' || saved === 'dark') {
+        setThemeState(saved);
+        document.documentElement.setAttribute('data-theme', saved);
+        document.documentElement.classList.toggle('dark', saved === 'dark');
+        document.documentElement.classList.toggle('light', saved === 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.classList.add('dark');
+      }
+    }
+  }, []);
+
+  const setTheme = useCallback((newTheme: 'dark' | 'light') => {
+    setThemeState(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('flarex_theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+      document.documentElement.classList.toggle('light', newTheme === 'light');
+    }
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setThemeState((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('flarex_theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.classList.toggle('dark', next === 'dark');
+        document.documentElement.classList.toggle('light', next === 'light');
+      }
+      return next;
+    });
+  }, []);
 
   // Toast feedback
   const addToast = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
@@ -395,6 +438,9 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         chatMessages,
         sendChatMessage,
         isAITyping,
+        theme,
+        setTheme,
+        toggleTheme,
       }}
     >
       {children}

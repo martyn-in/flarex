@@ -5,7 +5,7 @@ import { AlertOctagon, Flame, ShieldAlert, TrendingUp, CheckCircle, Crosshair } 
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function AlertCenterPanel() {
-  const { hotspots, selectHotspot, addToast } = useIntelligence();
+  const { hotspots, selectHotspot, addToast, theme } = useIntelligence();
 
   // Filter alerts requiring attention
   const criticalAndAbnormal = hotspots.filter(
@@ -23,16 +23,22 @@ export default function AlertCenterPanel() {
   return (
     <div className="flex flex-col gap-3">
       {/* Top Banner */}
-      <div className="p-3 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-between shadow-xs">
+      <div className={`p-3 rounded-2xl border flex items-center justify-between shadow-xs ${
+        theme === 'dark'
+          ? 'bg-[rgba(255,59,48,0.12)] border-red-500/30'
+          : 'bg-red-50 border-red-200'
+      }`}>
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-red-100 border border-red-200 flex items-center justify-center text-red-600">
+          <div className={`w-8 h-8 rounded-xl border flex items-center justify-center text-red-500 ${
+            theme === 'dark' ? 'bg-red-950/50 border-red-500/40' : 'bg-red-100 border-red-200'
+          }`}>
             <ShieldAlert size={18} />
           </div>
           <div>
-            <h4 className="text-[12.5px] font-extrabold text-red-950 leading-tight">
+            <h4 className={`text-[12.5px] font-extrabold leading-tight ${theme === 'dark' ? 'text-white' : 'text-red-950'}`}>
               Action Required ({criticalAndAbnormal.length} Active Alerts)
             </h4>
-            <p className="text-[10px] text-red-700/90 mt-0.5 font-medium">
+            <p className={`text-[10px] mt-0.5 font-medium ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-red-700/90'}`}>
               Industrial facilities exceeding safe operational baseline
             </p>
           </div>
@@ -49,7 +55,11 @@ export default function AlertCenterPanel() {
               key={spot.id}
               className={`p-3 rounded-2xl border flex flex-col gap-2.5 transition-all shadow-xs ${
                 isCritical
-                  ? 'bg-red-50/60 border-red-200'
+                  ? theme === 'dark'
+                    ? 'bg-[rgba(255,59,48,0.1)] border-red-500/40'
+                    : 'bg-red-50/60 border-red-200'
+                  : theme === 'dark'
+                  ? 'bg-[rgba(255,85,45,0.08)] border-[rgba(255,106,61,0.25)]'
                   : 'bg-orange-50/60 border-orange-200'
               }`}
             >
@@ -59,36 +69,44 @@ export default function AlertCenterPanel() {
                   <span
                     className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase border ${
                       isCritical
-                        ? 'bg-red-100 border-red-300 text-red-700'
+                        ? theme === 'dark'
+                          ? 'bg-red-950/60 border-red-500/40 text-red-400'
+                          : 'bg-red-100 border-red-300 text-red-700'
+                        : theme === 'dark'
+                        ? 'bg-orange-950/60 border-orange-500/40 text-orange-400'
                         : 'bg-orange-100 border-orange-300 text-orange-800'
                     }`}
                   >
                     {isCritical ? 'CRITICAL' : 'HIGH PRIORITY'}
                   </span>
-                  <span className="font-mono text-[10px] text-slate-700 font-bold bg-white px-1.5 py-0.2 rounded border border-slate-200">
+                  <span className={`font-mono text-[10px] font-bold px-1.5 py-0.2 rounded border ${
+                    theme === 'dark' ? 'text-[#d1b8af] bg-black/40 border-white/10' : 'text-slate-700 bg-white border-slate-200'
+                  }`}>
                     {spot.eventId}
                   </span>
                 </div>
 
-                <span className="font-mono text-[9.5px] text-slate-500 font-medium">
+                <span className={`font-mono text-[9.5px] font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-500'}`}>
                   {spot.timestamp.split(' ')[1]} IST
                 </span>
               </div>
 
               {/* Facility & Anomaly Multiple */}
               <div>
-                <h3 className="text-[13px] font-extrabold text-slate-900 leading-snug">
+                <h3 className={`text-[13px] font-extrabold leading-snug ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {spot.name}
                 </h3>
-                <p className="text-[11px] text-slate-600 mt-0.5">
+                <p className={`text-[11px] mt-0.5 ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-slate-600'}`}>
                   {isCritical ? 'Confirmed Industrial Fire Anomaly' : 'Abnormal Thermal Radiance Surge'}
                 </p>
               </div>
 
               {/* Radiative Stats Box */}
-              <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-[11px]">
-                <span className="text-slate-500 font-medium">Radiative Multiple:</span>
-                <span className="font-mono font-black text-red-600 flex items-center gap-1">
+              <div className={`flex items-center justify-between p-2 rounded-xl border text-[11px] ${
+                theme === 'dark' ? 'bg-black/30 border-white/10' : 'bg-white border-slate-200'
+              }`}>
+                <span className={`font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-500'}`}>Radiative Multiple:</span>
+                <span className="font-mono font-black text-red-500 flex items-center gap-1">
                   <TrendingUp size={13} />
                   {spot.baselineRatio}× BASELINE ({spot.frp} MW vs {spot.baselineFrp} MW)
                 </span>
@@ -99,7 +117,11 @@ export default function AlertCenterPanel() {
                 <button
                   type="button"
                   onClick={() => selectHotspot(spot, true)}
-                  className="flex-1 py-1.5 px-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-[10.5px] font-semibold flex items-center justify-center gap-1 border border-slate-200 shadow-xs transition-all cursor-pointer"
+                  className={`flex-1 py-1.5 px-2.5 rounded-xl text-[10.5px] font-semibold flex items-center justify-center gap-1 border shadow-xs transition-all cursor-pointer ${
+                    theme === 'dark'
+                      ? 'bg-white/5 hover:bg-white/10 text-white border-white/10'
+                      : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'
+                  }`}
                 >
                   <Crosshair size={13} />
                   <span>Investigate</span>
@@ -117,7 +139,11 @@ export default function AlertCenterPanel() {
                 <button
                   type="button"
                   onClick={() => handleAcknowledge(spot.id, spot.name)}
-                  className="py-1.5 px-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-[10.5px] font-medium transition-all cursor-pointer shadow-xs"
+                  className={`py-1.5 px-2.5 rounded-xl border text-[10.5px] font-medium transition-all cursor-pointer shadow-xs ${
+                    theme === 'dark'
+                      ? 'bg-white/5 border-white/10 text-[#a3928c] hover:text-white hover:bg-white/10'
+                      : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
                   title="Acknowledge Alert"
                 >
                   <CheckCircle size={13} />

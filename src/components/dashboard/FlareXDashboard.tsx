@@ -16,6 +16,8 @@ import {
   ChartNoAxesCombined,
   Database,
   Globe,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 import { useIntelligence } from '@/context/IntelligenceContext';
@@ -54,6 +56,8 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     resetMapView,
     addToast,
     calculatedStats,
+    theme,
+    toggleTheme,
   } = useIntelligence();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -263,7 +267,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   };
 
   return (
-    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#f0f5fa] text-[#0c2340]">
+    <main className="app-shell flex h-screen w-full overflow-hidden">
       {/* 1. SIDEBAR */}
       <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
         <div>
@@ -328,9 +332,9 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             <button
               type="button"
               onClick={onReturnToLanding}
-              className="w-full mb-3 py-2 px-3 rounded-xl bg-[#f0f7fd] hover:bg-[#e1effc] text-[#3b5677] hover:text-[#0c2340] text-[11px] font-bold flex items-center justify-center gap-2 border border-[#cfe0f0] hover:border-[#0284c7] transition-all cursor-pointer shadow-xs"
+              className="w-full mb-3 py-2 px-3 rounded-xl secondary-button text-[11px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
             >
-              <Globe size={14} className="text-[#0284c7]" />
+              <Globe size={14} className={theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#0284c7]'} />
               <span>3D Earth Globe Intro</span>
             </button>
           )}
@@ -365,6 +369,33 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
+
+            {/* Theme Toggle (Dark Flame Mode vs Arctic Light Mode) */}
+            <button
+              type="button"
+              onClick={() => {
+                toggleTheme();
+                addToast(
+                  theme === 'dark'
+                    ? 'Switched to Arctic Light Mode'
+                    : 'Switched to Dark Flame Theme',
+                  'info'
+                );
+              }}
+              className="icon-button glass-card cursor-pointer"
+              title={
+                theme === 'dark'
+                  ? 'Switch to Arctic Light Mode'
+                  : 'Switch to Dark Flame Theme'
+              }
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? (
+                <Sun size={18} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+              ) : (
+                <Moon size={18} className="text-[#0284c7]" />
+              )}
+            </button>
 
             {/* Notification Bell */}
             <button

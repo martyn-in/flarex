@@ -6,7 +6,7 @@ import { useIntelligence } from '@/context/IntelligenceContext';
 import { Hotspot } from '@/types';
 
 export default function IncidentsPanel() {
-  const { hotspots, selectedHotspot, selectHotspot, addToast } = useIntelligence();
+  const { hotspots, selectedHotspot, selectHotspot, addToast, theme } = useIntelligence();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'All' | 'Fires' | 'Abnormal' | 'Critical'>('All');
 
@@ -37,13 +37,17 @@ export default function IncidentsPanel() {
     <div className="flex flex-col gap-3">
       {/* Search Input */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3928c]" />
+        <Search size={14} className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-400'}`} />
         <input
           type="text"
           placeholder="Filter by facility, SEZ, or Event ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 rounded-xl text-[11px] text-white bg-[rgba(255,90,45,0.04)] border border-[rgba(255,106,61,0.2)] focus:border-[#ff5a3c] focus:outline-none placeholder-[#7d6e68] transition-colors"
+          className={`w-full pl-9 pr-3 py-2 rounded-xl text-[11px] focus:outline-none transition-colors border ${
+            theme === 'dark'
+              ? 'text-white bg-[rgba(255,90,45,0.04)] border-[rgba(255,106,61,0.2)] focus:border-[#ff5a3c] placeholder-[#7d6e68]'
+              : 'text-[#0c2340] bg-[#f8fbfe] border-[#cfe0f0] focus:border-[#0284c7] placeholder-slate-400'
+          }`}
         />
       </div>
 
@@ -66,10 +70,14 @@ export default function IncidentsPanel() {
               key={tab}
               type="button"
               onClick={() => setFilterType(tab)}
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
                 isActive
-                  ? 'bg-[rgba(255,90,45,0.18)] border border-[#ff5a3c] text-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.25)]'
-                  : 'bg-[rgba(255,90,45,0.04)] border border-[rgba(255,106,61,0.15)] text-[#a3928c] hover:text-white'
+                  ? theme === 'dark'
+                    ? 'bg-[rgba(255,90,45,0.18)] border-[#ff5a3c] text-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.25)]'
+                    : 'bg-[#e0f2fe] border-[#0284c7] text-[#0284c7] font-bold'
+                  : theme === 'dark'
+                  ? 'bg-[rgba(255,90,45,0.04)] border-[rgba(255,106,61,0.15)] text-[#a3928c] hover:text-white'
+                  : 'bg-white border-[#cfe0f0] text-[#4e6b8c] hover:text-[#0c2340]'
               }`}
             >
               <span>{tab}</span>
@@ -82,7 +90,7 @@ export default function IncidentsPanel() {
       {/* Incidents Table / List */}
       <div className="flarex-status-list mt-1">
         {filtered.length === 0 ? (
-          <div className="py-8 text-center text-[#a3928c] text-[11px]">
+          <div className={`py-8 text-center text-[11px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-400'}`}>
             No thermal incidents matching criteria.
           </div>
         ) : (
@@ -91,9 +99,22 @@ export default function IncidentsPanel() {
             const isCritical = incident.severity === 'critical' || incident.status === 'CRITICAL_FIRE';
             const isAbnormal = incident.status === 'ABNORMAL' || incident.baselineRatio >= 2.0;
 
-            let badgeColor = 'text-[#ffa940] bg-[rgba(255,169,64,0.12)] border-[rgba(255,169,64,0.3)]';
-            if (isCritical) badgeColor = 'text-[#ff4949] bg-[rgba(255,73,73,0.15)] border-[rgba(255,73,73,0.35)] shadow-[0_0_8px_rgba(255,73,73,0.25)]';
-            else if (isAbnormal) badgeColor = 'text-[#ff8a42] bg-[rgba(255,138,66,0.14)] border-[rgba(255,138,66,0.35)]';
+            let badgeColor =
+              theme === 'dark'
+                ? 'text-[#ffa940] bg-[rgba(255,169,64,0.12)] border-[rgba(255,169,64,0.3)]'
+                : 'text-amber-700 bg-amber-100 border-amber-200';
+
+            if (isCritical) {
+              badgeColor =
+                theme === 'dark'
+                  ? 'text-[#ff4949] bg-[rgba(255,73,73,0.15)] border-[rgba(255,73,73,0.35)] shadow-[0_0_8px_rgba(255,73,73,0.25)]'
+                  : 'text-red-700 bg-red-100 border-red-200';
+            } else if (isAbnormal) {
+              badgeColor =
+                theme === 'dark'
+                  ? 'text-[#ff8a42] bg-[rgba(255,138,66,0.14)] border-[rgba(255,138,66,0.35)]'
+                  : 'text-orange-700 bg-orange-100 border-orange-200';
+            }
 
             return (
               <div
@@ -101,10 +122,16 @@ export default function IncidentsPanel() {
                 onClick={() => handleIncidentClick(incident)}
                 className={`flarex-status-row !p-3 flex-col !items-stretch gap-2 transition-all cursor-pointer ${
                   isSelected
-                    ? '!border-[#ff5a3c] !bg-[rgba(255,90,45,0.12)] shadow-[0_0_15px_rgba(255,90,60,0.25)]'
+                    ? theme === 'dark'
+                      ? '!border-[#ff5a3c] !bg-[rgba(255,90,45,0.14)] shadow-[0_0_15px_rgba(255,90,60,0.25)]'
+                      : '!border-[#0284c7] !bg-[#e0f2fe] shadow-xs'
                     : isCritical
-                    ? 'border-[rgba(255,73,73,0.28)] hover:bg-white/[0.04]'
-                    : 'hover:bg-white/[0.04]'
+                    ? theme === 'dark'
+                      ? 'border-[rgba(255,73,73,0.28)] hover:bg-white/[0.04]'
+                      : 'border-red-200 hover:bg-red-50/50'
+                    : theme === 'dark'
+                    ? 'hover:bg-white/[0.04]'
+                    : 'hover:bg-[#f0f7fd]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -112,14 +139,14 @@ export default function IncidentsPanel() {
                     <span className={`px-2 py-0.5 rounded text-[8.5px] font-bold uppercase tracking-wider border ${badgeColor}`}>
                       {incident.severity}
                     </span>
-                    <span className="font-mono text-[10px] font-bold text-cyan-300">
+                    <span className={`font-mono text-[10px] font-bold ${theme === 'dark' ? 'text-cyan-300' : 'text-cyan-700'}`}>
                       {incident.eventId}
                     </span>
-                    <span className="text-[10px] text-slate-300 font-semibold truncate">
+                    <span className={`text-[10px] font-semibold truncate ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
                       {incident.nearestFacility.name}
                     </span>
                   </div>
-                  <span className="font-mono text-[9px] text-[#8c766e] shrink-0">
+                  <span className={`font-mono text-[9px] shrink-0 ${theme === 'dark' ? 'text-[#8c766e]' : 'text-slate-400'}`}>
                     {incident.timestamp.split(' ')[1]} IST
                   </span>
                 </div>
@@ -127,29 +154,35 @@ export default function IncidentsPanel() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     {isCritical ? (
-                      <Flame size={14} className="text-red-400" />
+                      <Flame size={14} className="text-red-500" />
                     ) : (
-                      <AlertTriangle size={14} className="text-orange-400" />
+                      <AlertTriangle size={14} className="text-orange-500" />
                     )}
                     <span className="flarex-status-name text-[12px]">{incident.classification}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {incident.baselineRatio >= 1.5 && (
-                      <span className="text-[9.5px] font-mono font-bold text-red-400 bg-red-950/60 px-1.5 py-0.5 rounded border border-red-500/20">
+                      <span className={`text-[9.5px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                        theme === 'dark'
+                          ? 'text-red-400 bg-red-950/60 border-red-500/20'
+                          : 'text-red-700 bg-red-100 border-red-200'
+                      }`}>
                         {incident.baselineRatio}× baseline
                       </span>
                     )}
-                    <span className="font-mono font-bold text-[12px] text-[#ff505d]">{incident.frp} MW</span>
+                    <span className={`font-mono font-bold text-[12px] ${theme === 'dark' ? 'text-[#ff505d]' : 'text-red-600'}`}>{incident.frp} MW</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[9.5px] text-[#8c766e] pt-1.5 border-t border-[rgba(255,106,61,0.08)]">
+                <div className={`flex items-center justify-between text-[9.5px] pt-1.5 border-t ${
+                  theme === 'dark' ? 'border-[rgba(255,106,61,0.08)] text-[#8c766e]' : 'border-[#cfe0f0] text-slate-500'
+                }`}>
                   <span className="flex items-center gap-1 truncate max-w-[200px]">
-                    <MapPin size={11} className="text-[#ff7a45] shrink-0" />
+                    <MapPin size={11} className={`${theme === 'dark' ? 'text-[#ff7a45]' : 'text-orange-600'} shrink-0`} />
                     {incident.location}
                   </span>
                   <div className="flex items-center gap-2 font-mono">
-                    <span className="text-[#ffa940]">{incident.confidence}% Conf.</span>
+                    <span className={theme === 'dark' ? 'text-[#ffa940]' : 'text-amber-700'}>{incident.confidence}% Conf.</span>
                     <span>{incident.temperature}°C</span>
                   </div>
                 </div>

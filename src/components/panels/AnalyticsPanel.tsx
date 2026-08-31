@@ -5,7 +5,7 @@ import { TrendingUp, Flame, Building2, Trees, Activity, Layers, MapPin } from 'l
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function AnalyticsPanel() {
-  const { hotspots, calculatedStats, selectHotspot } = useIntelligence();
+  const { hotspots, calculatedStats, selectHotspot, theme } = useIntelligence();
 
   // Dynamic Class Breakdown
   const industrialCount = hotspots.filter(
@@ -46,25 +46,25 @@ export default function AnalyticsPanel() {
       <div className="flarex-kpi-grid">
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Total Thermal Radiance</span>
-          <span className="flarex-kpi-value text-red-400">{calculatedStats.totalFrp} MW</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>{calculatedStats.totalFrp} MW</span>
           <span className="flarex-kpi-meta">{calculatedStats.totalEvents} Active Clusters</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Industrial vs Natural</span>
-          <span className="flarex-kpi-value text-[#ffa940]">{industrialPct}% / {naturalPct}%</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-[#ffa940]' : 'text-amber-700'}`}>{industrialPct}% / {naturalPct}%</span>
           <span className="flarex-kpi-meta">High Industrial Concentration</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Abnormal Heat Breaches</span>
-          <span className="flarex-kpi-value text-red-400">{calculatedStats.abnormalSources}</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>{calculatedStats.abnormalSources}</span>
           <span className="flarex-kpi-meta">&gt; 2.0× historical baseline</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Persistent Sources</span>
-          <span className="flarex-kpi-value text-purple-300">{calculatedStats.persistentSources}</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-purple-300' : 'text-purple-700'}`}>{calculatedStats.persistentSources}</span>
           <span className="flarex-kpi-meta">High 30-day recurrence</span>
         </div>
       </div>
@@ -75,26 +75,26 @@ export default function AnalyticsPanel() {
         <div className="flex flex-col gap-2.5">
           <div>
             <div className="flex justify-between items-center text-[11px] mb-1">
-              <span className="text-slate-300 flex items-center gap-1.5 font-medium">
+              <span className={`flex items-center gap-1.5 font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
                 <Building2 size={13} className="text-[#ff7a45]" />
                 Industrial Infrastructure Heat (Fires &amp; Flares)
               </span>
-              <span className="font-mono font-bold text-white">{industrialCount} ({industrialPct}%)</span>
+              <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{industrialCount} ({industrialPct}%)</span>
             </div>
-            <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-black/40' : 'bg-slate-200'}`}>
               <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full" style={{ width: `${industrialPct}%` }} />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between items-center text-[11px] mb-1">
-              <span className="text-slate-300 flex items-center gap-1.5 font-medium">
-                <Trees size={13} className="text-emerald-400" />
+              <span className={`flex items-center gap-1.5 font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                <Trees size={13} className="text-emerald-500" />
                 Natural &amp; Biomass Burning (Wildfires &amp; Agriculture)
               </span>
-              <span className="font-mono font-bold text-white">{naturalCount} ({naturalPct}%)</span>
+              <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{naturalCount} ({naturalPct}%)</span>
             </div>
-            <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-black/40' : 'bg-slate-200'}`}>
               <div className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full" style={{ width: `${naturalPct}%` }} />
             </div>
           </div>
@@ -109,18 +109,20 @@ export default function AnalyticsPanel() {
             <div
               key={c.state}
               onClick={() => selectHotspot(c.hotspot, true)}
-              className="flarex-status-row !p-2.5 cursor-pointer hover:bg-white/[0.04]"
+              className={`flarex-status-row !p-2.5 cursor-pointer ${
+                theme === 'dark' ? 'hover:bg-white/[0.04]' : 'hover:bg-[#f0f7fd]'
+              }`}
             >
               <div className="flex items-center gap-2">
-                <MapPin size={13} className="text-cyan-400 shrink-0" />
+                <MapPin size={13} className={`${theme === 'dark' ? 'text-cyan-400' : 'text-[#0284c7]'} shrink-0`} />
                 <div>
                   <span className="flarex-status-name text-[12px]">{c.state} Corridor</span>
-                  <span className="text-[9.5px] text-slate-400 block">{c.count} active thermal clusters</span>
+                  <span className={`text-[9.5px] block ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{c.count} active thermal clusters</span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-mono text-[11px] font-bold text-red-400">{c.peakFrp} Peak</span>
-                <span className="text-[8.5px] text-slate-400 block">Radiance</span>
+                <span className={`font-mono text-[11px] font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>{c.peakFrp} Peak</span>
+                <span className={`text-[8.5px] block ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>Radiance</span>
               </div>
             </div>
           ))}
@@ -133,7 +135,7 @@ export default function AnalyticsPanel() {
           <Flame size={17} />
         </div>
         <div>
-          <span className="insight-label">FLAMEX INTELLIGENCE DIAGNOSIS</span>
+          <span className="insight-label">FLAREX INTELLIGENCE DIAGNOSIS</span>
           <h4>Persistent industrial flares dominate, but severe localized surges detected.</h4>
           <p>
             {calculatedStats.industrialFires} critical industrial fires identified with radiative intensity exceeding 3.0× nominal baseline.

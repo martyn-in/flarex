@@ -6,7 +6,7 @@ import { REPORTS_LIST } from '@/data/mockData';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function ReportsPanel() {
-  const { hotspots, addToast } = useIntelligence();
+  const { hotspots, addToast, theme } = useIntelligence();
 
   const handleDownload = (report: (typeof REPORTS_LIST)[0]) => {
     addToast(`Generating and exporting ${report.name} (${report.type})...`, 'success');
@@ -101,7 +101,11 @@ export default function ReportsPanel() {
           {REPORTS_LIST.map((rep) => (
             <div key={rep.id} className="flarex-status-row !items-start">
               <div className="flex items-start gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-[rgba(255,90,45,0.12)] border border-[rgba(255,106,61,0.28)] flex items-center justify-center text-[#ff7a45] shrink-0 mt-0.5">
+                <div className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 ${
+                  theme === 'dark'
+                    ? 'bg-[rgba(255,90,45,0.12)] border-[rgba(255,106,61,0.28)] text-[#ff7a45]'
+                    : 'bg-orange-50 border-orange-200 text-orange-600'
+                }`}>
                   <FileText size={14} />
                 </div>
                 <div className="min-w-0">
@@ -115,7 +119,11 @@ export default function ReportsPanel() {
               <button
                 type="button"
                 onClick={() => handleDownload(rep)}
-                className="w-7 h-7 rounded-lg bg-[rgba(255,90,45,0.06)] border border-[rgba(255,106,61,0.2)] flex items-center justify-center text-[#d1b8af] hover:text-white hover:border-[#ff5a3c] hover:bg-[rgba(255,90,45,0.15)] shrink-0 transition-colors cursor-pointer"
+                className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
+                  theme === 'dark'
+                    ? 'bg-[rgba(255,90,45,0.06)] border-[rgba(255,106,61,0.2)] text-[#d1b8af] hover:text-white hover:border-[#ff5a3c] hover:bg-[rgba(255,90,45,0.15)]'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-orange-500 hover:bg-orange-50'
+                }`}
                 title={`Download ${rep.name}`}
               >
                 <Download size={13} />

@@ -6,7 +6,7 @@ import { DATA_SOURCES_LIST } from '@/data/mockData';
 import { useIntelligence } from '@/context/IntelligenceContext';
 
 export default function DataSourcesPanel() {
-  const { calculatedStats, refreshHotspots, addToast, dataSourceMode } = useIntelligence();
+  const { calculatedStats, refreshHotspots, addToast, dataSourceMode, theme } = useIntelligence();
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSync = async () => {
@@ -26,8 +26,8 @@ export default function DataSourcesPanel() {
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Pipeline Status</span>
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#20C997]" />
-            <span className="text-[14px] font-bold text-white">ALL CONNECTED</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#20C997]" />
+            <span className={`text-[14px] font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>ALL CONNECTED</span>
           </div>
           <span className="flarex-kpi-meta">5 / 5 Sources Active</span>
         </div>
@@ -40,13 +40,13 @@ export default function DataSourcesPanel() {
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">ML Inference Model</span>
-          <span className="flarex-kpi-value text-white">v1.2-NRT</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>v1.2-NRT</span>
           <span className="flarex-kpi-meta">Validation Acc. 96.4%</span>
         </div>
 
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Telemetry Ingestion Lag</span>
-          <span className="flarex-kpi-value text-[#ffa940]">1.8s</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-[#ffa940]' : 'text-amber-700'}`}>1.8s</span>
           <span className="flarex-kpi-meta">Mode: {dataSourceMode}</span>
         </div>
       </div>
@@ -69,7 +69,11 @@ export default function DataSourcesPanel() {
           {DATA_SOURCES_LIST.map((source) => (
             <div key={source.name} className="flarex-status-row !p-3">
               <div className="flex items-start gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-[rgba(255,90,45,0.12)] border border-[rgba(255,106,61,0.28)] flex items-center justify-center text-[#ff7a45] shrink-0 mt-0.5">
+                <div className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${
+                  theme === 'dark'
+                    ? 'bg-[rgba(255,90,45,0.12)] border-[rgba(255,106,61,0.28)] text-[#ff7a45]'
+                    : 'bg-orange-50 border-orange-200 text-orange-600'
+                }`}>
                   {source.type === 'Satellite Constellation' ? (
                     <Satellite size={16} />
                   ) : source.type === 'GIS Context' ? (
@@ -82,21 +86,23 @@ export default function DataSourcesPanel() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="flarex-status-name block font-bold text-white text-[12px]">{source.name}</span>
-                    <span className="px-1.5 py-0.2 rounded text-[8.5px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/[0.08]">
+                    <span className={`flarex-status-name block font-bold text-[12px] ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{source.name}</span>
+                    <span className={`px-1.5 py-0.2 rounded text-[8.5px] font-mono font-bold border ${
+                      theme === 'dark' ? 'bg-white/[0.06] text-slate-300 border-white/[0.08]' : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}>
                       {source.type}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-0.5 leading-snug">{source.description}</p>
+                  <p className={`text-[10px] mt-0.5 leading-snug ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{source.description}</p>
                 </div>
               </div>
 
               <div className="text-right shrink-0">
                 <div className="flex items-center justify-end gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#20C997]" />
-                  <span className="text-[10px] font-bold text-emerald-400">{source.status}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#20C997]" />
+                  <span className="text-[10px] font-bold text-emerald-500">{source.status}</span>
                 </div>
-                <span className="font-mono text-[9px] text-slate-400 mt-0.5 block">{source.latency} lag</span>
+                <span className={`font-mono text-[9px] mt-0.5 block ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{source.latency} lag</span>
               </div>
             </div>
           ))}

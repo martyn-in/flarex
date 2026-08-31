@@ -263,7 +263,7 @@ export const FlareXMap: React.FC = () => {
       {/* Live Map Telemetry Badge */}
       <div className="live-map-indicator">
         <span className="live-dot" />
-        <span>FLAMEX LIVE SATELLITE RADAR • PAN-INDIA</span>
+        <span>FLAREX LIVE SATELLITE RADAR • PAN-INDIA</span>
       </div>
 
       {/* Floating Map Controls */}
