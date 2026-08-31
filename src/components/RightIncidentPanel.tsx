@@ -227,28 +227,28 @@ export const RightIncidentPanel: React.FC = () => {
           </div>
         </div>
 
-        {/* Map Focus Action (Vibrant Flame Gradient) */}
-        <div className={`flex items-center gap-2 mt-2 pt-2 border-t ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'}`}>
+        {/* Map Focus Action (Vibrant Flame Gradient) & GIS Button */}
+        <div className={`flex items-center gap-2 mt-2 pt-2 border-t ${theme === 'dark' ? 'border-white/15' : 'border-[#cfe0f0]'}`}>
           <button
             type="button"
             onClick={() => flyToCoords(selectedHotspot.coordinates, 8.2, 30)}
-            className="flex-1 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#ea580c] via-[#f97316] to-[#c2410c] hover:from-[#f97316] hover:to-[#ea580c] text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_10px_rgba(234,88,12,0.25)] transition-all cursor-pointer"
+            className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] hover:brightness-110 text-white text-[11.5px] font-extrabold flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(255,85,45,0.4)] border border-[#ff9166] transition-all cursor-pointer"
           >
-            <Crosshair className="w-3.5 h-3.5" />
+            <Crosshair className="w-4 h-4" />
             <span>Focus on Map</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyCoords}
-            className={`py-1.5 px-3 rounded-xl text-[10.5px] font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs border ${
+            className={`py-2 px-3.5 rounded-xl text-[11px] font-extrabold flex items-center gap-1.5 transition-all cursor-pointer border ${
               theme === 'dark'
-                ? 'bg-white/5 border-white/10 text-[#d1b8af] hover:text-white hover:bg-white/10'
-                : 'bg-white border-[#cfe0f0] text-[#244265] hover:text-[#0c2340] hover:bg-[#fff7ed]'
+                ? 'bg-[rgba(255,85,45,0.18)] border-[rgba(255,106,61,0.5)] text-[#ffffff] hover:bg-[rgba(255,85,45,0.32)] hover:border-[#ff7a45] shadow-[0_2px_8px_rgba(0,0,0,0.5),0_0_10px_rgba(255,85,45,0.2)]'
+                : 'bg-white border-[#cfe0f0] text-[#0c2340] hover:text-[#0284c7] hover:bg-[#f0f7fd] shadow-xs'
             }`}
             title="Copy GIS Coordinates"
           >
-            <Copy className="w-3.5 h-3.5" />
+            <Copy className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#0284c7]'}`} />
             <span>GIS</span>
           </button>
         </div>
@@ -335,28 +335,33 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. INVESTIGATION TABS */}
-      <div className={`flex rounded-xl p-1 border overflow-x-auto ${
-        theme === 'dark' ? 'bg-[rgba(0,0,0,0.35)] border-[rgba(255,106,61,0.2)]' : 'bg-[#e6f0fa] border-[#cfe0f0]'
+      {/* 3. INVESTIGATION TABS (HIGH CONTRAST & PERFECTLY VISIBLE) */}
+      <div className={`flex rounded-xl p-1.5 border overflow-x-auto gap-1.5 ${
+        theme === 'dark'
+          ? 'bg-[rgba(24,12,8,0.95)] border-[rgba(255,106,61,0.35)] shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]'
+          : 'bg-[#e6f0fa] border-[#cfe0f0]'
       }`}>
-        {(['Why?', 'History', 'AI Probabilities', 'Sentinel-2', 'Overview'] as const).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-1 px-1 rounded-lg text-[10px] font-bold transition-all duration-150 cursor-pointer whitespace-nowrap ${
-              activeTab === tab
-                ? theme === 'dark'
-                  ? 'bg-[rgba(255,85,45,0.25)] text-white shadow-xs border border-[#ff5533]'
-                  : 'bg-white text-[#ea580c] shadow-xs border border-[#fed7aa]'
-                : theme === 'dark'
-                ? 'text-[#a3928c] hover:text-white'
-                : 'text-[#4e6b8c] hover:text-[#0c2340]'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+        {(['Why?', 'History', 'AI Probabilities', 'Sentinel-2', 'Overview'] as const).map((tab) => {
+          const isActive = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-[10.5px] transition-all duration-150 cursor-pointer whitespace-nowrap text-center font-extrabold ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] text-white shadow-[0_2px_12px_rgba(255,85,45,0.65)] border border-[#ff9166]'
+                    : 'bg-white text-[#ea580c] shadow-md border border-[#fed7aa]'
+                  : theme === 'dark'
+                  ? 'bg-white/[0.08] text-[#f2e2dc] hover:bg-[rgba(255,85,45,0.25)] hover:text-white border border-white/10'
+                  : 'bg-white/60 text-[#244265] hover:bg-white hover:text-[#0c2340] border border-transparent'
+              }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
 
       {/* 4. TAB CONTENTS */}
