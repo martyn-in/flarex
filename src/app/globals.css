@@ -95,17 +95,23 @@ body,
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Base Body Backgrounds - Uniform full viewport background without corner vignette */
-body,
+/* Remove the near-black corner background */
+html.dark body,
 body.dark-theme,
-[data-theme="dark"] body {
-  background: #120704 !important;
+[data-theme="dark"] body,
+html.dark main.app-shell,
+[data-theme="dark"] main.app-shell {
+  background: #120805 !important;
+  background-image: none !important;
   color: #fef8f6;
 }
 
 [data-theme="light"] body,
-body.light-theme {
+body.light-theme,
+html.light main.app-shell,
+[data-theme="light"] main.app-shell {
   background: #f0f5fa !important;
+  background-image: none !important;
   color: #0c2340;
 }
 
@@ -123,14 +129,16 @@ button {
    APP SHELL / DASHBOARD PAGE
    ========================================================================== */
 
+/* Remove exposed space around the outer panels */
+main.app-shell,
 .app-shell,
 .dashboard-page {
   height: 100vh;
   max-height: 100vh;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr) 355px;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 10px !important;
+  padding: 0 !important;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -140,25 +148,30 @@ button {
   box-shadow: none !important;
 }
 
-[data-theme="dark"] .app-shell,
-.dark .app-shell,
-[data-theme="dark"] .dashboard-page,
-.dark .dashboard-page {
-  background: #120704 !important;
-  color: #fef8f6;
-  box-shadow: none !important;
+/* Keep rounding only on the inside-facing corners */
+main.app-shell > .sidebar,
+.app-shell > .sidebar {
+  border-radius: 0 18px 18px 0 !important;
+  height: 100% !important;
+  max-height: 100vh !important;
 }
 
-[data-theme="light"] .app-shell,
-.light .app-shell,
-[data-theme="light"] .dashboard-page,
-.light .dashboard-page {
-  background: #f0f5fa !important;
-  color: #0c2340;
-  box-shadow: none !important;
+main.app-shell > .right-panel,
+.app-shell > .right-panel {
+  border-radius: 18px 0 0 18px !important;
+  height: 100% !important;
+  max-height: 100vh !important;
 }
 
-/* Remove any corner vignette or shadow overlay */
+/* Preserve the centre section’s vertical spacing */
+main.app-shell > .main-content,
+.app-shell > .main-content {
+  padding-block: 8px;
+}
+
+/* Remove the corner vignette overlay */
+main.app-shell::before,
+main.app-shell::after,
 .app-shell::before,
 .app-shell::after,
 .dashboard-page::before,
@@ -168,11 +181,12 @@ button {
 }
 
 @media (max-width: 1380px) {
+  main.app-shell,
   .app-shell,
   .dashboard-page {
     grid-template-columns: 210px minmax(0, 1fr) 330px;
-    gap: 10px;
-    padding: 8px 10px;
+    gap: 10px !important;
+    padding: 0 !important;
   }
 }
 
