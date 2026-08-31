@@ -57,7 +57,7 @@ export default function PersistentSourcesPanel() {
       <div className="flarex-kpi-grid">
         <div className="flarex-kpi">
           <span className="flarex-kpi-label">Tracked Flares</span>
-          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{persistentList.length}</span>
+          <span className={`flarex-kpi-value ${theme === 'dark' ? 'text-white' : 'text-[#261006]'}`}>{persistentList.length}</span>
           <span className="flarex-kpi-meta">Refinery &amp; Chemical Corridors</span>
         </div>
 
@@ -82,7 +82,7 @@ export default function PersistentSourcesPanel() {
 
       {/* Filter Tabs & Search */}
       <div className="flex flex-col gap-2">
-        <div className={`flex rounded-xl p-1 border ${theme === 'dark' ? 'bg-[rgba(32,15,9,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-slate-100 border-slate-200'}`}>
+        <div className={`flex rounded-xl p-1 border ${theme === 'dark' ? 'bg-[rgba(32,15,9,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-[#ffedd5] border-[#fed7aa]'}`}>
           {(['all', 'normal', 'abnormal'] as const).map((t) => (
             <button
               key={t}
@@ -92,10 +92,10 @@ export default function PersistentSourcesPanel() {
                 filterType === t
                   ? theme === 'dark'
                     ? 'bg-[rgba(255,85,45,0.25)] text-white shadow-xs border border-[rgba(255,106,61,0.5)]'
-                    : 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                    : 'bg-white text-[#ea580c] shadow-xs border border-[#fed7aa]'
                   : theme === 'dark'
                   ? 'text-[#ffcaa6] hover:text-white'
-                  : 'text-slate-600 hover:text-slate-900'
+                  : 'text-[#7c2d12] hover:text-[#261006]'
               }`}
             >
               {t === 'all' ? `All (${persistentList.length})` : t === 'normal' ? `Normal (${normalCount})` : `Abnormal (${abnormalCount})`}
@@ -104,7 +104,7 @@ export default function PersistentSourcesPanel() {
         </div>
 
         <div className="search-box !w-full">
-          <Search size={14} className="text-slate-400 shrink-0" />
+          <Search size={14} className="text-[#9a3412] shrink-0" />
           <input
             type="text"
             placeholder="Filter by facility name or location..."
@@ -128,11 +128,11 @@ export default function PersistentSourcesPanel() {
                 isSelected
                   ? theme === 'dark'
                     ? 'border-[#ff5a3c] bg-[rgba(255,90,45,0.2)] shadow-[0_0_15px_rgba(255,90,60,0.3)]'
-                    : 'border-orange-500 bg-orange-50/60 shadow-sm'
+                    : 'border-[#ea580c] bg-[#ffedd5] shadow-sm'
                   : isNormal
                   ? theme === 'dark'
                     ? 'bg-[rgba(32,15,9,0.7)] border-[rgba(255,106,61,0.25)] hover:bg-[rgba(40,18,11,0.85)]'
-                    : 'bg-white border-slate-200 hover:bg-slate-50'
+                    : 'bg-white border-[#fed7aa] hover:bg-[#fff7ed]'
                   : theme === 'dark'
                   ? 'border-red-500/40 bg-[rgba(50,15,10,0.7)] hover:bg-[rgba(60,18,12,0.85)]'
                   : 'border-red-200 bg-red-50/50 hover:bg-red-50'
@@ -141,11 +141,11 @@ export default function PersistentSourcesPanel() {
               {/* Top Row: Facility Name & Status Pill */}
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h4 className={`text-[12.5px] font-extrabold leading-snug ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                  <h4 className={`text-[12.5px] font-extrabold leading-snug ${theme === 'dark' ? 'text-white' : 'text-[#261006]'}`}>
                     {spot.nearestFacility.name}
                   </h4>
-                  <span className={`text-[10px] flex items-center gap-1 mt-0.5 font-medium ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-slate-500'}`}>
-                    <MapPin size={11} className={`${theme === 'dark' ? 'text-[#ff7a45]' : 'text-slate-400'} shrink-0`} />
+                  <span className={`text-[10px] flex items-center gap-1 mt-0.5 font-medium ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-[#7c2d12]'}`}>
+                    <MapPin size={11} className={`${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#ea580c]'} shrink-0`} />
                     {spot.location}
                   </span>
                 </div>
@@ -167,22 +167,22 @@ export default function PersistentSourcesPanel() {
 
               {/* Middle Row: Recurrence & Radiance Comparison */}
               <div className={`grid grid-cols-3 gap-2 py-2 px-2.5 rounded-xl border text-center ${
-                theme === 'dark' ? 'bg-[rgba(38,18,11,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-slate-50 border-slate-200'
+                theme === 'dark' ? 'bg-[rgba(38,18,11,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-[#fff7ed] border-[#fed7aa]'
               }`}>
                 <div>
-                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-slate-500'}`}>30-Day Recurrence</span>
-                  <span className="font-mono text-[11px] font-bold text-purple-300">
+                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-[#7c2d12]'}`}>30-Day Recurrence</span>
+                  <span className="font-mono text-[11px] font-bold text-purple-600">
                     {spot.persistenceDays}
                   </span>
                 </div>
                 <div>
-                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-slate-500'}`}>Typical FRP</span>
-                  <span className={`font-mono text-[11px] font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>
+                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-[#7c2d12]'}`}>Typical FRP</span>
+                  <span className={`font-mono text-[11px] font-bold ${theme === 'dark' ? 'text-white' : 'text-[#261006]'}`}>
                     {spot.baselineFrp} MW
                   </span>
                 </div>
                 <div>
-                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-500'}`}>Current FRP</span>
+                  <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7c2d12]'}`}>Current FRP</span>
                   <span className={`font-mono text-[11px] font-bold ${isNormal ? 'text-emerald-500' : 'text-red-500'}`}>
                     {spot.frp} MW
                   </span>
@@ -191,9 +191,9 @@ export default function PersistentSourcesPanel() {
 
               {/* Bottom: Classification & Multiplier */}
               <div className={`flex items-center justify-between text-[10px] pt-1 border-t ${
-                theme === 'dark' ? 'border-white/10 text-[#a3928c]' : 'border-slate-200 text-slate-500'
+                theme === 'dark' ? 'border-white/10 text-[#a3928c]' : 'border-[#fed7aa] text-[#7c2d12]'
               }`}>
-                <span className={`font-semibold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{spot.classification}</span>
+                <span className={`font-semibold ${theme === 'dark' ? 'text-slate-300' : 'text-[#261006]'}`}>{spot.classification}</span>
                 <span className={`font-mono font-bold ${isNormal ? 'text-emerald-500' : 'text-red-500'}`}>
                   {spot.baselineRatio}× baseline
                 </span>

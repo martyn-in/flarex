@@ -60,34 +60,34 @@ export default function SettingsPanel() {
             </div>
           </div>
 
-          {/* Arctic Light Mode Card */}
+          {/* Radiant Orange Light Mode Card */}
           <div
             onClick={() => {
               setTheme('light');
-              addToast('Arctic Light Mode activated', 'info');
+              addToast('Radiant Orange Light Mode activated', 'info');
             }}
             className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-2 relative overflow-hidden ${
               theme === 'light'
-                ? 'bg-[#e0f2fe] border-[#0284c7] shadow-[0_0_16px_rgba(2,132,199,0.2)]'
+                ? 'bg-[#ffedd5] border-[#ea580c] shadow-[0_0_16px_rgba(234,88,12,0.25)]'
                 : 'bg-white/[0.06] border-white/10 hover:border-white/20'
             }`}
           >
             <div className="flex items-center justify-between">
-              <div className="w-7 h-7 rounded-lg bg-[#e0f2fe] border border-[#bae6fd] flex items-center justify-center">
-                <Sun size={15} className="text-[#0284c7]" />
+              <div className="w-7 h-7 rounded-lg bg-[#fff7ed] border border-[#fed7aa] flex items-center justify-center">
+                <Sun size={15} className="text-[#ea580c]" />
               </div>
               {theme === 'light' ? (
-                <span className="w-2 h-2 rounded-full bg-[#0284c7] shadow-[0_0_8px_#0284c7]" />
+                <span className="w-2 h-2 rounded-full bg-[#ea580c] shadow-[0_0_8px_#ea580c]" />
               ) : (
-                <span className="text-[8.5px] font-bold text-[#0284c7] uppercase tracking-wider">Switch</span>
+                <span className="text-[8.5px] font-bold text-[#ea580c] uppercase tracking-wider">Switch</span>
               )}
             </div>
             <div>
-              <span className={`text-[11.5px] font-bold block ${theme === 'light' ? 'text-[#0c2340]' : 'text-white'}`}>
-                Arctic Light Mode
+              <span className={`text-[11.5px] font-bold block ${theme === 'light' ? 'text-[#261006]' : 'text-white'}`}>
+                Orange Light Mode
               </span>
-              <span className={`text-[9px] block font-medium mt-0.5 ${theme === 'light' ? 'text-[#5b7596]' : 'text-[#a3928c]'}`}>
-                Clean bluish-white daylight
+              <span className={`text-[9px] block font-medium mt-0.5 ${theme === 'light' ? 'text-[#7c2d12]' : 'text-[#a3928c]'}`}>
+                Warm amber &amp; luminous daylight
               </span>
             </div>
           </div>

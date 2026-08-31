@@ -110,14 +110,14 @@ export default function AnalyticsPanel() {
               key={c.state}
               onClick={() => selectHotspot(c.hotspot, true)}
               className={`flarex-status-row !p-2.5 cursor-pointer ${
-                theme === 'dark' ? 'hover:bg-white/[0.04]' : 'hover:bg-[#f0f7fd]'
+                theme === 'dark' ? 'hover:bg-white/[0.04]' : 'hover:bg-[#ffedd5]'
               }`}
             >
               <div className="flex items-center gap-2">
-                <MapPin size={13} className={`${theme === 'dark' ? 'text-cyan-400' : 'text-[#0284c7]'} shrink-0`} />
+                <MapPin size={13} className={`${theme === 'dark' ? 'text-orange-400' : 'text-[#ea580c]'} shrink-0`} />
                 <div>
                   <span className="flarex-status-name text-[12px]">{c.state} Corridor</span>
-                  <span className={`text-[9.5px] block ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{c.count} active thermal clusters</span>
+                  <span className={`text-[9.5px] block ${theme === 'dark' ? 'text-slate-400' : 'text-[#7c2d12]'}`}>{c.count} active thermal clusters</span>
                 </div>
               </div>
               <div className="text-right">

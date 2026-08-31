@@ -46,7 +46,7 @@ export default function IncidentsPanel() {
           className={`w-full pl-9 pr-3 py-2 rounded-xl text-[11px] focus:outline-none transition-colors border ${
             theme === 'dark'
               ? 'text-white bg-[rgba(255,90,45,0.04)] border-[rgba(255,106,61,0.2)] focus:border-[#ff5a3c] placeholder-[#7d6e68]'
-              : 'text-[#0c2340] bg-[#f8fbfe] border-[#cfe0f0] focus:border-[#0284c7] placeholder-slate-400'
+              : 'text-[#261006] bg-[#fff7ed] border-[#fed7aa] focus:border-[#ea580c] placeholder-[#9a3412]'
           }`}
         />
       </div>
@@ -74,10 +74,10 @@ export default function IncidentsPanel() {
                 isActive
                   ? theme === 'dark'
                     ? 'bg-[rgba(255,90,45,0.18)] border-[#ff5a3c] text-[#ff7a45] shadow-[0_0_10px_rgba(255,90,60,0.25)]'
-                    : 'bg-[#e0f2fe] border-[#0284c7] text-[#0284c7] font-bold'
+                    : 'bg-[#ffedd5] border-[#ea580c] text-[#c2410c] font-bold shadow-xs'
                   : theme === 'dark'
                   ? 'bg-[rgba(255,90,45,0.04)] border-[rgba(255,106,61,0.15)] text-[#a3928c] hover:text-white'
-                  : 'bg-white border-[#cfe0f0] text-[#4e6b8c] hover:text-[#0c2340]'
+                  : 'bg-white border-[#fed7aa] text-[#7c2d12] hover:text-[#ea580c] hover:bg-[#ffedd5]'
               }`}
             >
               <span>{tab}</span>
@@ -90,7 +90,7 @@ export default function IncidentsPanel() {
       {/* Incidents Table / List */}
       <div className="flarex-status-list mt-1">
         {filtered.length === 0 ? (
-          <div className={`py-8 text-center text-[11px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-400'}`}>
+          <div className={`py-8 text-center text-[11px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7c2d12]'}`}>
             No thermal incidents matching criteria.
           </div>
         ) : (
@@ -124,14 +124,14 @@ export default function IncidentsPanel() {
                   isSelected
                     ? theme === 'dark'
                       ? '!border-[#ff5a3c] !bg-[rgba(255,90,45,0.14)] shadow-[0_0_15px_rgba(255,90,60,0.25)]'
-                      : '!border-[#0284c7] !bg-[#e0f2fe] shadow-xs'
+                      : '!border-[#ea580c] !bg-[#ffedd5] shadow-xs'
                     : isCritical
                     ? theme === 'dark'
                       ? 'border-[rgba(255,73,73,0.28)] hover:bg-white/[0.04]'
                       : 'border-red-200 hover:bg-red-50/50'
                     : theme === 'dark'
                     ? 'hover:bg-white/[0.04]'
-                    : 'hover:bg-[#f0f7fd]'
+                    : 'hover:bg-[#ffedd5]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -175,10 +175,10 @@ export default function IncidentsPanel() {
                 </div>
 
                 <div className={`flex items-center justify-between text-[9.5px] pt-1.5 border-t ${
-                  theme === 'dark' ? 'border-[rgba(255,106,61,0.08)] text-[#8c766e]' : 'border-[#cfe0f0] text-slate-500'
+                  theme === 'dark' ? 'border-[rgba(255,106,61,0.08)] text-[#8c766e]' : 'border-[#fed7aa] text-[#7c2d12]'
                 }`}>
                   <span className="flex items-center gap-1 truncate max-w-[200px]">
-                    <MapPin size={11} className={`${theme === 'dark' ? 'text-[#ff7a45]' : 'text-orange-600'} shrink-0`} />
+                    <MapPin size={11} className={`${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#ea580c]'} shrink-0`} />
                     {incident.location}
                   </span>
                   <div className="flex items-center gap-2 font-mono">

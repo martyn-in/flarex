@@ -334,7 +334,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               onClick={onReturnToLanding}
               className="w-full mb-3 py-2 px-3 rounded-xl secondary-button text-[11px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
             >
-              <Globe size={14} className={theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#0284c7]'} />
+              <Globe size={14} className={theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#ea580c]'} />
               <span>3D Earth Globe Intro</span>
             </button>
           )}
@@ -370,14 +370,14 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               />
             </form>
 
-            {/* Theme Toggle (Dark Flame Mode vs Arctic Light Mode) */}
+            {/* Theme Toggle (Dark Flame Mode vs Orange Light Mode) */}
             <button
               type="button"
               onClick={() => {
                 toggleTheme();
                 addToast(
                   theme === 'dark'
-                    ? 'Switched to Arctic Light Mode'
+                    ? 'Switched to Orange Light Mode'
                     : 'Switched to Dark Flame Theme',
                   'info'
                 );
@@ -385,7 +385,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               className="icon-button glass-card cursor-pointer"
               title={
                 theme === 'dark'
-                  ? 'Switch to Arctic Light Mode'
+                  ? 'Switch to Orange Light Mode'
                   : 'Switch to Dark Flame Theme'
               }
               aria-label="Toggle Theme"
@@ -393,7 +393,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               {theme === 'dark' ? (
                 <Sun size={18} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
               ) : (
-                <Moon size={18} className="text-[#0284c7]" />
+                <Moon size={18} className="text-[#ea580c]" />
               )}
             </button>
 

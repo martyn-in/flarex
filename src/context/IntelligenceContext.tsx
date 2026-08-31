@@ -131,7 +131,7 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
   const [chatMessages, setChatMessages] = useState<AIAssistantMessage[]>(INITIAL_AI_MESSAGES);
   const [isAITyping, setIsAITyping] = useState<boolean>(false);
-  const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
+  const [theme, setThemeState] = useState<'dark' | 'light'>('light');
 
   // Sync theme with localStorage and documentElement data-theme / class
   useEffect(() => {
@@ -143,8 +143,9 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
         document.documentElement.classList.toggle('dark', saved === 'dark');
         document.documentElement.classList.toggle('light', saved === 'light');
       } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.documentElement.classList.add('dark');
+        setThemeState('light');
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.classList.add('light');
       }
     }
   }, []);
