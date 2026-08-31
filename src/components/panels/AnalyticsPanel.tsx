@@ -81,7 +81,7 @@ export default function AnalyticsPanel() {
               </span>
               <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{industrialCount} ({industrialPct}%)</span>
             </div>
-            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-black/40' : 'bg-slate-200'}`}>
+            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[rgba(32,15,9,0.85)] border border-[rgba(255,106,61,0.25)]' : 'bg-slate-200'}`}>
               <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full" style={{ width: `${industrialPct}%` }} />
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function AnalyticsPanel() {
               </span>
               <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{naturalCount} ({naturalPct}%)</span>
             </div>
-            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-black/40' : 'bg-slate-200'}`}>
+            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[rgba(32,15,9,0.85)] border border-[rgba(255,106,61,0.25)]' : 'bg-slate-200'}`}>
               <div className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full" style={{ width: `${naturalPct}%` }} />
             </div>
           </div>

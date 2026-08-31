@@ -227,17 +227,17 @@ export default function SettingsPanel() {
             <span className={`text-[11px] font-semibold ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-slate-700'}`}>
               Temperature Unit
             </span>
-            <div className={`flex p-0.5 rounded-lg border ${theme === 'dark' ? 'bg-black/30 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
+            <div className={`flex p-0.5 rounded-lg border ${theme === 'dark' ? 'bg-[rgba(32,15,9,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-slate-100 border-slate-200'}`}>
               <button
                 type="button"
                 onClick={() => setTempUnit('C')}
                 className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
                   tempUnit === 'C'
                     ? theme === 'dark'
-                      ? 'bg-[rgba(255,85,45,0.2)] text-[#ff7a45] shadow-xs border border-[rgba(255,106,61,0.3)]'
+                      ? 'bg-[rgba(255,85,45,0.25)] text-white shadow-xs border border-[rgba(255,106,61,0.45)]'
                       : 'bg-white text-orange-600 shadow-xs border border-slate-200'
                     : theme === 'dark'
-                    ? 'text-[#a3928c] hover:text-white'
+                    ? 'text-[#ffcaa6] hover:text-white'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -249,10 +249,10 @@ export default function SettingsPanel() {
                 className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
                   tempUnit === 'F'
                     ? theme === 'dark'
-                      ? 'bg-[rgba(255,85,45,0.2)] text-[#ff7a45] shadow-xs border border-[rgba(255,106,61,0.3)]'
+                      ? 'bg-[rgba(255,85,45,0.25)] text-white shadow-xs border border-[rgba(255,106,61,0.45)]'
                       : 'bg-white text-orange-600 shadow-xs border border-slate-200'
                     : theme === 'dark'
-                    ? 'text-[#a3928c] hover:text-white'
+                    ? 'text-[#ffcaa6] hover:text-white'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >

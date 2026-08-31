@@ -75,7 +75,7 @@ export const MapToolbar: React.FC = () => {
                   className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
                     isActive
                       ? 'bg-cyan-500 border-cyan-400 text-white shadow-[0_0_8px_rgba(56,189,248,0.5)]'
-                      : 'border-white/20 bg-black/20'
+                      : 'border-[rgba(255,106,61,0.3)] bg-[rgba(32,15,9,0.7)]'
                   }`}
                 >
                   {isActive && <Check className="w-3 h-3 stroke-[3]" />}

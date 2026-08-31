@@ -5,32 +5,32 @@
    FLAREX DUAL-THEME ENGINE (DARK FLAME MODE & ARCTIC LIGHT MODE)
    ========================================================================== */
 
-/* 1. DARK FLAME THEME (DEFAULT / RESTORED FLAME OBSIDIAN MODE) */
+/* 1. DARK FLAME THEME (WARM DARK MAHOGANY & FLAME PALETTE - ZERO BLACK) */
 :root,
 [data-theme="dark"],
 body.dark-theme {
   --flarex-nav-width: 72px;
 
-  /* Radiant Magma & Obsidian Black Palette */
-  --fx-bg-0: #040202;
-  --fx-bg-1: #0a0504;
-  --fx-bg-2: #140a07;
-  --fx-surface: rgba(12, 6, 4, 0.88);
-  --fx-surface-elevated: rgba(26, 12, 8, 0.96);
+  /* Radiant Flame & Warm Espresso / Dark Mahogany Palette - ZERO BLACK */
+  --fx-bg-0: #120805;
+  --fx-bg-1: #1a0c08;
+  --fx-bg-2: #24110b;
+  --fx-surface: rgba(26, 12, 8, 0.94);
+  --fx-surface-elevated: rgba(36, 16, 10, 0.97);
 
-  --fx-border: rgba(255, 106, 61, 0.16);
-  --fx-border-strong: rgba(255, 106, 61, 0.28);
-  --fx-border-glow: rgba(255, 85, 45, 0.35);
+  --fx-border: rgba(255, 106, 61, 0.3);
+  --fx-border-strong: rgba(255, 106, 61, 0.45);
+  --fx-border-glow: rgba(255, 85, 45, 0.45);
 
   --fx-text: #fef8f6;
-  --fx-text-muted: #d1b8af;
-  --fx-muted: #a3928c;
+  --fx-text-muted: #ffeedd;
+  --fx-muted: #ffcaa6;
 
   --fx-brand-primary: #ff5533;
   --fx-brand-bright: #ff7a45;
   --fx-brand-amber: #ffa940;
   --fx-brand-dark: #b32400;
-  --fx-brand-glow: rgba(255, 85, 45, 0.25);
+  --fx-brand-glow: rgba(255, 85, 45, 0.35);
 
   --fx-danger: #ff3b30;
   --fx-warning: #faad14;
@@ -208,14 +208,14 @@ main.app-shell::after,
   background:
     linear-gradient(
       135deg,
-      rgba(255, 100, 50, 0.055),
-      rgba(255, 60, 20, 0.015)
+      rgba(255, 100, 50, 0.08),
+      rgba(255, 60, 20, 0.02)
     ),
-    rgba(12, 6, 4, 0.88);
-  border: 1px solid rgba(255, 106, 61, 0.16);
+    rgba(26, 12, 8, 0.94);
+  border: 1px solid rgba(255, 106, 61, 0.32);
   backdrop-filter: blur(22px) saturate(140%);
   -webkit-backdrop-filter: blur(22px) saturate(140%);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 15px 50px rgba(18, 8, 5, 0.55);
 }
 
 [data-theme="light"] .glass-panel,
@@ -236,13 +236,13 @@ main.app-shell::after,
   background:
     linear-gradient(
       135deg,
-      rgba(26, 12, 8, 0.95),
-      rgba(14, 6, 4, 0.96)
+      rgba(36, 16, 10, 0.96),
+      rgba(26, 12, 8, 0.98)
     );
-  border: 1px solid rgba(255, 106, 61, 0.24);
+  border: 1px solid rgba(255, 106, 61, 0.38);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 25px rgba(255, 75, 30, 0.08);
+  box-shadow: 0 20px 60px rgba(18, 8, 5, 0.65), 0 0 25px rgba(255, 75, 30, 0.12);
 }
 
 [data-theme="light"] .glass-panel-elevated,
@@ -257,8 +257,8 @@ main.app-shell::after,
 /* Glass Pills & Docks */
 [data-theme="dark"] .glass-pill,
 .dark .glass-pill {
-  background: rgba(255, 90, 45, 0.06);
-  border: 1px solid rgba(255, 106, 61, 0.15);
+  background: rgba(255, 90, 45, 0.12);
+  border: 1px solid rgba(255, 106, 61, 0.3);
   color: #fef8f6;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -266,9 +266,9 @@ main.app-shell::after,
 
 [data-theme="dark"] .glass-pill:hover,
 .dark .glass-pill:hover {
-  background: rgba(255, 90, 45, 0.14);
-  border-color: rgba(255, 106, 61, 0.35);
-  box-shadow: 0 0 12px rgba(255, 85, 45, 0.2);
+  background: rgba(255, 90, 45, 0.22);
+  border-color: rgba(255, 106, 61, 0.5);
+  box-shadow: 0 0 12px rgba(255, 85, 45, 0.3);
 }
 
 [data-theme="light"] .glass-pill,
@@ -306,12 +306,12 @@ main.app-shell::after,
   background:
     linear-gradient(
       135deg,
-      rgba(255, 100, 50, 0.055),
-      rgba(255, 60, 20, 0.015)
+      rgba(255, 100, 50, 0.06),
+      rgba(255, 60, 20, 0.02)
     ),
-    rgba(12, 6, 4, 0.92);
-  border: 1px solid rgba(255, 106, 61, 0.16);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.45);
+    rgba(24, 11, 7, 0.96);
+  border: 1px solid rgba(255, 106, 61, 0.32);
+  box-shadow: 0 15px 50px rgba(18, 8, 5, 0.55);
 }
 
 [data-theme="light"] .sidebar,
@@ -710,14 +710,14 @@ main.app-shell::after,
 .dark .search-box {
   color: #fef8f6;
   border: 1px solid rgba(255, 106, 61, 0.4);
-  background: rgba(255, 85, 45, 0.1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 85, 45, 0.12);
+  background: rgba(255, 85, 45, 0.12);
+  box-shadow: 0 2px 10px rgba(18, 8, 5, 0.4), 0 0 10px rgba(255, 85, 45, 0.15);
 }
 
 [data-theme="dark"] .search-box:focus-within,
 .dark .search-box:focus-within {
   border-color: #ff7a45;
-  background: rgba(255, 85, 45, 0.16);
+  background: rgba(255, 85, 45, 0.18);
   box-shadow: 0 0 0 3px rgba(255, 90, 60, 0.25), 0 0 16px rgba(255, 85, 45, 0.35);
 }
 
@@ -729,7 +729,7 @@ main.app-shell::after,
 
 [data-theme="dark"] .search-box input::placeholder,
 .dark .search-box input::placeholder {
-  color: #c4b0a8;
+  color: #ffeedd;
 }
 
 [data-theme="light"] .search-box,
@@ -778,9 +778,9 @@ main.app-shell::after,
 [data-theme="dark"] .icon-button,
 .dark .icon-button {
   border: 1px solid rgba(255, 106, 61, 0.45);
-  background: linear-gradient(135deg, rgba(255, 85, 45, 0.16), rgba(255, 122, 69, 0.08));
+  background: linear-gradient(135deg, rgba(255, 85, 45, 0.2), rgba(255, 122, 69, 0.1));
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 0 12px rgba(255, 85, 45, 0.18);
+  box-shadow: 0 2px 10px rgba(18, 8, 5, 0.45), 0 0 12px rgba(255, 85, 45, 0.2);
 }
 
 [data-theme="dark"] .icon-button:hover,
@@ -1212,7 +1212,7 @@ main.app-shell::after,
 
 [data-theme="dark"] .map-area,
 .dark .map-area {
-  background: #070302;
+  background: #140906;
   border: none;
 }
 
@@ -1248,10 +1248,10 @@ main.app-shell::after,
 
 [data-theme="dark"] .live-map-indicator,
 .dark .live-map-indicator {
-  background: rgba(14, 7, 4, 0.88);
-  border: 1px solid rgba(255, 106, 61, 0.35);
+  background: rgba(30, 14, 9, 0.94);
+  border: 1px solid rgba(255, 106, 61, 0.4);
   color: #fef8f6;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 85, 45, 0.2);
+  box-shadow: 0 4px 14px rgba(18, 8, 5, 0.6), 0 0 12px rgba(255, 85, 45, 0.25);
 }
 
 [data-theme="light"] .live-map-indicator,
@@ -1284,18 +1284,18 @@ main.app-shell::after,
 
 [data-theme="dark"] .map-controls button,
 .dark .map-controls button {
-  background: rgba(18, 9, 6, 0.9);
-  border: 1px solid rgba(255, 106, 61, 0.35);
+  background: rgba(32, 15, 10, 0.95);
+  border: 1px solid rgba(255, 106, 61, 0.4);
   color: #ffe5db;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 8px rgba(255, 85, 45, 0.15);
+  box-shadow: 0 4px 12px rgba(18, 8, 5, 0.5), 0 0 8px rgba(255, 85, 45, 0.2);
 }
 
 [data-theme="dark"] .map-controls button:hover,
 .dark .map-controls button:hover {
-  background: rgba(255, 85, 45, 0.3);
+  background: rgba(255, 85, 45, 0.35);
   border-color: #ff7a45;
   color: #ffffff;
-  box-shadow: 0 0 16px rgba(255, 85, 45, 0.45);
+  box-shadow: 0 0 16px rgba(255, 85, 45, 0.5);
   transform: scale(1.06);
 }
 
@@ -1355,7 +1355,7 @@ main.app-shell::after,
     );
   border: 1px solid rgba(255, 106, 61, 0.35);
   color: #fef8f6;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 130, 80, 0.2);
+  box-shadow: 0 15px 50px rgba(18, 8, 5, 0.6), inset 0 1px 0 rgba(255, 130, 80, 0.2);
 }
 
 [data-theme="light"] .right-panel,
@@ -1368,9 +1368,9 @@ main.app-shell::after,
 
 [data-theme="dark"] .glass-card-critical,
 .dark .glass-card-critical {
-  background: rgba(255, 59, 48, 0.12);
-  border: 1px solid rgba(255, 59, 48, 0.35);
-  box-shadow: 0 0 20px rgba(255, 59, 48, 0.15);
+  background: rgba(255, 59, 48, 0.15);
+  border: 1px solid rgba(255, 59, 48, 0.45);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.2);
 }
 
 [data-theme="light"] .glass-card-critical,
@@ -1409,11 +1409,11 @@ main.app-shell::after,
   background:
     linear-gradient(
       140deg,
-      rgba(24, 11, 7, 0.98),
-      rgba(12, 5, 3, 0.98)
+      rgba(28, 13, 8, 0.98),
+      rgba(18, 8, 5, 0.98)
     );
-  border: 1px solid rgba(255, 106, 61, 0.28);
-  box-shadow: -20px 0 80px rgba(0, 0, 0, 0.75), 0 0 35px rgba(255, 75, 30, 0.1);
+  border: 1px solid rgba(255, 106, 61, 0.35);
+  box-shadow: -20px 0 80px rgba(18, 8, 5, 0.75), 0 0 35px rgba(255, 75, 30, 0.15);
   color: #fef8f6;
 }
 
@@ -1435,7 +1435,7 @@ main.app-shell::after,
 
 [data-theme="dark"] .flarex-drawer-header,
 .dark .flarex-drawer-header {
-  border-bottom: 1px solid rgba(255, 106, 61, 0.15);
+  border-bottom: 1px solid rgba(255, 106, 61, 0.2);
 }
 
 [data-theme="light"] .flarex-drawer-header,
@@ -1496,10 +1496,10 @@ main.app-shell::after,
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   position: relative;
+  cursor: pointer;
   transition: all 0.18s ease;
 }
 
@@ -1533,8 +1533,8 @@ main.app-shell::after,
   position: absolute;
   width: 14px;
   height: 2px;
+  border-radius: 1px;
   background: currentColor;
-  border-radius: 2px;
 }
 
 .flarex-drawer-close span:first-child {
@@ -1554,7 +1554,7 @@ main.app-shell::after,
 .flarex-drawer-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(18, 8, 5, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 90;
@@ -1583,8 +1583,8 @@ main.app-shell::after,
 
 [data-theme="dark"] .flarex-kpi,
 .dark .flarex-kpi {
-  background: rgba(255, 85, 45, 0.06);
-  border: 1px solid rgba(255, 106, 61, 0.18);
+  background: rgba(255, 85, 45, 0.08);
+  border: 1px solid rgba(255, 106, 61, 0.25);
 }
 
 [data-theme="light"] .flarex-kpi,
@@ -1601,7 +1601,7 @@ main.app-shell::after,
 
 [data-theme="dark"] .flarex-kpi-label,
 .dark .flarex-kpi-label {
-  color: #a3928c;
+  color: #ffcaa6;
 }
 
 [data-theme="light"] .flarex-kpi-label,
@@ -1633,7 +1633,7 @@ main.app-shell::after,
 
 [data-theme="dark"] .flarex-kpi-meta,
 .dark .flarex-kpi-meta {
-  color: #8c766e;
+  color: #ffeedd;
 }
 
 [data-theme="light"] .flarex-kpi-meta,
@@ -1648,9 +1648,9 @@ main.app-shell::after,
 
 [data-theme="dark"] .flarex-section,
 .dark .flarex-section {
-  background: rgba(255, 85, 45, 0.04);
-  border: 1px solid rgba(255, 106, 61, 0.16);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 85, 45, 0.06);
+  border: 1px solid rgba(255, 106, 61, 0.22);
+  box-shadow: 0 4px 16px rgba(18, 8, 5, 0.4);
 }
 
 [data-theme="light"] .flarex-section,

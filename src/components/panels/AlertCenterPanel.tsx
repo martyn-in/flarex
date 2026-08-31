@@ -80,13 +80,13 @@ export default function AlertCenterPanel() {
                     {isCritical ? 'CRITICAL' : 'HIGH PRIORITY'}
                   </span>
                   <span className={`font-mono text-[10px] font-bold px-1.5 py-0.2 rounded border ${
-                    theme === 'dark' ? 'text-[#d1b8af] bg-black/40 border-white/10' : 'text-slate-700 bg-white border-slate-200'
+                    theme === 'dark' ? 'text-[#ffeedd] bg-[rgba(40,20,12,0.8)] border-[rgba(255,106,61,0.35)]' : 'text-slate-700 bg-white border-slate-200'
                   }`}>
                     {spot.eventId}
                   </span>
                 </div>
 
-                <span className={`font-mono text-[9.5px] font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-500'}`}>
+                <span className={`font-mono text-[9.5px] font-medium ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-slate-500'}`}>
                   {spot.timestamp.split(' ')[1]} IST
                 </span>
               </div>
@@ -96,16 +96,16 @@ export default function AlertCenterPanel() {
                 <h3 className={`text-[13px] font-extrabold leading-snug ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {spot.name}
                 </h3>
-                <p className={`text-[11px] mt-0.5 ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-slate-600'}`}>
+                <p className={`text-[11px] mt-0.5 ${theme === 'dark' ? 'text-[#ffeedd]' : 'text-slate-600'}`}>
                   {isCritical ? 'Confirmed Industrial Fire Anomaly' : 'Abnormal Thermal Radiance Surge'}
                 </p>
               </div>
 
               {/* Radiative Stats Box */}
               <div className={`flex items-center justify-between p-2 rounded-xl border text-[11px] ${
-                theme === 'dark' ? 'bg-black/30 border-white/10' : 'bg-white border-slate-200'
+                theme === 'dark' ? 'bg-[rgba(34,16,10,0.85)] border-[rgba(255,106,61,0.3)]' : 'bg-white border-slate-200'
               }`}>
-                <span className={`font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-slate-500'}`}>Radiative Multiple:</span>
+                <span className={`font-medium ${theme === 'dark' ? 'text-[#ffcaa6]' : 'text-slate-500'}`}>Radiative Multiple:</span>
                 <span className="font-mono font-black text-red-500 flex items-center gap-1">
                   <TrendingUp size={13} />
                   {spot.baselineRatio}× BASELINE ({spot.frp} MW vs {spot.baselineFrp} MW)
