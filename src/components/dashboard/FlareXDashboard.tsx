@@ -444,7 +444,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         </section>
 
         {/* 4. MAP SECTION (PAN-INDIA SATELLITE ENGINE) */}
-        <section className="map-wrapper flex-1 flex flex-col min-h-[460px]">
+        <section className="flex-1 flex flex-col min-h-[420px] w-full">
           <article className="map-card glass-card flex-1 flex flex-col">
             <div className="map-header">
               <div>

@@ -217,9 +217,24 @@ export const FlareXMap: React.FC = () => {
       mapRef.current = map;
       setMapInstance(map);
       renderHotspotMarkers(map, filteredHotspots, selectedHotspot);
+      map.resize();
+      setTimeout(() => map.resize(), 100);
+      setTimeout(() => map.resize(), 350);
     });
 
+    // ResizeObserver to ensure 100% canvas coverage with zero black corners
+    let resizeObserver: ResizeObserver | null = null;
+    if (mapContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        map.resize();
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       markersRef.current.forEach((m) => m.remove());
       facilityMarkersRef.current.forEach((m) => m.remove());
       map.remove();
