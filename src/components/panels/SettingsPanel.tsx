@@ -39,15 +39,17 @@ export default function SettingsPanel() {
             className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-2 relative overflow-hidden ${
               theme === 'dark'
                 ? 'bg-[rgba(255,85,45,0.14)] border-[#ff5533] shadow-[0_0_18px_rgba(255,85,45,0.25)]'
-                : 'bg-[rgba(0,0,0,0.2)] border-white/10 hover:border-white/20 opacity-70'
+                : 'bg-[#0f0705] border-[#ff5533]/30 hover:border-[#ff5533] shadow-sm'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#ff5a3c]/30 to-[#b32400]/20 border border-[#ff6a3d]/40 flex items-center justify-center">
                 <Flame size={15} className="text-[#ff5533] fill-[#ff5533]/60" />
               </div>
-              {theme === 'dark' && (
+              {theme === 'dark' ? (
                 <span className="w-2 h-2 rounded-full bg-[#ff5533] shadow-[0_0_8px_#ff5533]" />
+              ) : (
+                <span className="text-[8.5px] font-bold text-[#ff7a45] uppercase tracking-wider">Switch</span>
               )}
             </div>
             <div>
@@ -67,15 +69,17 @@ export default function SettingsPanel() {
             className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-2 relative overflow-hidden ${
               theme === 'light'
                 ? 'bg-[#e0f2fe] border-[#0284c7] shadow-[0_0_16px_rgba(2,132,199,0.2)]'
-                : 'bg-white/5 border-white/10 hover:border-white/20 opacity-70'
+                : 'bg-white/[0.06] border-white/10 hover:border-white/20'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="w-7 h-7 rounded-lg bg-[#e0f2fe] border border-[#bae6fd] flex items-center justify-center">
                 <Sun size={15} className="text-[#0284c7]" />
               </div>
-              {theme === 'light' && (
+              {theme === 'light' ? (
                 <span className="w-2 h-2 rounded-full bg-[#0284c7] shadow-[0_0_8px_#0284c7]" />
+              ) : (
+                <span className="text-[8.5px] font-bold text-[#0284c7] uppercase tracking-wider">Switch</span>
               )}
             </div>
             <div>

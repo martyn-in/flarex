@@ -21,7 +21,6 @@ import {
   ShieldAlert,
   Radio,
   Wind,
-  FileCheck,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -58,11 +57,11 @@ export const RightIncidentPanel: React.FC = () => {
   const severityBadgeClass =
     selectedHotspot.severity === 'critical'
       ? theme === 'dark'
-        ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-[0_0_10px_rgba(255,77,79,0.3)]'
+        ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-[0_0_8px_rgba(255,77,79,0.3)]'
         : 'bg-red-100 text-red-700 border-red-200'
       : selectedHotspot.severity === 'high'
       ? theme === 'dark'
-        ? 'bg-orange-500/20 text-orange-400 border-orange-500/40 shadow-[0_0_10px_rgba(255,138,61,0.25)]'
+        ? 'bg-orange-500/20 text-orange-400 border-orange-500/40 shadow-[0_0_8px_rgba(255,138,61,0.25)]'
         : 'bg-orange-100 text-orange-700 border-orange-200'
       : selectedHotspot.severity === 'medium'
       ? theme === 'dark'
@@ -87,18 +86,20 @@ export const RightIncidentPanel: React.FC = () => {
   };
 
   return (
-    <aside className={`w-[390px] h-full right-panel p-3.5 flex flex-col gap-2.5 z-20 shrink-0 select-none overflow-y-auto relative ${theme === 'dark' ? 'border-l border-[rgba(255,106,61,0.2)]' : 'bg-white border-l border-[#cfe0f0] shadow-sm'}`}>
+    <aside className={`w-full h-full right-panel p-2.5 flex flex-col gap-2 z-20 shrink-0 select-none overflow-y-auto relative ${
+      theme === 'dark' ? 'border-l border-[rgba(255,106,61,0.2)]' : 'bg-white border-l border-[#cfe0f0] shadow-sm'
+    }`}>
       {/* Top Accent Line for Priority */}
       {isCritical && (
-        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-red-500 via-orange-500 to-red-500 shadow-[0_0_12px_#ff4d4f]" />
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-red-500 via-orange-500 to-red-500 shadow-[0_0_10px_#ff4d4f]" />
       )}
 
-      {/* 1. VISUALLY DOMINANT CLASSIFICATION HEADER */}
+      {/* 1. COMPACT CLASSIFICATION HEADER */}
       <div
-        className={`p-3 rounded-2xl transition-all border ${
+        className={`p-2.5 rounded-xl transition-all border ${
           isCritical
             ? theme === 'dark'
-              ? 'bg-[rgba(255,59,48,0.15)] border-red-500/40 shadow-[0_0_20px_rgba(255,59,48,0.15)]'
+              ? 'bg-[rgba(255,59,48,0.15)] border-red-500/40 shadow-[0_0_16px_rgba(255,59,48,0.15)]'
               : 'bg-red-50/70 border-red-200'
             : isNormalFlare
             ? theme === 'dark'
@@ -111,12 +112,12 @@ export const RightIncidentPanel: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2.5 w-2.5">
+            <span className="relative flex h-2 w-2">
               {isCritical && (
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
               )}
               <span
-                className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                className={`relative inline-flex rounded-full h-2 w-2 ${
                   isCritical
                     ? 'bg-red-500'
                     : isNormalFlare
@@ -125,18 +126,18 @@ export const RightIncidentPanel: React.FC = () => {
                 }`}
               />
             </span>
-            <span className={`text-[10px] font-extrabold tracking-wider uppercase ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
+            <span className={`text-[9.5px] font-extrabold tracking-wider uppercase ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
               {selectedHotspot.classification.toUpperCase()}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <span
-              className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border ${severityBadgeClass} tracking-wide uppercase`}
+              className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-extrabold border ${severityBadgeClass} tracking-wide uppercase`}
             >
               {selectedHotspot.severity}
             </span>
-            <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+            <span className={`font-mono text-[9px] font-bold px-1.5 py-0.2 rounded border ${
               theme === 'dark'
                 ? 'text-[#d1b8af] bg-white/[0.04] border-white/10'
                 : 'text-[#3b5677] bg-white border-[#cfe0f0]'
@@ -147,198 +148,198 @@ export const RightIncidentPanel: React.FC = () => {
         </div>
 
         {/* Primary Classification Headline with Confidence */}
-        <div className="mt-2 flex items-center justify-between">
-          <h2 className={`text-[16px] font-black leading-tight flex items-center gap-1.5 ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
-            {isCritical && <Flame className="w-4.5 h-4.5 text-red-500 shrink-0" />}
-            {isWildfire && <Trees className="w-4.5 h-4.5 text-amber-500 shrink-0" />}
+        <div className="mt-1.5 flex items-center justify-between">
+          <h2 className={`text-[14px] font-black leading-tight flex items-center gap-1.5 ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            {isCritical && <Flame className="w-3.5 h-3.5 text-red-500 shrink-0" />}
+            {isWildfire && <Trees className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
             <span>{selectedHotspot.classification}</span>
           </h2>
-          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px] font-bold font-mono border ${
+          <div className={`flex items-center gap-1 px-1.5 py-0.2 rounded-md text-[9.5px] font-bold font-mono border ${
             theme === 'dark'
               ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-400'
               : 'bg-emerald-50 border-emerald-300 text-emerald-700'
           }`}>
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3 h-3" />
             <span>{selectedHotspot.confidence}% AI</span>
           </div>
         </div>
 
         {/* Baseline Multiple Alert Banner */}
-        <div className="mt-1.5">
+        <div className="mt-1">
           {selectedHotspot.baselineRatio >= 2.0 ? (
-            <div className={`flex items-center gap-1.5 py-1 px-2.5 rounded-lg text-[10.5px] font-bold border ${
+            <div className={`flex items-center gap-1 py-0.5 px-2 rounded-md text-[9.5px] font-bold border ${
               theme === 'dark'
                 ? 'bg-red-500/20 border-red-500/40 text-red-300'
                 : 'bg-red-100 border-red-300 text-red-800'
             }`}>
-              <TrendingUp className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              <TrendingUp className="w-3 h-3 text-red-500 shrink-0" />
               <span>{selectedHotspot.baselineRatio}× ABOVE HISTORICAL BASELINE</span>
             </div>
           ) : selectedHotspot.status === 'NORMAL' ? (
-            <div className={`flex items-center gap-1.5 py-1 px-2.5 rounded-lg text-[10.5px] font-semibold border ${
+            <div className={`flex items-center gap-1 py-0.5 px-2 rounded-md text-[9.5px] font-semibold border ${
               theme === 'dark'
                 ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
                 : 'bg-emerald-100 border-emerald-300 text-emerald-800'
             }`}>
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
               <span>Normal recurring baseline ({selectedHotspot.baselineRatio}× typical)</span>
             </div>
           ) : (
-            <div className={`flex items-center gap-1.5 py-1 px-2.5 rounded-lg text-[10.5px] font-semibold border ${
+            <div className={`flex items-center gap-1 py-0.5 px-2 rounded-md text-[9.5px] font-semibold border ${
               theme === 'dark'
                 ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
                 : 'bg-orange-100 border-orange-300 text-orange-900'
             }`}>
-              <Activity className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+              <Activity className="w-3 h-3 text-orange-500 shrink-0" />
               <span>{selectedHotspot.baselineRatio}× elevated emission</span>
             </div>
           )}
         </div>
 
         {/* Spatial, Land-Cover & Population Proximity Summary */}
-        <div className={`mt-2 pt-2 border-t flex flex-col gap-1 text-[11px] ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'}`}>
+        <div className={`mt-1.5 pt-1.5 border-t flex flex-col gap-0.5 text-[10px] ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'}`}>
           <div className="flex items-center justify-between">
-            <span className={`flex items-center gap-1 font-medium ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#5b7596]'}`}>
-              <Building2 className="w-3.5 h-3.5 text-[#ff7a45] shrink-0" />
-              {selectedHotspot.nearestFacility.distance} from {selectedHotspot.nearestFacility.name.split(' ')[0]}
+            <span className={`flex items-center gap-1 font-medium truncate ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#5b7596]'}`}>
+              <Building2 className="w-3 h-3 text-[#ff7a45] shrink-0" />
+              <span className="truncate">{selectedHotspot.nearestFacility.distance} from {selectedHotspot.nearestFacility.name.split(' ')[0]}</span>
             </span>
-            <span className={`font-mono text-[10px] font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <span className={`font-mono text-[9.5px] font-bold shrink-0 ml-1 ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               {selectedHotspot.nearestFacility.distance}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
-              <Layers className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-              {selectedHotspot.landCover}
+            <span className={`flex items-center gap-1 truncate ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
+              <Layers className="w-3 h-3 text-amber-500 shrink-0" />
+              <span className="truncate">{selectedHotspot.landCover}</span>
             </span>
-            <span className={`font-mono font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>{selectedHotspot.state}</span>
+            <span className={`font-mono font-medium text-[9px] shrink-0 ml-1 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>{selectedHotspot.state}</span>
           </div>
 
           {/* Population Proximity Feature */}
-          <div className={`flex items-center justify-between pt-1 border-t ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]/60'}`}>
+          <div className={`flex items-center justify-between pt-0.5 border-t ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]/60'}`}>
             <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#5b7596]'}`}>
-              <Users className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-              Population Proximity
+              <Users className="w-3 h-3 text-rose-500 shrink-0" />
+              Pop. Proximity
             </span>
-            <span className="font-mono text-rose-400 font-bold">
-              {selectedHotspot.populationContext?.distanceMeters || 450} m ({selectedHotspot.populationContext?.densityCategory || 'Settlement'})
+            <span className="font-mono text-rose-400 font-bold text-[9.5px]">
+              {selectedHotspot.populationContext?.distanceMeters || 450}m ({selectedHotspot.populationContext?.densityCategory || 'Settlement'})
             </span>
           </div>
         </div>
 
-        {/* Map Focus Action (Vibrant Flame Gradient) & GIS Button */}
-        <div className={`flex items-center gap-2 mt-2 pt-2 border-t ${theme === 'dark' ? 'border-white/15' : 'border-[#cfe0f0]'}`}>
+        {/* Map Focus Action & GIS Button */}
+        <div className={`flex items-center gap-1.5 mt-1.5 pt-1.5 border-t ${theme === 'dark' ? 'border-white/15' : 'border-[#cfe0f0]'}`}>
           <button
             type="button"
             onClick={() => flyToCoords(selectedHotspot.coordinates, 8.2, 30)}
-            className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] hover:brightness-110 text-white text-[11.5px] font-extrabold flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(255,85,45,0.4)] border border-[#ff9166] transition-all cursor-pointer"
+            className="flex-1 py-1.5 px-2 rounded-lg bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] hover:brightness-110 text-white text-[10.5px] font-extrabold flex items-center justify-center gap-1.5 shadow-[0_3px_12px_rgba(255,85,45,0.35)] border border-[#ff9166] transition-all cursor-pointer"
           >
-            <Crosshair className="w-4 h-4" />
-            <span>Focus on Map</span>
+            <Crosshair className="w-3.5 h-3.5" />
+            <span>Focus Map</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyCoords}
-            className={`py-2 px-3.5 rounded-xl text-[11px] font-extrabold flex items-center gap-1.5 transition-all cursor-pointer border ${
+            className={`py-1.5 px-2.5 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
               theme === 'dark'
-                ? 'bg-[rgba(255,85,45,0.18)] border-[rgba(255,106,61,0.5)] text-[#ffffff] hover:bg-[rgba(255,85,45,0.32)] hover:border-[#ff7a45] shadow-[0_2px_8px_rgba(0,0,0,0.5),0_0_10px_rgba(255,85,45,0.2)]'
+                ? 'bg-[rgba(255,85,45,0.18)] border-[rgba(255,106,61,0.5)] text-[#ffffff] hover:bg-[rgba(255,85,45,0.32)] shadow-[0_2px_8px_rgba(0,0,0,0.4)]'
                 : 'bg-white border-[#cfe0f0] text-[#0c2340] hover:text-[#0284c7] hover:bg-[#f0f7fd] shadow-xs'
             }`}
             title="Copy GIS Coordinates"
           >
-            <Copy className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#0284c7]'}`} />
+            <Copy className={`w-3 h-3 ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#0284c7]'}`} />
             <span>GIS</span>
           </button>
         </div>
       </div>
 
-      {/* 2. PRIMARY TELEMETRY METRIC GRID */}
+      {/* 2. COMPACT TELEMETRY METRIC GRID (2x2) */}
       <div className="grid grid-cols-2 gap-1.5">
         {/* Current FRP */}
-        <div className={`border rounded-xl p-2 flex flex-col justify-between shadow-xs ${
+        <div className={`border rounded-lg p-1.5 flex flex-col justify-between shadow-xs ${
           theme === 'dark'
             ? 'bg-[rgba(255,85,45,0.08)] border-[rgba(255,106,61,0.25)]'
             : 'bg-[#fff7ed] border-[#fed7aa]'
         }`}>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#ea580c]'}`}>Current FRP</span>
-            <Flame className="w-3.5 h-3.5 text-red-500" />
+            <span className={`text-[8.5px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#ea580c]'}`}>Current FRP</span>
+            <Flame className="w-3 h-3 text-red-500" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
-            <span className="text-[20px] font-black text-red-500 font-mono leading-none">
+            <span className="text-[16px] font-black text-red-500 font-mono leading-none">
               {selectedHotspot.frp}
             </span>
-            <span className={`text-[10px] font-bold ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#c2410c]'}`}>MW</span>
+            <span className={`text-[9px] font-bold ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#c2410c]'}`}>MW</span>
           </div>
         </div>
 
         {/* Historical Baseline */}
-        <div className={`border rounded-xl p-2 flex flex-col justify-between shadow-xs ${
+        <div className={`border rounded-lg p-1.5 flex flex-col justify-between shadow-xs ${
           theme === 'dark'
             ? 'bg-[rgba(255,255,255,0.03)] border-[rgba(255,106,61,0.18)]'
             : 'bg-[#f8fbfe] border-[#cfe0f0]'
         }`}>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Hist. Baseline</span>
-            <Clock className="w-3.5 h-3.5 text-[#ff7a45]" />
+            <span className={`text-[8.5px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Baseline</span>
+            <Clock className="w-3 h-3 text-[#ff7a45]" />
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
-            <span className={`text-[20px] font-black font-mono leading-none ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <span className={`text-[16px] font-black font-mono leading-none ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               {selectedHotspot.baselineFrp}
             </span>
-            <span className={`text-[10px] font-bold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7b95b3]'}`}>MW</span>
+            <span className={`text-[9px] font-bold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7b95b3]'}`}>MW</span>
           </div>
         </div>
 
         {/* Multi-Spectral Skin Temperature */}
-        <div className={`border rounded-xl p-2 flex flex-col justify-between shadow-xs ${
+        <div className={`border rounded-lg p-1.5 flex flex-col justify-between shadow-xs ${
           theme === 'dark'
             ? 'bg-[rgba(255,255,255,0.03)] border-[rgba(255,106,61,0.18)]'
             : 'bg-[#f8fbfe] border-[#cfe0f0]'
         }`}>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Skin Temp (T4)</span>
-            <span className={`text-[9px] font-bold px-1 py-0.2 rounded ${
+            <span className={`text-[8.5px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Skin Temp</span>
+            <span className={`text-[8px] font-bold px-1 py-0.2 rounded ${
               theme === 'dark' ? 'bg-amber-950/60 text-amber-400' : 'text-amber-700 bg-amber-100'
             }`}>
               VIIRS
             </span>
           </div>
           <div className="mt-0.5 flex items-baseline gap-0.5">
-            <span className={`text-[20px] font-black font-mono leading-none ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <span className={`text-[16px] font-black font-mono leading-none ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               {selectedHotspot.temperature}
             </span>
-            <span className="text-[12px] font-bold text-amber-500">°C</span>
+            <span className="text-[10px] font-bold text-amber-500">°C</span>
           </div>
         </div>
 
         {/* 30-Day Persistence Score */}
-        <div className={`border rounded-xl p-2 flex flex-col justify-between shadow-xs ${
+        <div className={`border rounded-lg p-1.5 flex flex-col justify-between shadow-xs ${
           theme === 'dark'
             ? 'bg-[rgba(255,255,255,0.03)] border-[rgba(255,106,61,0.18)]'
             : 'bg-[#f8fbfe] border-[#cfe0f0]'
         }`}>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Recurrence</span>
-            <span className="text-[9.5px] font-mono text-purple-400 font-bold">
-              {selectedHotspot.persistenceDays}
+            <span className={`text-[8.5px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Recurrence</span>
+            <span className="text-[8.5px] font-mono text-purple-400 font-bold">
+              {selectedHotspot.persistenceDays}d
             </span>
           </div>
           <div className="mt-0.5 flex items-baseline gap-1">
-            <span className="text-[20px] font-black text-purple-400 font-mono leading-none">
+            <span className="text-[16px] font-black text-purple-400 font-mono leading-none">
               {selectedHotspot.persistenceScore}
             </span>
-            <span className={`text-[10px] font-bold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7b95b3]'}`}>/ 100</span>
+            <span className={`text-[9px] font-bold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#7b95b3]'}`}>/100</span>
           </div>
         </div>
       </div>
 
-      {/* 3. INVESTIGATION TABS (HIGH CONTRAST & PERFECTLY VISIBLE IN BOTH MODES) */}
-      <div className={`flex rounded-xl p-1.5 border overflow-x-auto gap-1.5 ${
+      {/* 3. COMPACT INVESTIGATION TABS */}
+      <div className={`flex rounded-lg p-1 border overflow-x-auto gap-1 ${
         theme === 'dark'
-          ? 'bg-[rgba(24,12,8,0.95)] border-[rgba(255,106,61,0.35)] shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]'
+          ? 'bg-[rgba(24,12,8,0.95)] border-[rgba(255,106,61,0.35)] shadow-inner'
           : 'bg-[#e2eaf2] border-[#b9d2eb] shadow-inner'
       }`}>
         {(['Why?', 'History', 'AI Probabilities', 'Sentinel-2', 'Overview'] as const).map((tab) => {
@@ -348,14 +349,14 @@ export const RightIncidentPanel: React.FC = () => {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-1.5 px-2.5 rounded-lg text-[11px] transition-all duration-150 cursor-pointer whitespace-nowrap text-center font-black ${
+              className={`flex-1 py-1 px-1.5 rounded text-[9.5px] transition-all duration-150 cursor-pointer whitespace-nowrap text-center font-extrabold ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] text-white shadow-[0_2px_12px_rgba(255,85,45,0.65)] border border-[#ff9166]'
-                    : 'bg-[#ea580c] text-white shadow-md border border-[#c2410c]'
+                    ? 'bg-gradient-to-r from-[#ff5533] via-[#ff7a45] to-[#ea580c] text-white shadow-[0_2px_8px_rgba(255,85,45,0.5)] border border-[#ff9166]'
+                    : 'bg-[#ea580c] text-white shadow-xs border border-[#c2410c]'
                   : theme === 'dark'
-                  ? 'bg-white/[0.08] text-[#f2e2dc] hover:bg-[rgba(255,85,45,0.25)] hover:text-white border border-white/10'
-                  : 'bg-white text-[#0c2340] border border-[#b4cde6] hover:bg-[#0284c7] hover:text-white hover:border-[#0284c7] shadow-xs'
+                  ? 'bg-white/[0.06] text-[#f2e2dc] hover:bg-[rgba(255,85,45,0.2)] hover:text-white'
+                  : 'bg-white text-[#0c2340] border border-[#b4cde6] hover:bg-[#0284c7] hover:text-white shadow-xs'
               }`}
             >
               {tab}
@@ -365,24 +366,24 @@ export const RightIncidentPanel: React.FC = () => {
       </div>
 
       {/* 4. TAB CONTENTS */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         {/* WHY? EXPLAINABILITY TAB (THE HERO FEATURE) */}
         {activeTab === 'Why?' && (
-          <div className={`border rounded-2xl p-3 flex flex-col gap-2 shadow-xs ${
+          <div className={`border rounded-xl p-2.5 flex flex-col gap-1.5 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.25)]'
               : 'bg-[#fff7ed] border-[#fed7aa]'
           }`}>
-            <div className={`flex items-center justify-between pb-1.5 border-b ${
+            <div className={`flex items-center justify-between pb-1 border-b ${
               theme === 'dark' ? 'border-white/10' : 'border-[#fed7aa]'
             }`}>
               <div className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-[#ff7a45]" />
-                <span className={`text-[11.5px] font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+                <Cpu className="w-3 h-3 text-[#ff7a45]" />
+                <span className={`text-[10.5px] font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
                   Multi-Source Evidence Fusion
                 </span>
               </div>
-              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+              <span className={`text-[8.5px] font-bold px-1.5 py-0.2 rounded-full border ${
                 theme === 'dark'
                   ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
                   : 'text-emerald-700 bg-emerald-100 border-emerald-200'
@@ -391,16 +392,15 @@ export const RightIncidentPanel: React.FC = () => {
               </span>
             </div>
 
-            <p className={`text-[10.5px] leading-snug ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
-              Why did FLAREX classify this as{' '}
-              <strong className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.classification}</strong>?
+            <p className={`text-[9.5px] leading-snug ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#3b5677]'}`}>
+              Why classified as <strong className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.classification}</strong>:
             </p>
 
-            <div className="flex flex-col gap-1.5 mt-0.5">
+            <div className="flex flex-col gap-1 mt-0.5">
               {selectedHotspot.aiReasons.map((reason, idx) => (
-                <div key={idx} className={`flex items-start gap-1.5 text-[11px] ${theme === 'dark' ? 'text-[#fef8f6]' : 'text-[#0c2340]'}`}>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="leading-snug">{reason.text}</span>
+                <div key={idx} className={`flex items-start gap-1 text-[9.5px] ${theme === 'dark' ? 'text-[#fef8f6]' : 'text-[#0c2340]'}`}>
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="leading-tight">{reason.text}</span>
                 </div>
               ))}
             </div>
@@ -409,37 +409,37 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* HISTORY TAB: 7-DAY FRP CURVE WITH BASELINE */}
         {activeTab === 'History' && (
-          <div className={`border rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs ${
+          <div className={`border rounded-xl p-2.5 flex flex-col gap-1 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.2)]'
               : 'bg-white border-[#cfe0f0]'
           }`}>
-            <div className="flex items-center justify-between text-[10.5px]">
+            <div className="flex items-center justify-between text-[9.5px]">
               <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>7-Day Radiative Power Curve</span>
               <div className="flex items-center gap-2">
-                <span className={`flex items-center gap-1 text-[9px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-                  <span className="w-2 h-2 rounded-full bg-[#FF4D4F]" /> FRP (MW)
+                <span className={`flex items-center gap-1 text-[8.5px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D4F]" /> FRP
                 </span>
-                <span className={`flex items-center gap-1 text-[9px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-                  <span className="w-2 h-0.5 bg-[#FF7A45]" /> Baseline
+                <span className={`flex items-center gap-1 text-[8.5px] ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+                  <span className="w-2 h-0.5 bg-[#FF7A45]" /> Base
                 </span>
               </div>
             </div>
 
-            <div className="h-[140px] w-full mt-1">
+            <div className="h-[110px] w-full mt-0.5">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={selectedHotspot.history}
-                  margin={{ top: 8, right: 8, left: -22, bottom: 0 }}
+                  margin={{ top: 6, right: 6, left: -24, bottom: 0 }}
                 >
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: theme === 'dark' ? '#A3928C' : '#5B7596', fontSize: 9 }}
+                    tick={{ fill: theme === 'dark' ? '#A3928C' : '#5B7596', fontSize: 8 }}
                     axisLine={{ stroke: theme === 'dark' ? 'rgba(255,106,61,0.2)' : '#CFE0F0' }}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: theme === 'dark' ? '#A3928C' : '#5B7596', fontSize: 9 }}
+                    tick={{ fill: theme === 'dark' ? '#A3928C' : '#5B7596', fontSize: 8 }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -447,14 +447,14 @@ export const RightIncidentPanel: React.FC = () => {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className={`p-2 rounded-lg shadow-md text-[10px] border ${
+                          <div className={`p-1.5 rounded-md shadow-md text-[9px] border ${
                             theme === 'dark'
                               ? 'bg-[#140a07] text-[#fef8f6] border-[rgba(255,106,61,0.3)]'
                               : 'bg-white text-[#0c2340] border-[#cfe0f0]'
                           }`}>
                             <p className={`font-medium ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>{payload[0].payload.date}</p>
-                            <p className="text-red-500 font-bold mt-0.5">FRP: {payload[0].value} MW</p>
-                            <p className={`mt-0.5 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Baseline: {payload[0].payload.baseline} MW</p>
+                            <p className="text-red-500 font-bold">FRP: {payload[0].value} MW</p>
+                            <p className={`${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Base: {payload[0].payload.baseline} MW</p>
                           </div>
                         );
                       }
@@ -465,15 +465,15 @@ export const RightIncidentPanel: React.FC = () => {
                     y={selectedHotspot.baselineFrp}
                     stroke="#FF7A45"
                     strokeDasharray="3 3"
-                    strokeWidth={1.5}
+                    strokeWidth={1.2}
                   />
                   <Line
                     type="monotone"
                     dataKey="frp"
                     stroke="#FF4D4F"
-                    strokeWidth={2.5}
-                    dot={{ r: 3, fill: '#FF4D4F', stroke: '#FFFFFF', strokeWidth: 1 }}
-                    activeDot={{ r: 5, fill: '#FF4D4F', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    strokeWidth={2}
+                    dot={{ r: 2.5, fill: '#FF4D4F', stroke: '#FFFFFF', strokeWidth: 1 }}
+                    activeDot={{ r: 4, fill: '#FF4D4F', stroke: '#FFFFFF', strokeWidth: 1.5 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -483,16 +483,16 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* AI PROBABILITIES TAB */}
         {activeTab === 'AI Probabilities' && (
-          <div className={`border rounded-2xl p-3 flex flex-col gap-2 shadow-xs ${
+          <div className={`border rounded-xl p-2.5 flex flex-col gap-1.5 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.2)]'
               : 'bg-[#ffffff] border-[#cfe0f0]'
           }`}>
-            <span className={`text-[11.5px] font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <span className={`text-[10px] font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               6-Class AI Classifier Output Distribution
             </span>
 
-            <div className="flex flex-col gap-2 mt-1">
+            <div className="flex flex-col gap-1.5 mt-0.5">
               {[
                 { label: 'Industrial Fire', val: selectedHotspot.probabilities.industrialFire, color: 'bg-red-500' },
                 { label: 'Gas Flare', val: selectedHotspot.probabilities.gasFlare, color: 'bg-orange-500' },
@@ -501,12 +501,12 @@ export const RightIncidentPanel: React.FC = () => {
                 { label: 'Mining / Furnace', val: selectedHotspot.probabilities.mining, color: 'bg-purple-500' },
                 { label: 'Unknown / Ambiguous', val: selectedHotspot.probabilities.unknown, color: 'bg-slate-400' },
               ].map((item) => (
-                <div key={item.label} className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center text-[10.5px]">
+                <div key={item.label} className="flex flex-col gap-0.5">
+                  <div className="flex justify-between items-center text-[9.5px]">
                     <span className={`font-bold ${theme === 'dark' ? 'text-[#e5d4ce]' : 'text-[#0c2340]'}`}>{item.label}</span>
                     <span className={`font-mono font-extrabold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{item.val}%</span>
                   </div>
-                  <div className={`w-full h-2 rounded-full overflow-hidden border ${
+                  <div className={`w-full h-1.5 rounded-full overflow-hidden border ${
                     theme === 'dark' ? 'bg-white/10 border-white/5' : 'bg-[#e2eaf2] border-[#cfe0f0]'
                   }`}>
                     <div
@@ -522,7 +522,7 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* SENTINEL-2 OPTICAL IMAGERY TAB */}
         {activeTab === 'Sentinel-2' && (
-          <div className={`border rounded-2xl p-3 flex flex-col gap-2 shadow-xs ${
+          <div className={`border rounded-xl p-2.5 flex flex-col gap-1.5 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.2)]'
               : 'bg-white border-[#cfe0f0]'
@@ -531,12 +531,12 @@ export const RightIncidentPanel: React.FC = () => {
               theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'
             }`}>
               <div className="flex items-center gap-1.5">
-                <Satellite className="w-3.5 h-3.5 text-[#ff7a45]" />
-                <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+                <Satellite className="w-3 h-3 text-[#ff7a45]" />
+                <span className={`text-[10px] font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
                   Sentinel-2 MSI Optical Verification
                 </span>
               </div>
-              <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border font-bold ${
+              <span className={`text-[8.5px] font-mono px-1.5 py-0.2 rounded border font-bold ${
                 theme === 'dark'
                   ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
                   : 'text-emerald-700 bg-emerald-100 border-emerald-200'
@@ -545,30 +545,30 @@ export const RightIncidentPanel: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <div className={`p-2 rounded-xl border ${
+            <div className="grid grid-cols-2 gap-1 text-[9.5px]">
+              <div className={`p-1.5 rounded-lg border ${
                 theme === 'dark' ? 'bg-[rgba(255,85,45,0.06)] border-[rgba(255,106,61,0.2)]' : 'bg-[#fff7ed] border-[#fed7aa]'
               }`}>
-                <span className={`text-[9px] block ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Sentinel Tile</span>
+                <span className={`text-[8.5px] block ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Sentinel Tile</span>
                 <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
                   {selectedHotspot.sentinelImagery?.tileId || 'T43QBC'}
                 </span>
               </div>
-              <div className={`p-2 rounded-xl border ${
+              <div className={`p-1.5 rounded-lg border ${
                 theme === 'dark' ? 'bg-[rgba(255,85,45,0.06)] border-[rgba(255,106,61,0.2)]' : 'bg-[#fff7ed] border-[#fed7aa]'
               }`}>
-                <span className={`text-[9px] block ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Cloud Cover</span>
+                <span className={`text-[8.5px] block ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Cloud Cover</span>
                 <span className="font-mono font-bold text-emerald-500">
-                  {selectedHotspot.sentinelImagery?.cloudCoverPct || 1.8}% (Clear)
+                  {selectedHotspot.sentinelImagery?.cloudCoverPct || 1.8}%
                 </span>
               </div>
             </div>
 
-            <div className={`p-2.5 rounded-xl border text-[10.5px] ${
+            <div className={`p-2 rounded-lg border text-[9.5px] ${
               theme === 'dark' ? 'bg-[rgba(255,85,45,0.06)] border-[rgba(255,106,61,0.2)]' : 'bg-[#fff7ed] border-[#fed7aa]'
             }`}>
               <div className={`flex items-center gap-1 font-bold mb-0.5 ${theme === 'dark' ? 'text-[#ff7a45]' : 'text-[#c2410c]'}`}>
-                <Eye size={13} className="text-[#ff7a45]" />
+                <Eye size={12} className="text-[#ff7a45]" />
                 <span>Visual Optical Verification</span>
               </div>
               <p className={`leading-snug ${theme === 'dark' ? 'text-[#d1b8af]' : 'text-[#244265]'}`}>
@@ -580,55 +580,55 @@ export const RightIncidentPanel: React.FC = () => {
 
         {/* OVERVIEW TAB */}
         {activeTab === 'Overview' && (
-          <div className={`border rounded-2xl p-3 flex flex-col gap-1.5 shadow-xs ${
+          <div className={`border rounded-xl p-2.5 flex flex-col gap-1 shadow-xs ${
             theme === 'dark'
               ? 'bg-[rgba(16,8,5,0.92)] border-[rgba(255,106,61,0.2)]'
               : 'bg-white border-[#cfe0f0]'
           }`}>
-            <div className="flex justify-between items-center text-[10.5px]">
-              <span className={`flex items-center gap-1.5 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-                <Satellite className="w-3.5 h-3.5 text-[#ff7a45]" /> Sensor Stream
+            <div className="flex justify-between items-center text-[9.5px]">
+              <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+                <Satellite className="w-3 h-3 text-[#ff7a45]" /> Sensor
               </span>
               <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.satellite}</span>
             </div>
-            <div className="flex justify-between items-center text-[10.5px]">
-              <span className={`flex items-center gap-1.5 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-                <Clock className="w-3.5 h-3.5" /> Detection Time
+            <div className="flex justify-between items-center text-[9.5px]">
+              <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+                <Clock className="w-3 h-3" /> Time
               </span>
               <span className={`font-mono font-semibold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.timestamp}</span>
             </div>
-            <div className="flex justify-between items-center text-[10.5px]">
-              <span className={theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}>GIS Coordinates</span>
+            <div className="flex justify-between items-center text-[9.5px]">
+              <span className={theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}>GIS Coords</span>
               <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
                 {selectedHotspot.coordinates[1].toFixed(4)}°N, {selectedHotspot.coordinates[0].toFixed(4)}°E
               </span>
             </div>
-            <div className="flex justify-between items-center text-[10.5px]">
+            <div className="flex justify-between items-center text-[9.5px]">
               <span className={theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}>Land Cover</span>
               <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.landCover}</span>
             </div>
-            <div className={`flex justify-between items-center text-[10.5px] pt-1 border-t ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'}`}>
-              <span className={theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}>Facility Proximity</span>
+            <div className={`flex justify-between items-center text-[9.5px] pt-0.5 border-t ${theme === 'dark' ? 'border-white/10' : 'border-[#cfe0f0]'}`}>
+              <span className={theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}>Facility</span>
               <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>{selectedHotspot.nearestFacility.name}</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* 5. OPERATIONAL EMERGENCY CONTEXT & PLUME DISPERSION */}
-      <div className={`border rounded-2xl p-3 flex flex-col gap-2 shadow-xs ${
+      {/* 5. COMPACT EMERGENCY UNITS & PLUME DISPERSION */}
+      <div className={`border rounded-xl p-2 flex flex-col gap-1.5 shadow-xs ${
         theme === 'dark'
           ? 'bg-[rgba(255,85,45,0.08)] border-[rgba(255,106,61,0.25)]'
           : 'bg-[#fff7ed] border-[#fed7aa]'
       }`}>
-        <div className={`flex items-center justify-between pb-1.5 border-b ${theme === 'dark' ? 'border-white/10' : 'border-[#fed7aa]'}`}>
+        <div className={`flex items-center justify-between pb-1 border-b ${theme === 'dark' ? 'border-white/10' : 'border-[#fed7aa]'}`}>
           <div className="flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#ff7a45]" />
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
+            <ShieldAlert className="w-3 h-3 text-[#ff7a45]" />
+            <span className={`text-[10px] font-extrabold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
               Emergency Units &amp; Plume
             </span>
           </div>
-          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+          <span className={`text-[8.5px] font-bold px-1.5 py-0.2 rounded-full border ${
             theme === 'dark'
               ? 'bg-[rgba(255,85,45,0.2)] text-[#ff7a45] border-[rgba(255,106,61,0.3)]'
               : 'text-[#c2410c] bg-[#ffedd5] border-[#fed7aa]'
@@ -637,35 +637,35 @@ export const RightIncidentPanel: React.FC = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
-          <div className={`p-2 rounded-xl border ${
+        <div className="grid grid-cols-2 gap-1 text-[9.5px]">
+          <div className={`p-1.5 rounded-lg border ${
             theme === 'dark' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,106,61,0.2)]' : 'bg-white border-[#fed7aa]'
           }`}>
-            <span className={`text-[9px] block font-semibold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Nearest Station</span>
+            <span className={`text-[8.5px] block font-semibold ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>Nearest Station</span>
             <span className={`font-bold block truncate ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
-              {selectedHotspot.nearestFacility.name.split(' ')[0]} Fire Unit
+              {selectedHotspot.nearestFacility.name.split(' ')[0]} Unit
             </span>
-            <span className="text-[9px] text-[#ff7a45] font-mono font-bold">2.4 km (~5 mins)</span>
+            <span className="text-[8.5px] text-[#ff7a45] font-mono font-bold">2.4 km (~5m)</span>
           </div>
-          <div className={`p-2 rounded-xl border ${
+          <div className={`p-1.5 rounded-lg border ${
             theme === 'dark' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,106,61,0.2)]' : 'bg-white border-[#fed7aa]'
           }`}>
-            <span className={`text-[9px] block font-semibold flex items-center gap-1 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
-              <Wind size={10} className="text-[#ff7a45]" /> Plume Vector
+            <span className={`text-[8.5px] block font-semibold flex items-center gap-1 ${theme === 'dark' ? 'text-[#a3928c]' : 'text-[#5b7596]'}`}>
+              <Wind size={9} className="text-[#ff7a45]" /> Plume Vector
             </span>
             <span className={`font-bold block truncate ${theme === 'dark' ? 'text-white' : 'text-[#0c2340]'}`}>
-              12 km/h SW → NE
+              12 km/h SW→NE
             </span>
-            <span className={`text-[9px] font-mono font-bold ${theme === 'dark' ? 'text-amber-400' : 'text-amber-700'}`}>Buffer: 850m</span>
+            <span className={`text-[8.5px] font-mono font-bold ${theme === 'dark' ? 'text-amber-400' : 'text-amber-700'}`}>Buf: 850m</span>
           </div>
         </div>
 
-        <div className={`flex items-center justify-between text-[10px] pt-1 border-t ${
+        <div className={`flex items-center justify-between text-[9px] pt-0.5 border-t ${
           theme === 'dark' ? 'text-[#d1b8af] border-white/10' : 'text-[#3b5677] border-[#fed7aa]/80'
         }`}>
           <span className="flex items-center gap-1 font-medium">
-            <Radio className="w-3 h-3 text-[#ff7a45]" />
-            SPCB Telemetry Ingestion:
+            <Radio className="w-2.5 h-2.5 text-[#ff7a45]" />
+            SPCB Telemetry:
           </span>
           <span className="font-mono font-bold text-emerald-500">ONLINE (Active)</span>
         </div>
@@ -676,9 +676,9 @@ export const RightIncidentPanel: React.FC = () => {
         <button
           type="button"
           onClick={handleDispatchProtocol}
-          className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-[11.5px] font-bold flex items-center justify-center gap-2 shadow-sm border border-red-700 transition-all cursor-pointer mt-auto"
+          className="w-full py-2 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-[10.5px] font-bold flex items-center justify-center gap-1.5 shadow-sm border border-red-700 transition-all cursor-pointer mt-auto"
         >
-          <AlertOctagon className="w-4 h-4" />
+          <AlertOctagon className="w-3.5 h-3.5" />
           <span>Dispatch Incident Alert Protocol</span>
         </button>
       )}
