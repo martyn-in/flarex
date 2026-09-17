@@ -4,6 +4,7 @@ export type ThermalClassification =
   | 'Wildfire'
   | 'Agricultural Burning'
   | 'Mining / Furnace Activity'
+  | 'Persistent Industrial Thermal Source'
   | 'Unknown / Ambiguous';
 
 export type LandCoverType =
@@ -11,6 +12,7 @@ export type LandCoverType =
   | 'Cropland / Agriculture'
   | 'Dense Forest / Woodland'
   | 'Grassland / Shrubland'
+  | 'Shrubland / Grassland'
   | 'Mining / Bare Soil'
   | 'Water / Wetland';
 

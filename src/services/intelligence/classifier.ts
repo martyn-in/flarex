@@ -69,7 +69,7 @@ export function classifyThermalAnomaly(input: RawAnomalyFeatureInput): Classific
   let pWildfire = 5;
   let pAgri = 5;
   let pMining = 5;
-  let pUnknown = 5;
+  const pUnknown = 5;
 
   // 1. Facility & Spatial Rules
   if (isNearFacility) {

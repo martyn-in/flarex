@@ -6,7 +6,7 @@ import { useIntelligence } from '@/context/IntelligenceContext';
 import { Hotspot } from '@/types';
 
 export default function IncidentsPanel() {
-  const { hotspots, selectedHotspot, selectHotspot, addToast } = useIntelligence();
+  const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp } = useIntelligence();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'All' | 'Fires' | 'Abnormal' | 'Critical'>('All');
 
@@ -37,13 +37,13 @@ export default function IncidentsPanel() {
     <div className="flex flex-col gap-3">
       {/* Search Input */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#ea580c]" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7c2d12]" />
         <input
           type="text"
           placeholder="Filter by facility, SEZ, or Event ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 rounded-xl text-[11px] focus:outline-none transition-colors border text-[#261006] bg-[#fff7ed] border-[#fed7aa] focus:border-[#ea580c] placeholder-[#9a3412]"
+          className="w-full pl-9 pr-3 py-2 rounded-xl text-[11px] focus:outline-none transition-colors border text-[#431407] bg-white border-[#fed7aa] focus:border-[#ea580c] placeholder-[#9a3412]"
         />
       </div>
 
@@ -68,8 +68,8 @@ export default function IncidentsPanel() {
               onClick={() => setFilterType(tab)}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
                 isActive
-                  ? 'bg-[#ffedd5] border-[#ea580c] text-[#c2410c] font-bold shadow-xs'
-                  : 'bg-white border-[#fed7aa] text-[#7c2d12] hover:text-[#ea580c] hover:bg-[#ffedd5]'
+                  ? 'bg-[#ea580c] border-[#c2410c] text-white font-bold'
+                  : 'bg-white border-[#fed7aa] text-[#7c2d12] hover:text-[#431407] hover:bg-[#fff7ed]'
               }`}
             >
               <span>{tab}</span>
@@ -91,12 +91,12 @@ export default function IncidentsPanel() {
             const isCritical = incident.severity === 'critical' || incident.status === 'CRITICAL_FIRE';
             const isAbnormal = incident.status === 'ABNORMAL' || incident.baselineRatio >= 2.0;
 
-            let badgeColor = 'text-amber-700 bg-amber-100 border-amber-200';
+            let badgeColor = 'text-amber-800 bg-amber-100 border-amber-200';
 
             if (isCritical) {
               badgeColor = 'text-red-700 bg-red-100 border-red-200';
             } else if (isAbnormal) {
-              badgeColor = 'text-orange-700 bg-orange-100 border-orange-200';
+              badgeColor = 'text-orange-800 bg-orange-100 border-orange-200';
             }
 
             return (
@@ -105,10 +105,10 @@ export default function IncidentsPanel() {
                 onClick={() => handleIncidentClick(incident)}
                 className={`flarex-status-row !p-3 flex-col !items-stretch gap-2 transition-all cursor-pointer ${
                   isSelected
-                    ? '!border-[#ea580c] !bg-[#ffedd5] shadow-xs'
+                    ? '!border-[#ea580c] !bg-[#ffedd5]'
                     : isCritical
                     ? 'border-red-200 hover:bg-red-50/50'
-                    : 'hover:bg-[#ffedd5]'
+                    : 'hover:bg-[#ffedd5]/50'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -116,10 +116,10 @@ export default function IncidentsPanel() {
                     <span className={`px-2 py-0.5 rounded text-[8.5px] font-bold uppercase tracking-wider border ${badgeColor}`}>
                       {incident.severity}
                     </span>
-                    <span className="font-mono text-[10px] font-bold text-[#c2410c]">
+                    <span className="font-mono text-[10px] font-bold text-[#ea580c]">
                       {incident.eventId}
                     </span>
-                    <span className="text-[10px] font-semibold truncate text-[#261006]">
+                    <span className="text-[10px] font-semibold truncate text-[#431407]">
                       {incident.nearestFacility.name}
                     </span>
                   </div>
@@ -133,7 +133,7 @@ export default function IncidentsPanel() {
                     {isCritical ? (
                       <Flame size={14} className="text-red-500" />
                     ) : (
-                      <AlertTriangle size={14} className="text-orange-500" />
+                      <AlertTriangle size={14} className="text-[#ea580c]" />
                     )}
                     <span className="flarex-status-name text-[12px]">{incident.classification}</span>
                   </div>
@@ -147,14 +147,14 @@ export default function IncidentsPanel() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[9.5px] pt-1.5 border-t border-[#fed7aa] text-[#7c2d12]">
+                <div className="flex items-center justify-between text-[9.5px] pt-1.5 border-t border-[#fed7aa]/60 text-[#7c2d12]">
                   <span className="flex items-center gap-1 truncate max-w-[200px]">
                     <MapPin size={11} className="text-[#ea580c] shrink-0" />
                     {incident.location}
                   </span>
                   <div className="flex items-center gap-2 font-mono">
-                    <span className="text-amber-700">{incident.confidence}% Conf.</span>
-                    <span>{incident.temperature}°C</span>
+                    <span className="text-amber-800">{incident.confidence}% Conf.</span>
+                    <span className="font-bold text-[#431407]">{formatTemp(incident.temperature)}</span>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getThermalEventById } from '@/services/firms';
+import { dbRowToHotspot } from '@/lib/adapters';
 
 export async function GET(
   request: NextRequest,
@@ -16,9 +17,11 @@ export async function GET(
       );
     }
 
+    const hotspot = dbRowToHotspot(data.event);
+
     return NextResponse.json({
       success: true,
-      data,
+      event: hotspot,
     });
   } catch (error: any) {
     console.error('Error in /api/firms/hotspot/[id]:', error);

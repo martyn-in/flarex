@@ -1,6 +1,6 @@
-import { Hotspot, IndustrialFacility, DataSourceStatus } from '@/types';
+import { Hotspot, IndustrialFacility, DataSourceStatus, AIAssistantMessage } from '@/types';
 
-export type { Hotspot, IndustrialFacility, DataSourceStatus };
+export type { Hotspot, IndustrialFacility, DataSourceStatus, AIAssistantMessage };
 
 export const SYSTEM_OPERATIONAL_STATS = {
   activeHotspots: 10,
@@ -624,5 +624,14 @@ export const DATA_SOURCES_LIST: DataSourceStatus[] = [
     description: 'Multi-feature XGBoost & Spatial Ensemble with explainability generation',
     recordsCount: 10,
     lastSync: 'Real-time',
+  },
+];
+
+export const INITIAL_AI_MESSAGES: AIAssistantMessage[] = [
+  {
+    id: 'ai-init-1',
+    sender: 'assistant',
+    text: 'FlareX Thermal Intelligence Assistant online. Ready to analyze multi-spectral satellite observations, industrial boundaries, and baseline anomalies.',
+    timestamp: '18:57',
   },
 ];

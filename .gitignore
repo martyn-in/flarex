@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sqlite temporary wal/shm
+*.sqlite-shm
+*.sqlite-wal
+catboost_info/
+
+# export bundles and kaggle working files
+*.zip
+all_in_one_bundle/
+kaggle_dataset/
+kaggle_kernel/

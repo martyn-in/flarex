@@ -9,66 +9,24 @@ export default function ReportsPanel() {
   const { hotspots, addToast } = useIntelligence();
 
   const handleDownload = (report: (typeof REPORTS_LIST)[0]) => {
-    addToast(`Generating and exporting ${report.name} (${report.type})...`, 'success');
+    let url = `/api/reports/download?type=pdf`;
+    if (report.type.toLowerCase().includes('geojson') || report.type.toLowerCase().includes('gis')) {
+      url = `/api/reports/download?type=geojson`;
+    } else if (report.type.toLowerCase().includes('csv')) {
+      url = `/api/reports/download?type=csv`;
+    }
+    window.open(url, '_blank');
+    addToast(`Generating and downloading ${report.name} (${report.type})...`, 'success');
   };
 
   const handleExportGeoJSON = () => {
-    const geojson = {
-      type: 'FeatureCollection',
-      features: hotspots.map((h) => ({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: h.coordinates,
-        },
-        properties: {
-          id: h.id,
-          eventId: h.eventId,
-          name: h.name,
-          location: h.location,
-          severity: h.severity,
-          status: h.status,
-          classification: h.classification,
-          confidence: h.confidence,
-          frp: h.frp,
-          baselineFrp: h.baselineFrp,
-          baselineRatio: h.baselineRatio,
-          temperature: h.temperature,
-          landCover: h.landCover,
-          satellite: h.satellite,
-          timestamp: h.timestamp,
-        },
-      })),
-    };
-
-    const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `flarex-hotspots-${new Date().toISOString().slice(0, 10)}.geojson`;
-    a.click();
-    URL.revokeObjectURL(url);
-    addToast('GeoJSON export generated and downloaded successfully.', 'success');
+    window.open('/api/reports/download?type=geojson', '_blank');
+    addToast('GeoJSON FeatureCollection export generated and downloaded.', 'success');
   };
 
   const handleExportCSV = () => {
-    const headers =
-      'ID,Event_ID,Name,Location,State,Longitude,Latitude,Severity,Classification,Confidence,FRP_MW,Baseline_FRP,Baseline_Ratio,Temperature_C,Land_Cover,Satellite,Timestamp\n';
-    const rows = hotspots
-      .map(
-        (h) =>
-          `"${h.id}","${h.eventId}","${h.name}","${h.location}","${h.state}",${h.coordinates[0]},${h.coordinates[1]},"${h.severity}","${h.classification}",${h.confidence},${h.frp},${h.baselineFrp},${h.baselineRatio},${h.temperature},"${h.landCover}","${h.satellite}","${h.timestamp}"`
-      )
-      .join('\n');
-
-    const blob = new Blob([headers + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `flarex-telemetry-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    addToast('CSV manifest exported successfully.', 'success');
+    window.open('/api/reports/download?type=csv', '_blank');
+    addToast('Full telemetry CSV dataset exported and downloaded.', 'success');
   };
 
   return (
@@ -78,7 +36,7 @@ export default function ReportsPanel() {
         <button
           type="button"
           onClick={handleExportGeoJSON}
-          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9 bg-white border border-[#fed7aa] text-[#7c2d12] hover:bg-[#ffedd5] hover:text-[#ea580c] rounded-xl font-bold text-[11px]"
+          className="flex items-center justify-center gap-1.5 h-9 rounded-xl text-[11px] font-bold bg-[#fff7ed] hover:bg-[#ffedd5] text-[#ea580c] border border-[#fed7aa] transition-all cursor-pointer"
         >
           <Map size={13} />
           <span>Export GeoJSON</span>
@@ -87,7 +45,7 @@ export default function ReportsPanel() {
         <button
           type="button"
           onClick={handleExportCSV}
-          className="flarex-action-btn flex items-center justify-center gap-1.5 h-9 bg-white border border-[#fed7aa] text-[#7c2d12] hover:bg-[#ffedd5] hover:text-[#ea580c] rounded-xl font-bold text-[11px]"
+          className="flex items-center justify-center gap-1.5 h-9 rounded-xl text-[11px] font-bold bg-[#fff7ed] hover:bg-[#ffedd5] text-[#ea580c] border border-[#fed7aa] transition-all cursor-pointer"
         >
           <FileSpreadsheet size={13} />
           <span>Export CSV Manifest</span>
@@ -101,12 +59,12 @@ export default function ReportsPanel() {
           {REPORTS_LIST.map((rep) => (
             <div key={rep.id} className="flarex-status-row !items-start">
               <div className="flex items-start gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 bg-orange-50 border-orange-200 text-[#ea580c]">
+                <div className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 bg-[#fff7ed] border-[#fed7aa] text-[#ea580c]">
                   <FileText size={14} />
                 </div>
                 <div className="min-w-0">
-                  <span className="flarex-status-name block text-[#261006]">{rep.name}</span>
-                  <span className="flarex-status-meta block text-[#7c2d12] text-[9.5px]">
+                  <span className="flarex-status-name block text-[#431407]">{rep.name}</span>
+                  <span className="text-[10px] text-[#9a3412] block">
                     {rep.type} • {rep.date} ({rep.size})
                   </span>
                 </div>
@@ -115,7 +73,7 @@ export default function ReportsPanel() {
               <button
                 type="button"
                 onClick={() => handleDownload(rep)}
-                className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors cursor-pointer bg-[#ffedd5] border-[#fed7aa] text-[#7c2d12] hover:text-[#ea580c] hover:border-[#ea580c] hover:bg-[#fed7aa]"
+                className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors cursor-pointer bg-white border-[#fed7aa] text-[#7c2d12] hover:text-[#ea580c] hover:border-[#ea580c] hover:bg-[#fff7ed]"
                 title={`Download ${rep.name}`}
               >
                 <Download size={13} />

@@ -1,0 +1,521 @@
+incident_id,raw_ground_truth_label,target_class
+INC-0001,Warehouse Industrial Fire,industrial_fire
+INC-0002,Warehouse Industrial Fire,industrial_fire
+INC-0003,Chemical Storage Blaze,industrial_fire
+INC-0004,Warehouse Industrial Fire,industrial_fire
+INC-0005,Chemical Storage Blaze,industrial_fire
+INC-0006,Manufacturing Plant Fire,industrial_fire
+INC-0007,Manufacturing Plant Fire,industrial_fire
+INC-0008,Manufacturing Plant Fire,industrial_fire
+INC-0009,Chemical Storage Blaze,industrial_fire
+INC-0010,Petrochemical Explosion,industrial_fire
+INC-0011,Refinery Flare Stack Fire,industrial_fire
+INC-0012,Manufacturing Plant Fire,industrial_fire
+INC-0013,Chemical Storage Blaze,industrial_fire
+INC-0014,Chemical Storage Blaze,industrial_fire
+INC-0015,Manufacturing Plant Fire,industrial_fire
+INC-0016,Refinery Flare Stack Fire,industrial_fire
+INC-0017,Manufacturing Plant Fire,industrial_fire
+INC-0018,Petrochemical Explosion,industrial_fire
+INC-0019,Manufacturing Plant Fire,industrial_fire
+INC-0020,Petrochemical Explosion,industrial_fire
+INC-0021,Refinery Flare Stack Fire,industrial_fire
+INC-0022,Chemical Storage Blaze,industrial_fire
+INC-0023,Warehouse Industrial Fire,industrial_fire
+INC-0024,Warehouse Industrial Fire,industrial_fire
+INC-0025,Chemical Storage Blaze,industrial_fire
+INC-0026,Refinery Flare Stack Fire,industrial_fire
+INC-0027,Manufacturing Plant Fire,industrial_fire
+INC-0028,Manufacturing Plant Fire,industrial_fire
+INC-0029,Chemical Storage Blaze,industrial_fire
+INC-0030,Chemical Storage Blaze,industrial_fire
+INC-0031,Manufacturing Plant Fire,industrial_fire
+INC-0032,Chemical Storage Blaze,industrial_fire
+INC-0033,Manufacturing Plant Fire,industrial_fire
+INC-0034,Chemical Storage Blaze,industrial_fire
+INC-0035,Warehouse Industrial Fire,industrial_fire
+INC-0036,Warehouse Industrial Fire,industrial_fire
+INC-0037,Refinery Flare Stack Fire,industrial_fire
+INC-0038,Manufacturing Plant Fire,industrial_fire
+INC-0039,Warehouse Industrial Fire,industrial_fire
+INC-0040,Manufacturing Plant Fire,industrial_fire
+INC-0041,Chemical Storage Blaze,industrial_fire
+INC-0042,Chemical Storage Blaze,industrial_fire
+INC-0043,Manufacturing Plant Fire,industrial_fire
+INC-0044,Chemical Storage Blaze,industrial_fire
+INC-0045,Chemical Storage Blaze,industrial_fire
+INC-0046,Manufacturing Plant Fire,industrial_fire
+INC-0047,Manufacturing Plant Fire,industrial_fire
+INC-0048,Manufacturing Plant Fire,industrial_fire
+INC-0049,Petrochemical Explosion,industrial_fire
+INC-0050,Refinery Flare Stack Fire,industrial_fire
+INC-0051,Manufacturing Plant Fire,industrial_fire
+INC-0052,Chemical Storage Blaze,industrial_fire
+INC-0053,Manufacturing Plant Fire,industrial_fire
+INC-0054,Manufacturing Plant Fire,industrial_fire
+INC-0055,Petrochemical Explosion,industrial_fire
+INC-0056,Petrochemical Explosion,industrial_fire
+INC-0057,Refinery Flare Stack Fire,industrial_fire
+INC-0058,Chemical Storage Blaze,industrial_fire
+INC-0059,Manufacturing Plant Fire,industrial_fire
+INC-0060,Refinery Flare Stack Fire,industrial_fire
+INC-0061,Refinery Flare Stack Fire,industrial_fire
+INC-0062,Warehouse Industrial Fire,industrial_fire
+INC-0063,Warehouse Industrial Fire,industrial_fire
+INC-0064,Warehouse Industrial Fire,industrial_fire
+INC-0065,Chemical Storage Blaze,industrial_fire
+INC-0066,Chemical Storage Blaze,industrial_fire
+INC-0067,Chemical Storage Blaze,industrial_fire
+INC-0068,Petrochemical Explosion,industrial_fire
+INC-0069,Refinery Flare Stack Fire,industrial_fire
+INC-0070,Chemical Storage Blaze,industrial_fire
+INC-0071,Chemical Storage Blaze,industrial_fire
+INC-0072,Refinery Flare Stack Fire,industrial_fire
+INC-0073,Petrochemical Explosion,industrial_fire
+INC-0074,Manufacturing Plant Fire,industrial_fire
+INC-0075,Refinery Flare Stack Fire,industrial_fire
+INC-0076,Manufacturing Plant Fire,industrial_fire
+INC-0077,Refinery Flare Stack Fire,industrial_fire
+INC-0078,Refinery Flare Stack Fire,industrial_fire
+INC-0079,Manufacturing Plant Fire,industrial_fire
+INC-0080,Manufacturing Plant Fire,industrial_fire
+INC-0081,Chemical Storage Blaze,industrial_fire
+INC-0082,Manufacturing Plant Fire,industrial_fire
+INC-0083,Chemical Storage Blaze,industrial_fire
+INC-0084,Petrochemical Explosion,industrial_fire
+INC-0085,Chemical Storage Blaze,industrial_fire
+INC-0086,Chemical Storage Blaze,industrial_fire
+INC-0087,Manufacturing Plant Fire,industrial_fire
+INC-0088,Refinery Flare Stack Fire,industrial_fire
+INC-0089,Refinery Flare Stack Fire,industrial_fire
+INC-0090,Warehouse Industrial Fire,industrial_fire
+INC-0091,Warehouse Industrial Fire,industrial_fire
+INC-0092,Warehouse Industrial Fire,industrial_fire
+INC-0093,Petrochemical Explosion,industrial_fire
+INC-0094,Warehouse Industrial Fire,industrial_fire
+INC-0095,Manufacturing Plant Fire,industrial_fire
+INC-0096,Chemical Storage Blaze,industrial_fire
+INC-0097,Manufacturing Plant Fire,industrial_fire
+INC-0098,Manufacturing Plant Fire,industrial_fire
+INC-0099,Warehouse Industrial Fire,industrial_fire
+INC-0100,Warehouse Industrial Fire,industrial_fire
+INC-0101,Chemical Storage Blaze,industrial_fire
+INC-0102,Petrochemical Explosion,industrial_fire
+INC-0103,Warehouse Industrial Fire,industrial_fire
+INC-0104,Manufacturing Plant Fire,industrial_fire
+INC-0105,Refinery Flare Stack Fire,industrial_fire
+INC-0106,Warehouse Industrial Fire,industrial_fire
+INC-0107,Refinery Flare Stack Fire,industrial_fire
+INC-0108,Warehouse Industrial Fire,industrial_fire
+INC-0109,Manufacturing Plant Fire,industrial_fire
+INC-0110,Chemical Storage Blaze,industrial_fire
+INC-0111,Petrochemical Explosion,industrial_fire
+INC-0112,Refinery Flare Stack Fire,industrial_fire
+INC-0113,Chemical Storage Blaze,industrial_fire
+INC-0114,Manufacturing Plant Fire,industrial_fire
+INC-0115,Refinery Flare Stack Fire,industrial_fire
+INC-0116,Refinery Flare Stack Fire,industrial_fire
+INC-0117,Petrochemical Explosion,industrial_fire
+INC-0118,Manufacturing Plant Fire,industrial_fire
+INC-0119,Petrochemical Explosion,industrial_fire
+INC-0120,Manufacturing Plant Fire,industrial_fire
+INC-0121,Warehouse Industrial Fire,industrial_fire
+INC-0122,Chemical Storage Blaze,industrial_fire
+INC-0123,Manufacturing Plant Fire,industrial_fire
+INC-0124,Manufacturing Plant Fire,industrial_fire
+INC-0125,Warehouse Industrial Fire,industrial_fire
+INC-0126,Chemical Storage Blaze,industrial_fire
+INC-0127,Petrochemical Explosion,industrial_fire
+INC-0128,Chemical Storage Blaze,industrial_fire
+INC-0129,Chemical Storage Blaze,industrial_fire
+INC-0130,Refinery Flare Stack Fire,industrial_fire
+INC-0131,Refinery Flare Stack Fire,industrial_fire
+INC-0132,Refinery Flare Stack Fire,industrial_fire
+INC-0133,Chemical Storage Blaze,industrial_fire
+INC-0134,Refinery Flare Stack Fire,industrial_fire
+INC-0135,Petrochemical Explosion,industrial_fire
+INC-0136,Chemical Storage Blaze,industrial_fire
+INC-0137,Chemical Storage Blaze,industrial_fire
+INC-0138,Manufacturing Plant Fire,industrial_fire
+INC-0139,Petrochemical Explosion,industrial_fire
+INC-0140,Manufacturing Plant Fire,industrial_fire
+INC-0141,Scrubland Vegetation Fire,wildfire
+INC-0142,Forest Canopy Blaze,wildfire
+INC-0143,Forest Canopy Blaze,wildfire
+INC-0144,National Park Forest Fire,wildfire
+INC-0145,Scrubland Vegetation Fire,wildfire
+INC-0146,National Park Forest Fire,wildfire
+INC-0147,National Park Forest Fire,wildfire
+INC-0148,Forest Canopy Blaze,wildfire
+INC-0149,National Park Forest Fire,wildfire
+INC-0150,National Park Forest Fire,wildfire
+INC-0151,National Park Forest Fire,wildfire
+INC-0152,Scrubland Vegetation Fire,wildfire
+INC-0153,Scrubland Vegetation Fire,wildfire
+INC-0154,Forest Canopy Blaze,wildfire
+INC-0155,Forest Canopy Blaze,wildfire
+INC-0156,National Park Forest Fire,wildfire
+INC-0157,Scrubland Vegetation Fire,wildfire
+INC-0158,Scrubland Vegetation Fire,wildfire
+INC-0159,Scrubland Vegetation Fire,wildfire
+INC-0160,National Park Forest Fire,wildfire
+INC-0161,Scrubland Vegetation Fire,wildfire
+INC-0162,National Park Forest Fire,wildfire
+INC-0163,Scrubland Vegetation Fire,wildfire
+INC-0164,Forest Canopy Blaze,wildfire
+INC-0165,Scrubland Vegetation Fire,wildfire
+INC-0166,National Park Forest Fire,wildfire
+INC-0167,Forest Canopy Blaze,wildfire
+INC-0168,Forest Canopy Blaze,wildfire
+INC-0169,Forest Canopy Blaze,wildfire
+INC-0170,Scrubland Vegetation Fire,wildfire
+INC-0171,National Park Forest Fire,wildfire
+INC-0172,Forest Canopy Blaze,wildfire
+INC-0173,Scrubland Vegetation Fire,wildfire
+INC-0174,National Park Forest Fire,wildfire
+INC-0175,National Park Forest Fire,wildfire
+INC-0176,Scrubland Vegetation Fire,wildfire
+INC-0177,Forest Canopy Blaze,wildfire
+INC-0178,Forest Canopy Blaze,wildfire
+INC-0179,Scrubland Vegetation Fire,wildfire
+INC-0180,Scrubland Vegetation Fire,wildfire
+INC-0181,National Park Forest Fire,wildfire
+INC-0182,Forest Canopy Blaze,wildfire
+INC-0183,Scrubland Vegetation Fire,wildfire
+INC-0184,National Park Forest Fire,wildfire
+INC-0185,National Park Forest Fire,wildfire
+INC-0186,Scrubland Vegetation Fire,wildfire
+INC-0187,National Park Forest Fire,wildfire
+INC-0188,Scrubland Vegetation Fire,wildfire
+INC-0189,Forest Canopy Blaze,wildfire
+INC-0190,Scrubland Vegetation Fire,wildfire
+INC-0191,National Park Forest Fire,wildfire
+INC-0192,National Park Forest Fire,wildfire
+INC-0193,National Park Forest Fire,wildfire
+INC-0194,Forest Canopy Blaze,wildfire
+INC-0195,Forest Canopy Blaze,wildfire
+INC-0196,Scrubland Vegetation Fire,wildfire
+INC-0197,Forest Canopy Blaze,wildfire
+INC-0198,Forest Canopy Blaze,wildfire
+INC-0199,Forest Canopy Blaze,wildfire
+INC-0200,National Park Forest Fire,wildfire
+INC-0201,Scrubland Vegetation Fire,wildfire
+INC-0202,National Park Forest Fire,wildfire
+INC-0203,National Park Forest Fire,wildfire
+INC-0204,National Park Forest Fire,wildfire
+INC-0205,National Park Forest Fire,wildfire
+INC-0206,National Park Forest Fire,wildfire
+INC-0207,National Park Forest Fire,wildfire
+INC-0208,National Park Forest Fire,wildfire
+INC-0209,National Park Forest Fire,wildfire
+INC-0210,Scrubland Vegetation Fire,wildfire
+INC-0211,National Park Forest Fire,wildfire
+INC-0212,National Park Forest Fire,wildfire
+INC-0213,Scrubland Vegetation Fire,wildfire
+INC-0214,National Park Forest Fire,wildfire
+INC-0215,National Park Forest Fire,wildfire
+INC-0216,Forest Canopy Blaze,wildfire
+INC-0217,National Park Forest Fire,wildfire
+INC-0218,National Park Forest Fire,wildfire
+INC-0219,Forest Canopy Blaze,wildfire
+INC-0220,Scrubland Vegetation Fire,wildfire
+INC-0221,Forest Canopy Blaze,wildfire
+INC-0222,Scrubland Vegetation Fire,wildfire
+INC-0223,Forest Canopy Blaze,wildfire
+INC-0224,National Park Forest Fire,wildfire
+INC-0225,National Park Forest Fire,wildfire
+INC-0226,Forest Canopy Blaze,wildfire
+INC-0227,Scrubland Vegetation Fire,wildfire
+INC-0228,Scrubland Vegetation Fire,wildfire
+INC-0229,National Park Forest Fire,wildfire
+INC-0230,National Park Forest Fire,wildfire
+INC-0231,Forest Canopy Blaze,wildfire
+INC-0232,Scrubland Vegetation Fire,wildfire
+INC-0233,Scrubland Vegetation Fire,wildfire
+INC-0234,National Park Forest Fire,wildfire
+INC-0235,Scrubland Vegetation Fire,wildfire
+INC-0236,National Park Forest Fire,wildfire
+INC-0237,National Park Forest Fire,wildfire
+INC-0238,National Park Forest Fire,wildfire
+INC-0239,National Park Forest Fire,wildfire
+INC-0240,National Park Forest Fire,wildfire
+INC-0241,Scrubland Vegetation Fire,wildfire
+INC-0242,National Park Forest Fire,wildfire
+INC-0243,Scrubland Vegetation Fire,wildfire
+INC-0244,Scrubland Vegetation Fire,wildfire
+INC-0245,Forest Canopy Blaze,wildfire
+INC-0246,National Park Forest Fire,wildfire
+INC-0247,Forest Canopy Blaze,wildfire
+INC-0248,National Park Forest Fire,wildfire
+INC-0249,Scrubland Vegetation Fire,wildfire
+INC-0250,Scrubland Vegetation Fire,wildfire
+INC-0251,Scrubland Vegetation Fire,wildfire
+INC-0252,Forest Canopy Blaze,wildfire
+INC-0253,Scrubland Vegetation Fire,wildfire
+INC-0254,Scrubland Vegetation Fire,wildfire
+INC-0255,National Park Forest Fire,wildfire
+INC-0256,Scrubland Vegetation Fire,wildfire
+INC-0257,National Park Forest Fire,wildfire
+INC-0258,National Park Forest Fire,wildfire
+INC-0259,Forest Canopy Blaze,wildfire
+INC-0260,Scrubland Vegetation Fire,wildfire
+INC-0261,National Park Forest Fire,wildfire
+INC-0262,Scrubland Vegetation Fire,wildfire
+INC-0263,Forest Canopy Blaze,wildfire
+INC-0264,Scrubland Vegetation Fire,wildfire
+INC-0265,Scrubland Vegetation Fire,wildfire
+INC-0266,Sugarcane Field Burning,agricultural_burn
+INC-0267,Crop Residue Burning,agricultural_burn
+INC-0268,Sugarcane Field Burning,agricultural_burn
+INC-0269,Paddy Stubble Burn,agricultural_burn
+INC-0270,Sugarcane Field Burning,agricultural_burn
+INC-0271,Sugarcane Field Burning,agricultural_burn
+INC-0272,Paddy Stubble Burn,agricultural_burn
+INC-0273,Paddy Stubble Burn,agricultural_burn
+INC-0274,Crop Residue Burning,agricultural_burn
+INC-0275,Paddy Stubble Burn,agricultural_burn
+INC-0276,Sugarcane Field Burning,agricultural_burn
+INC-0277,Crop Residue Burning,agricultural_burn
+INC-0278,Crop Residue Burning,agricultural_burn
+INC-0279,Paddy Stubble Burn,agricultural_burn
+INC-0280,Sugarcane Field Burning,agricultural_burn
+INC-0281,Paddy Stubble Burn,agricultural_burn
+INC-0282,Crop Residue Burning,agricultural_burn
+INC-0283,Crop Residue Burning,agricultural_burn
+INC-0284,Sugarcane Field Burning,agricultural_burn
+INC-0285,Sugarcane Field Burning,agricultural_burn
+INC-0286,Crop Residue Burning,agricultural_burn
+INC-0287,Sugarcane Field Burning,agricultural_burn
+INC-0288,Crop Residue Burning,agricultural_burn
+INC-0289,Paddy Stubble Burn,agricultural_burn
+INC-0290,Paddy Stubble Burn,agricultural_burn
+INC-0291,Paddy Stubble Burn,agricultural_burn
+INC-0292,Sugarcane Field Burning,agricultural_burn
+INC-0293,Paddy Stubble Burn,agricultural_burn
+INC-0294,Sugarcane Field Burning,agricultural_burn
+INC-0295,Sugarcane Field Burning,agricultural_burn
+INC-0296,Crop Residue Burning,agricultural_burn
+INC-0297,Paddy Stubble Burn,agricultural_burn
+INC-0298,Crop Residue Burning,agricultural_burn
+INC-0299,Crop Residue Burning,agricultural_burn
+INC-0300,Crop Residue Burning,agricultural_burn
+INC-0301,Crop Residue Burning,agricultural_burn
+INC-0302,Paddy Stubble Burn,agricultural_burn
+INC-0303,Sugarcane Field Burning,agricultural_burn
+INC-0304,Paddy Stubble Burn,agricultural_burn
+INC-0305,Paddy Stubble Burn,agricultural_burn
+INC-0306,Crop Residue Burning,agricultural_burn
+INC-0307,Paddy Stubble Burn,agricultural_burn
+INC-0308,Paddy Stubble Burn,agricultural_burn
+INC-0309,Paddy Stubble Burn,agricultural_burn
+INC-0310,Paddy Stubble Burn,agricultural_burn
+INC-0311,Paddy Stubble Burn,agricultural_burn
+INC-0312,Sugarcane Field Burning,agricultural_burn
+INC-0313,Sugarcane Field Burning,agricultural_burn
+INC-0314,Paddy Stubble Burn,agricultural_burn
+INC-0315,Crop Residue Burning,agricultural_burn
+INC-0316,Crop Residue Burning,agricultural_burn
+INC-0317,Paddy Stubble Burn,agricultural_burn
+INC-0318,Paddy Stubble Burn,agricultural_burn
+INC-0319,Crop Residue Burning,agricultural_burn
+INC-0320,Paddy Stubble Burn,agricultural_burn
+INC-0321,Paddy Stubble Burn,agricultural_burn
+INC-0322,Paddy Stubble Burn,agricultural_burn
+INC-0323,Sugarcane Field Burning,agricultural_burn
+INC-0324,Paddy Stubble Burn,agricultural_burn
+INC-0325,Sugarcane Field Burning,agricultural_burn
+INC-0326,Crop Residue Burning,agricultural_burn
+INC-0327,Sugarcane Field Burning,agricultural_burn
+INC-0328,Paddy Stubble Burn,agricultural_burn
+INC-0329,Crop Residue Burning,agricultural_burn
+INC-0330,Sugarcane Field Burning,agricultural_burn
+INC-0331,Paddy Stubble Burn,agricultural_burn
+INC-0332,Crop Residue Burning,agricultural_burn
+INC-0333,Paddy Stubble Burn,agricultural_burn
+INC-0334,Sugarcane Field Burning,agricultural_burn
+INC-0335,Crop Residue Burning,agricultural_burn
+INC-0336,Sugarcane Field Burning,agricultural_burn
+INC-0337,Sugarcane Field Burning,agricultural_burn
+INC-0338,Crop Residue Burning,agricultural_burn
+INC-0339,Paddy Stubble Burn,agricultural_burn
+INC-0340,Sugarcane Field Burning,agricultural_burn
+INC-0341,Sugarcane Field Burning,agricultural_burn
+INC-0342,Sugarcane Field Burning,agricultural_burn
+INC-0343,Paddy Stubble Burn,agricultural_burn
+INC-0344,Crop Residue Burning,agricultural_burn
+INC-0345,Paddy Stubble Burn,agricultural_burn
+INC-0346,Crop Residue Burning,agricultural_burn
+INC-0347,Sugarcane Field Burning,agricultural_burn
+INC-0348,Crop Residue Burning,agricultural_burn
+INC-0349,Paddy Stubble Burn,agricultural_burn
+INC-0350,Sugarcane Field Burning,agricultural_burn
+INC-0351,Sugarcane Field Burning,agricultural_burn
+INC-0352,Sugarcane Field Burning,agricultural_burn
+INC-0353,Crop Residue Burning,agricultural_burn
+INC-0354,Paddy Stubble Burn,agricultural_burn
+INC-0355,Paddy Stubble Burn,agricultural_burn
+INC-0356,Paddy Stubble Burn,agricultural_burn
+INC-0357,Crop Residue Burning,agricultural_burn
+INC-0358,Sugarcane Field Burning,agricultural_burn
+INC-0359,Crop Residue Burning,agricultural_burn
+INC-0360,Paddy Stubble Burn,agricultural_burn
+INC-0361,Sugarcane Field Burning,agricultural_burn
+INC-0362,Crop Residue Burning,agricultural_burn
+INC-0363,Crop Residue Burning,agricultural_burn
+INC-0364,Sugarcane Field Burning,agricultural_burn
+INC-0365,Paddy Stubble Burn,agricultural_burn
+INC-0366,Sugarcane Field Burning,agricultural_burn
+INC-0367,Paddy Stubble Burn,agricultural_burn
+INC-0368,Crop Residue Burning,agricultural_burn
+INC-0369,Crop Residue Burning,agricultural_burn
+INC-0370,Paddy Stubble Burn,agricultural_burn
+INC-0371,Sugarcane Field Burning,agricultural_burn
+INC-0372,Sugarcane Field Burning,agricultural_burn
+INC-0373,Sugarcane Field Burning,agricultural_burn
+INC-0374,Crop Residue Burning,agricultural_burn
+INC-0375,Paddy Stubble Burn,agricultural_burn
+INC-0376,Colliery Smoldering Pit,mining_fire
+INC-0377,Colliery Smoldering Pit,mining_fire
+INC-0378,Colliery Smoldering Pit,mining_fire
+INC-0379,Open-Cast Coal Seam Fire,mining_fire
+INC-0380,Open-Cast Coal Seam Fire,mining_fire
+INC-0381,Open-Cast Coal Seam Fire,mining_fire
+INC-0382,Open-Cast Coal Seam Fire,mining_fire
+INC-0383,Colliery Smoldering Pit,mining_fire
+INC-0384,Colliery Smoldering Pit,mining_fire
+INC-0385,Colliery Smoldering Pit,mining_fire
+INC-0386,Colliery Smoldering Pit,mining_fire
+INC-0387,Colliery Smoldering Pit,mining_fire
+INC-0388,Open-Cast Coal Seam Fire,mining_fire
+INC-0389,Mineral Processing Thermal Anomaly,mining_fire
+INC-0390,Colliery Smoldering Pit,mining_fire
+INC-0391,Open-Cast Coal Seam Fire,mining_fire
+INC-0392,Mineral Processing Thermal Anomaly,mining_fire
+INC-0393,Open-Cast Coal Seam Fire,mining_fire
+INC-0394,Open-Cast Coal Seam Fire,mining_fire
+INC-0395,Colliery Smoldering Pit,mining_fire
+INC-0396,Open-Cast Coal Seam Fire,mining_fire
+INC-0397,Colliery Smoldering Pit,mining_fire
+INC-0398,Mineral Processing Thermal Anomaly,mining_fire
+INC-0399,Mineral Processing Thermal Anomaly,mining_fire
+INC-0400,Open-Cast Coal Seam Fire,mining_fire
+INC-0401,Open-Cast Coal Seam Fire,mining_fire
+INC-0402,Colliery Smoldering Pit,mining_fire
+INC-0403,Open-Cast Coal Seam Fire,mining_fire
+INC-0404,Mineral Processing Thermal Anomaly,mining_fire
+INC-0405,Colliery Smoldering Pit,mining_fire
+INC-0406,Colliery Smoldering Pit,mining_fire
+INC-0407,Mineral Processing Thermal Anomaly,mining_fire
+INC-0408,Colliery Smoldering Pit,mining_fire
+INC-0409,Open-Cast Coal Seam Fire,mining_fire
+INC-0410,Colliery Smoldering Pit,mining_fire
+INC-0411,Mineral Processing Thermal Anomaly,mining_fire
+INC-0412,Open-Cast Coal Seam Fire,mining_fire
+INC-0413,Mineral Processing Thermal Anomaly,mining_fire
+INC-0414,Mineral Processing Thermal Anomaly,mining_fire
+INC-0415,Open-Cast Coal Seam Fire,mining_fire
+INC-0416,Mineral Processing Thermal Anomaly,mining_fire
+INC-0417,Colliery Smoldering Pit,mining_fire
+INC-0418,Mineral Processing Thermal Anomaly,mining_fire
+INC-0419,Colliery Smoldering Pit,mining_fire
+INC-0420,Open-Cast Coal Seam Fire,mining_fire
+INC-0421,Colliery Smoldering Pit,mining_fire
+INC-0422,Open-Cast Coal Seam Fire,mining_fire
+INC-0423,Open-Cast Coal Seam Fire,mining_fire
+INC-0424,Mineral Processing Thermal Anomaly,mining_fire
+INC-0425,Mineral Processing Thermal Anomaly,mining_fire
+INC-0426,Open-Cast Coal Seam Fire,mining_fire
+INC-0427,Colliery Smoldering Pit,mining_fire
+INC-0428,Colliery Smoldering Pit,mining_fire
+INC-0429,Mineral Processing Thermal Anomaly,mining_fire
+INC-0430,Mineral Processing Thermal Anomaly,mining_fire
+INC-0431,Mineral Processing Thermal Anomaly,mining_fire
+INC-0432,Colliery Smoldering Pit,mining_fire
+INC-0433,Colliery Smoldering Pit,mining_fire
+INC-0434,Mineral Processing Thermal Anomaly,mining_fire
+INC-0435,Mineral Processing Thermal Anomaly,mining_fire
+INC-0436,Open-Cast Coal Seam Fire,mining_fire
+INC-0437,Open-Cast Coal Seam Fire,mining_fire
+INC-0438,Open-Cast Coal Seam Fire,mining_fire
+INC-0439,Mineral Processing Thermal Anomaly,mining_fire
+INC-0440,Mineral Processing Thermal Anomaly,mining_fire
+INC-0441,Mineral Processing Thermal Anomaly,mining_fire
+INC-0442,Open-Cast Coal Seam Fire,mining_fire
+INC-0443,Mineral Processing Thermal Anomaly,mining_fire
+INC-0444,Colliery Smoldering Pit,mining_fire
+INC-0445,Colliery Smoldering Pit,mining_fire
+INC-0446,Mineral Processing Thermal Anomaly,mining_fire
+INC-0447,Colliery Smoldering Pit,mining_fire
+INC-0448,Colliery Smoldering Pit,mining_fire
+INC-0449,Colliery Smoldering Pit,mining_fire
+INC-0450,Open-Cast Coal Seam Fire,mining_fire
+INC-0451,Mineral Processing Thermal Anomaly,mining_fire
+INC-0452,Mineral Processing Thermal Anomaly,mining_fire
+INC-0453,Mineral Processing Thermal Anomaly,mining_fire
+INC-0454,Mineral Processing Thermal Anomaly,mining_fire
+INC-0455,Open-Cast Coal Seam Fire,mining_fire
+INC-0456,Municipal Landfill Fire,other_unknown
+INC-0457,Construction Heating Anomaly,other_unknown
+INC-0458,Construction Heating Anomaly,other_unknown
+INC-0459,Transient Urban Anomaly,other_unknown
+INC-0460,Transient Urban Anomaly,other_unknown
+INC-0461,Transient Urban Anomaly,other_unknown
+INC-0462,Construction Heating Anomaly,other_unknown
+INC-0463,Municipal Landfill Fire,other_unknown
+INC-0464,Transient Urban Anomaly,other_unknown
+INC-0465,Transient Urban Anomaly,other_unknown
+INC-0466,Municipal Landfill Fire,other_unknown
+INC-0467,Transient Urban Anomaly,other_unknown
+INC-0468,Municipal Landfill Fire,other_unknown
+INC-0469,Construction Heating Anomaly,other_unknown
+INC-0470,Transient Urban Anomaly,other_unknown
+INC-0471,Construction Heating Anomaly,other_unknown
+INC-0472,Municipal Landfill Fire,other_unknown
+INC-0473,Transient Urban Anomaly,other_unknown
+INC-0474,Construction Heating Anomaly,other_unknown
+INC-0475,Transient Urban Anomaly,other_unknown
+INC-0476,Construction Heating Anomaly,other_unknown
+INC-0477,Municipal Landfill Fire,other_unknown
+INC-0478,Construction Heating Anomaly,other_unknown
+INC-0479,Transient Urban Anomaly,other_unknown
+INC-0480,Construction Heating Anomaly,other_unknown
+INC-0481,Construction Heating Anomaly,other_unknown
+INC-0482,Construction Heating Anomaly,other_unknown
+INC-0483,Municipal Landfill Fire,other_unknown
+INC-0484,Construction Heating Anomaly,other_unknown
+INC-0485,Transient Urban Anomaly,other_unknown
+INC-0486,Construction Heating Anomaly,other_unknown
+INC-0487,Construction Heating Anomaly,other_unknown
+INC-0488,Municipal Landfill Fire,other_unknown
+INC-0489,Transient Urban Anomaly,other_unknown
+INC-0490,Construction Heating Anomaly,other_unknown
+INC-0491,Construction Heating Anomaly,other_unknown
+INC-0492,Construction Heating Anomaly,other_unknown
+INC-0493,Municipal Landfill Fire,other_unknown
+INC-0494,Construction Heating Anomaly,other_unknown
+INC-0495,Construction Heating Anomaly,other_unknown
+INC-0496,Construction Heating Anomaly,other_unknown
+INC-0497,Municipal Landfill Fire,other_unknown
+INC-0498,Municipal Landfill Fire,other_unknown
+INC-0499,Construction Heating Anomaly,other_unknown
+INC-0500,Transient Urban Anomaly,other_unknown
+INC-0501,Municipal Landfill Fire,other_unknown
+INC-0502,Municipal Landfill Fire,other_unknown
+INC-0503,Municipal Landfill Fire,other_unknown
+INC-0504,Municipal Landfill Fire,other_unknown
+INC-0505,Construction Heating Anomaly,other_unknown
+INC-0506,Municipal Landfill Fire,other_unknown
+INC-0507,Transient Urban Anomaly,other_unknown
+INC-0508,Municipal Landfill Fire,other_unknown
+INC-0509,Transient Urban Anomaly,other_unknown
+INC-0510,Construction Heating Anomaly,other_unknown
+INC-0511,Transient Urban Anomaly,other_unknown
+INC-0512,Construction Heating Anomaly,other_unknown
+INC-0513,Municipal Landfill Fire,other_unknown
+INC-0514,Municipal Landfill Fire,other_unknown
+INC-0515,Construction Heating Anomaly,other_unknown
+INC-0516,Construction Heating Anomaly,other_unknown
+INC-0517,Municipal Landfill Fire,other_unknown
+INC-0518,Municipal Landfill Fire,other_unknown
+INC-0519,Construction Heating Anomaly,other_unknown
+INC-0520,Construction Heating Anomaly,other_unknown

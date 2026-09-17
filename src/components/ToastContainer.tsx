@@ -40,7 +40,7 @@ export const ToastContainer: React.FC = () => {
   return (
     <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none">
       <AnimatePresence>
-        {visibleToasts.map((toast) => (
+        {visibleToasts.map((toast: Toast) => (
           <motion.div
             key={toast.id}
             initial={{ opacity: 0, y: -12, scale: 0.95 }}

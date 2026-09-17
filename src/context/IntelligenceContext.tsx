@@ -1,40 +1,30 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import type * as maplibregl from 'maplibre-gl';
-import { HOTSPOTS_DATA } from '../data/mockData';
-import { Hotspot, AIAssistantMessage } from '../types';
-import { mapThermalEventToHotspot } from '../lib/adapters';
-import { generateAssistantResponse } from '../services/intelligence/assistant';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  ReactNode,
+} from 'react';
+import { Hotspot, AIAssistantMessage, DataSourceStatus } from '@/types';
+import { DATA_SOURCES_LIST, INITIAL_AI_MESSAGES } from '@/data/mockData';
 
-export interface Toast {
-  id: string;
-  message: string;
-  type?: 'info' | 'success' | 'warning' | 'error';
-}
-
-export type ActiveDrawerType =
+export type DrawerType =
   | 'incidents'
-  | 'industrial_fires'
+  | 'persistents'
   | 'persistent_sources'
   | 'alerts'
   | 'analytics'
   | 'datasources'
-  | 'data'
   | 'reports'
-  | 'ai'
   | 'settings'
+  | 'ai'
   | null;
 
-export type HotspotFilterType =
-  | 'all'
-  | 'industrial_fires'
-  | 'persistent_sources'
-  | 'critical'
-  | 'high'
-  | 'wildfires'
-  | 'agricultural'
-  | null;
+export type ActiveDrawerType = DrawerType;
 
 export interface MapLayersState {
   satellite: boolean;
@@ -54,152 +44,390 @@ export interface CalculatedStats {
   lastSyncTime: string;
 }
 
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+}
+
+export interface IngestionMetadata {
+  source: 'NASA_FIRMS_LIVE' | 'CACHED_DATABASE' | 'DEMO_DATASET' | 'OFFLINE';
+  status: 'LIVE_NRT' | 'CACHED' | 'STALE' | 'DEGRADED' | 'OFFLINE' | 'DEMO';
+  provider: string;
+  dataAgeMinutes: number;
+  acquisitionTime: string;
+  ingestionTime: string;
+}
+
 interface IntelligenceContextType {
-  selectedHotspot: Hotspot | null;
-  selectHotspot: (hotspot: Hotspot | null, fly?: boolean) => void;
-  focusActiveIncident: () => void;
+  // Data
   hotspots: Hotspot[];
   filteredHotspots: Hotspot[];
-  activeFilter: HotspotFilterType;
-  setFilter: (filter: HotspotFilterType) => void;
+  selectedHotspot: Hotspot | null;
+  activeDrawer: DrawerType;
+  activeFilter: string | null;
+  activeLayers: MapLayersState;
   calculatedStats: CalculatedStats;
-  activeDrawer: ActiveDrawerType;
-  openDrawer: (drawerId: ActiveDrawerType) => void;
-  closeDrawer: () => void;
-  isSettingsOpen: boolean;
-  setIsSettingsOpen: (open: boolean) => void;
-  isNotificationsOpen: boolean;
-  setIsNotificationsOpen: (open: boolean) => void;
-  isPresentationMode: boolean;
-  togglePresentationMode: () => void;
+  dataSources: DataSourceStatus[];
+  dataSourceMode: 'LIVE_NRT' | 'CACHED' | 'STALE' | 'DEGRADED' | 'OFFLINE' | 'DEMO';
+  ingestionMeta: IngestionMetadata;
+  isLoading: boolean;
   isLiveMode: boolean;
   toggleLiveMode: () => void;
-  activeLayers: MapLayersState;
-  toggleLayer: (layerKey: keyof MapLayersState) => void;
+
+  // Toasts
   toasts: Toast[];
-  addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
   removeToast: (id: string) => void;
-  mapInstance: maplibregl.Map | null;
-  setMapInstance: (map: maplibregl.Map | null) => void;
+
+  // Settings
+  theme: 'dark' | 'light';
+  setTheme: (theme: 'dark' | 'light') => void;
+  toggleTheme: () => void;
+  tempUnit: 'C' | 'F';
+  setTempUnit: (unit: 'C' | 'F') => void;
+  formatTemp: (celsius: number) => string;
+  formatTempValue: (celsius: number) => number;
+  syncCadence: string;
+  setSyncCadence: (cadence: string) => void;
+  audioAlerts: boolean;
+  setAudioAlerts: (enabled: boolean) => void;
+  criticalFrpThreshold: number;
+  setMinFrpThreshold: (val: number) => void;
+
+  // Modals & Drawers
+  isPresentationMode: boolean;
+  isSettingsOpen: boolean;
+  isNotificationsOpen: boolean;
+  isDispatchOpen: boolean;
+  dispatchTarget: Hotspot | null;
+  openDispatchModal: (hotspot?: Hotspot) => void;
+  closeDispatchModal: () => void;
+  setIsSettingsOpen: (open: boolean) => void;
+  setIsNotificationsOpen: (open: boolean) => void;
+  togglePresentationMode: () => void;
+
+  // Actions
+  selectHotspot: (hotspot: Hotspot | null, flyTo?: boolean) => void;
+  openDrawer: (drawer: DrawerType) => void;
+  closeDrawer: () => void;
+  setFilter: (filter: string | null) => void;
+  toggleLayer: (layer: keyof MapLayersState) => void;
+  refreshHotspots: () => Promise<void>;
   flyToCoords: (coords: [number, number], zoom?: number, pitch?: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   resetMapView: () => void;
-  refreshHotspots: () => Promise<void>;
-  dataSourceMode: 'LIVE' | 'CACHED' | 'SYNCING';
+  focusActiveIncident: () => void;
+  addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
+  playAlertSound: () => void;
+
+  // Map Instance
+  mapInstance: any | null;
+  setMapInstance: (map: any | null) => void;
+
+  // Map View Mode (2D / 3D Perspective)
+  is3DMode: boolean;
+  toggle3DMode: () => void;
+
+  // AI Assistant Chat
   chatMessages: AIAssistantMessage[];
-  sendChatMessage: (text: string) => void;
   isAITyping: boolean;
-  theme: 'light';
-  setTheme: (theme: 'light') => void;
-  toggleTheme: () => void;
+  sendChatMessage: (text: string) => Promise<void>;
 }
 
 const IntelligenceContext = createContext<IntelligenceContextType | undefined>(undefined);
 
-const INITIAL_AI_MESSAGES: AIAssistantMessage[] = [
-  {
-    id: 'msg-0',
-    sender: 'assistant',
-    timestamp: '18:50',
-    text: `👋 Hello! I am the **FlameX AI Copilot**, grounded directly in our active NASA FIRMS satellite feed, OpenStreetMap industrial corridors, and ESA WorldCover baseline database.\n\nAsk me anything about current thermal anomalies or abnormal industrial facility emissions.`,
-    suggestedActions: [
-      { label: 'Which facilities are abnormal?', actionKey: 'QUERY_ABNORMAL' },
-      { label: 'Summarize Industrial Fires', actionKey: 'FILTER_FIRES' },
-      { label: 'Check Persistent Sources', actionKey: 'FILTER_PERSISTENT' },
-    ],
-  },
-];
+export function isActionableAlert(h: Hotspot): boolean {
+  return (
+    h.severity === 'critical' ||
+    h.status === 'CRITICAL_FIRE' ||
+    h.status === 'ABNORMAL' ||
+    h.baselineRatio >= 2.0
+  );
+}
 
-export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [hotspots, setHotspots] = useState<Hotspot[]>(HOTSPOTS_DATA);
-  const [selectedHotspot, setSelectedHotspotState] = useState<Hotspot | null>(HOTSPOTS_DATA[0]);
-  const [activeFilter, setActiveFilter] = useState<HotspotFilterType>(null);
-  const [activeDrawer, setActiveDrawer] = useState<ActiveDrawerType>(null);
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
-  const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
-  const [isLiveMode, setIsLiveMode] = useState<boolean>(true);
-  const [dataSourceMode, setDataSourceMode] = useState<'LIVE' | 'CACHED' | 'SYNCING'>('CACHED');
+export function isPersistentSource(h: Hotspot): boolean {
+  return (
+    h.classification === 'Gas Flare' ||
+    h.classification === 'Mining / Furnace Activity' ||
+    parseInt(h.persistenceDays || '0') >= 10 ||
+    h.persistenceScore >= 50
+  );
+}
+
+export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
+  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
+  const [activeDrawer, setActiveDrawer] = useState<DrawerType>(null);
+  const [activeFilter, setActiveFilterState] = useState<string | null>(null);
   const [activeLayers, setActiveLayers] = useState<MapLayersState>({
     satellite: true,
     heatmap: false,
     industrial: true,
     boundaries: false,
   });
+  const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
+  const [isDispatchOpen, setIsDispatchOpen] = useState<boolean>(false);
+  const [dispatchTarget, setDispatchTarget] = useState<Hotspot | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null);
+  const [mapInstance, setMapInstance] = useState<any | null>(null);
   const [chatMessages, setChatMessages] = useState<AIAssistantMessage[]>(INITIAL_AI_MESSAGES);
   const [isAITyping, setIsAITyping] = useState<boolean>(false);
-  const theme = 'light' as const;
 
-  // Ensure document always has light theme
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    }
-  }, []);
+  // Settings State
+  const [theme, setThemeState] = useState<'dark' | 'light'>('light');
+  const [tempUnit, setTempUnitState] = useState<'C' | 'F'>('C');
+  const [syncCadence, setSyncCadenceState] = useState<string>('30s');
+  const [audioAlerts, setAudioAlertsState] = useState<boolean>(true);
+  const [criticalFrpThreshold, setMinFrpThresholdState] = useState<number>(15);
 
-  const setTheme = useCallback((_newTheme: 'light') => {
-    // Single light theme only
-  }, []);
+  // Ingestion Meta
+  const [ingestionMeta, setIngestionMeta] = useState<IngestionMetadata>({
+    source: 'CACHED_DATABASE',
+    status: 'CACHED',
+    provider: 'NASA FIRMS VIIRS/MODIS (Durable Storage Cache)',
+    dataAgeMinutes: 45,
+    acquisitionTime: new Date().toISOString(),
+    ingestionTime: new Date().toISOString(),
+  });
 
-  const toggleTheme = useCallback(() => {
-    // Single light theme only
-  }, []);
+  const dataSourceMode = ingestionMeta.status;
+  const isLiveMode = dataSourceMode === 'LIVE_NRT';
+
+  // Web Audio Synth Chime
+  const playAlertSound = useCallback(() => {
+    if (!audioAlerts || typeof window === 'undefined') return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    } catch {}
+  }, [audioAlerts]);
 
   // Toast feedback
-  const addToast = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
-  }, []);
+  const addToast = useCallback(
+    (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+      const id = Math.random().toString(36).substring(2, 9);
+      setToasts((prev) => [...prev, { id, message, type }]);
+      if (type === 'warning' || type === 'error') {
+        playAlertSound();
+      }
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 4000);
+    },
+    [playAlertSound]
+  );
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // Fetch real thermal records from /api/firms/latest
+  const toggleLiveMode = useCallback(() => {
+    addToast(
+      `Live status: ${dataSourceMode} (Latency: ${ingestionMeta.dataAgeMinutes}m from NASA FIRMS)`,
+      'info'
+    );
+  }, [addToast, dataSourceMode, ingestionMeta.dataAgeMinutes]);
+
+  // Fetch /api/firms/latest
   const refreshHotspots = useCallback(async () => {
     try {
-      setDataSourceMode('SYNCING');
-      const res = await fetch('/api/firms/latest?limit=60');
+      setIsLoading(true);
+      const res = await fetch('/api/firms/latest?limit=50', { cache: 'no-store' });
       if (res.ok) {
-        const json = await res.json();
-        if (json.success && Array.isArray(json.events) && json.events.length > 0) {
-          const adapted = json.events.map(mapThermalEventToHotspot);
-          setHotspots(adapted);
-          setDataSourceMode(json.source === 'NASA_FIRMS_LIVE' ? 'LIVE' : 'CACHED');
-
-          setSelectedHotspotState((prev) => {
-            if (!prev) return adapted[0];
-            const match = adapted.find((h: Hotspot) => h.id === prev.id);
-            return match || adapted[0];
-          });
+        const data = await res.json();
+        if (data.events && Array.isArray(data.events)) {
+          setHotspots(data.events);
+          if (!selectedHotspot && data.events.length > 0) {
+            setSelectedHotspot(data.events[0]);
+          }
+          if (data.status) {
+            setIngestionMeta({
+              source: data.source || 'CACHED_DATABASE',
+              status: data.status || 'CACHED',
+              provider: data.provider || 'NASA FIRMS VIIRS/MODIS',
+              dataAgeMinutes: data.dataAgeMinutes !== undefined ? data.dataAgeMinutes : 45,
+              acquisitionTime: data.acquisitionTime || new Date().toISOString(),
+              ingestionTime: data.ingestionTime || new Date().toISOString(),
+            });
+          }
         }
       }
-    } catch {
-      setDataSourceMode('CACHED');
+    } catch (err) {
+      console.error('Failed to refresh thermal telemetry:', err);
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [selectedHotspot]);
 
   // Initial load
   useEffect(() => {
     refreshHotspots();
   }, [refreshHotspots]);
 
-  // Dynamically compute real stats from active data
+  // Filtered hotspots computation
+  const filteredHotspots = useMemo<Hotspot[]>(() => {
+    if (!activeFilter) return hotspots;
+    if (activeFilter === 'industrial_fires') {
+      return hotspots.filter((h) => h.classification === 'Industrial Fire');
+    }
+    if (activeFilter === 'wildfires') {
+      return hotspots.filter((h) => h.classification === 'Wildfire');
+    }
+    if (activeFilter === 'frequent') {
+      return hotspots.filter(isPersistentSource);
+    }
+    return hotspots;
+  }, [hotspots, activeFilter]);
+
+  // Load Settings from Server
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.settings) {
+          if (data.settings.temperature_unit) setTempUnitState(data.settings.temperature_unit);
+          if (data.settings.critical_frp_threshold) setMinFrpThresholdState(data.settings.critical_frp_threshold);
+          if (data.settings.refresh_interval) setSyncCadenceState(data.settings.refresh_interval);
+          if (data.settings.audio_alerts !== undefined) setAudioAlertsState(Boolean(data.settings.audio_alerts));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Cadence Polling Interval
+  useEffect(() => {
+    let ms = 30000;
+    if (syncCadence === '15s') ms = 15000;
+    else if (syncCadence === '30s') ms = 30000;
+    else if (syncCadence === '60s') ms = 60000;
+    else if (syncCadence === '5m') ms = 300000;
+
+    const interval = setInterval(() => {
+      refreshHotspots();
+    }, ms);
+
+    return () => clearInterval(interval);
+  }, [syncCadence, refreshHotspots]);
+
+  // Sync theme with localStorage and documentElement
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('flarex_theme');
+      const activeTheme = saved === 'dark' || saved === 'light' ? saved : 'light';
+      setThemeState(activeTheme);
+      document.documentElement.setAttribute('data-theme', activeTheme);
+      document.documentElement.classList.toggle('dark', activeTheme === 'dark');
+      document.documentElement.classList.toggle('light', activeTheme === 'light');
+    }
+  }, []);
+
+  const setTheme = useCallback((newTheme: 'dark' | 'light') => {
+    setThemeState(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('flarex_theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+      document.documentElement.classList.toggle('light', newTheme === 'light');
+    }
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setThemeState((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('flarex_theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.classList.toggle('dark', next === 'dark');
+        document.documentElement.classList.toggle('light', next === 'light');
+      }
+      return next;
+    });
+  }, []);
+
+  // Temperature conversions
+  const formatTemp = useCallback(
+    (celsius: number): string => {
+      if (tempUnit === 'F') {
+        const fahrenheit = Math.round((celsius * 9) / 5 + 32);
+        return `${fahrenheit}°F`;
+      }
+      return `${Math.round(celsius)}°C`;
+    },
+    [tempUnit]
+  );
+
+  const formatTempValue = useCallback(
+    (celsius: number): number => {
+      if (tempUnit === 'F') {
+        return Math.round((celsius * 9) / 5 + 32);
+      }
+      return Math.round(celsius);
+    },
+    [tempUnit]
+  );
+
+  const setTempUnit = useCallback((unit: 'C' | 'F') => {
+    setTempUnitState(unit);
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ temperature_unit: unit }),
+    }).catch(() => {});
+  }, []);
+
+  const setSyncCadence = useCallback((cadence: string) => {
+    setSyncCadenceState(cadence);
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_interval: cadence }),
+    }).catch(() => {});
+  }, []);
+
+  const setAudioAlerts = useCallback((enabled: boolean) => {
+    setAudioAlertsState(enabled);
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ audio_alerts: enabled ? 1 : 0 }),
+    }).catch(() => {});
+  }, []);
+
+  const setMinFrpThreshold = useCallback((val: number) => {
+    setMinFrpThresholdState(val);
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ critical_frp_threshold: val }),
+    }).catch(() => {});
+  }, []);
+
+  // Dynamically compute real stats from active authoritative data
   const calculatedStats = useMemo<CalculatedStats>(() => {
     const totalEvents = hotspots.length;
     const industrialFires = hotspots.filter((h) => h.classification === 'Industrial Fire').length;
-    const persistentSources = hotspots.filter(
-      (h) => h.classification === 'Gas Flare' || h.classification === 'Mining / Furnace Activity' || h.persistenceScore >= 50
-    ).length;
-    const criticalAlerts = hotspots.filter((h) => h.severity === 'critical' || h.status === 'CRITICAL_FIRE' || h.status === 'ABNORMAL').length;
+    const persistentSources = hotspots.filter(isPersistentSource).length;
+    const criticalAlerts = hotspots.filter(isActionableAlert).length;
     const abnormalSources = hotspots.filter((h) => h.status === 'ABNORMAL' || h.baselineRatio >= 2.0).length;
     const totalConf = hotspots.reduce((acc, h) => acc + h.confidence, 0);
     const averageConfidence = totalEvents > 0 ? Math.round(totalConf / totalEvents) : 92;
@@ -217,208 +445,239 @@ export const IntelligenceProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, [hotspots]);
 
-  // Compute filtered hotspots
-  const filteredHotspots = useMemo(() => {
-    if (activeFilter === 'industrial_fires') {
-      return hotspots.filter((h) => h.classification === 'Industrial Fire');
-    }
-    if (activeFilter === 'persistent_sources') {
-      return hotspots.filter(
-        (h) => h.classification === 'Gas Flare' || h.classification === 'Mining / Furnace Activity' || h.persistenceScore >= 50
-      );
-    }
-    if (activeFilter === 'critical') {
-      return hotspots.filter((h) => h.severity === 'critical' || h.status === 'CRITICAL_FIRE');
-    }
-    if (activeFilter === 'high') {
-      return hotspots.filter((h) => h.severity === 'high' || h.status === 'ABNORMAL');
-    }
-    if (activeFilter === 'wildfires') {
-      return hotspots.filter((h) => h.classification === 'Wildfire');
-    }
-    if (activeFilter === 'agricultural') {
-      return hotspots.filter((h) => h.classification === 'Agricultural Burning');
-    }
-    return hotspots;
-  }, [hotspots, activeFilter]);
+  // Dispatch modal
+  const openDispatchModal = useCallback((hotspot?: Hotspot) => {
+    setDispatchTarget(hotspot || selectedHotspot || null);
+    setIsDispatchOpen(true);
+  }, [selectedHotspot]);
 
-  // Map camera controls
-  const flyToCoords = useCallback((coords: [number, number], zoom = 7.5, pitch = 25) => {
-    if (!mapInstance) return;
-    mapInstance.flyTo({
-      center: coords,
-      zoom,
-      pitch,
-      speed: 1.25,
-      curve: 1.3,
-      essential: true,
-      easing: (t) => t * (2 - t),
-    });
+  const closeDispatchModal = useCallback(() => {
+    setIsDispatchOpen(false);
+    setDispatchTarget(null);
+  }, []);
+
+  // FlyTo and selection
+  const selectHotspot = useCallback((hotspot: Hotspot | null, flyTo: boolean = true) => {
+    setSelectedHotspot(hotspot);
+    if (hotspot && flyTo && mapInstance) {
+      mapInstance.flyTo({
+        center: hotspot.coordinates,
+        zoom: 8.5,
+        pitch: 35,
+        essential: true,
+        duration: 1600,
+      });
+    }
   }, [mapInstance]);
 
+  const flyToCoords = useCallback(
+    (coords: [number, number], zoom: number = 8.5, pitch: number = 30) => {
+      if (mapInstance) {
+        mapInstance.flyTo({
+          center: coords,
+          zoom,
+          pitch,
+          essential: true,
+          duration: 1400,
+        });
+      }
+    },
+    [mapInstance]
+  );
+
   const zoomIn = useCallback(() => {
-    if (!mapInstance) return;
-    mapInstance.zoomIn({ duration: 250 });
+    if (mapInstance) mapInstance.zoomIn({ duration: 300 });
   }, [mapInstance]);
 
   const zoomOut = useCallback(() => {
-    if (!mapInstance) return;
-    mapInstance.zoomOut({ duration: 250 });
+    if (mapInstance) mapInstance.zoomOut({ duration: 300 });
   }, [mapInstance]);
 
   const resetMapView = useCallback(() => {
-    if (!mapInstance) return;
-    mapInstance.flyTo({
-      center: [80.5, 21.0],
-      zoom: 4.25,
-      pitch: 0,
-      bearing: 0,
-      speed: 1.1,
-      curve: 1.3,
-      essential: true,
-      easing: (t) => t * (2 - t),
-    });
-    addToast('Camera reset to national overview', 'info');
-  }, [mapInstance, addToast]);
-
-  // Hotspot selection
-  const selectHotspot = useCallback((hotspot: Hotspot | null, fly = true) => {
-    setSelectedHotspotState(hotspot);
-    if (hotspot && fly) {
-      flyToCoords(hotspot.coordinates, 7.5, 25);
-      addToast(`Focused on: ${hotspot.name} (${hotspot.location})`, hotspot.severity === 'critical' ? 'warning' : 'info');
+    if (mapInstance) {
+      mapInstance.flyTo({
+        center: [78.9629, 22.5937],
+        zoom: 4.6,
+        pitch: 0,
+        bearing: 0,
+        essential: true,
+        duration: 1800,
+      });
     }
-  }, [flyToCoords, addToast]);
+  }, [mapInstance]);
 
   const focusActiveIncident = useCallback(() => {
-    if (selectedHotspot) {
-      flyToCoords(selectedHotspot.coordinates, 8.2, 30);
-      addToast(`Target locked: ${selectedHotspot.name} (${selectedHotspot.frp} MW)`, 'info');
-    }
-  }, [selectedHotspot, flyToCoords, addToast]);
-
-  // Filter selection
-  const setFilter = useCallback((filter: HotspotFilterType) => {
-    setActiveFilter(filter);
-    if (filter === 'industrial_fires') {
-      const fire = hotspots.find((h) => h.classification === 'Industrial Fire');
-      if (fire) selectHotspot(fire, true);
-      addToast('Filter: Showing Confirmed Industrial Fires', 'warning');
-    } else if (filter === 'persistent_sources') {
-      const pers = hotspots.find((h) => h.classification === 'Gas Flare' || h.persistenceScore >= 50);
-      if (pers) selectHotspot(pers, true);
-      addToast('Filter: Showing Persistent Industrial Heat Flares', 'info');
-    } else if (filter === 'critical') {
-      const crit = hotspots.find((h) => h.severity === 'critical');
-      if (crit) selectHotspot(crit, true);
-      addToast('Filter: Showing Critical Fire Alerts', 'warning');
+    if (selectedHotspot && mapInstance) {
+      mapInstance.flyTo({
+        center: selectedHotspot.coordinates,
+        zoom: 9.0,
+        pitch: 40,
+        essential: true,
+        duration: 1500,
+      });
     } else {
-      resetMapView();
-      addToast('Showing all thermal detections', 'info');
+      addToast('No active incident selected to focus', 'info');
     }
-  }, [hotspots, selectHotspot, resetMapView, addToast]);
+  }, [selectedHotspot, mapInstance, addToast]);
 
-  // Drawer management
-  const openDrawer = useCallback((drawerId: ActiveDrawerType) => {
-    setActiveDrawer(drawerId);
-    setIsSettingsOpen(false);
-    setIsNotificationsOpen(false);
+  const openDrawer = useCallback((drawer: DrawerType) => {
+    setActiveDrawer(drawer);
   }, []);
 
   const closeDrawer = useCallback(() => {
     setActiveDrawer(null);
   }, []);
 
-  const toggleLayer = useCallback((layerKey: keyof MapLayersState) => {
-    setActiveLayers((prev) => {
-      const next = { ...prev, [layerKey]: !prev[layerKey] };
-      const label =
-        layerKey === 'satellite' ? 'High-Res Satellite Imagery' :
-        layerKey === 'heatmap' ? 'Thermal Density Heatmap' :
-        layerKey === 'industrial' ? 'Industrial Facility Clusters' : 'Administrative GIS Boundaries';
-      addToast(`${label}: ${next[layerKey] ? 'ENABLED' : 'DISABLED'}`, 'info');
-      return next;
-    });
-  }, [addToast]);
+  const setFilter = useCallback((filter: string | null) => {
+    setActiveFilterState(filter);
+  }, []);
+
+  const toggleLayer = useCallback((layer: keyof MapLayersState) => {
+    setActiveLayers((prev) => ({
+      ...prev,
+      [layer]: !prev[layer],
+    }));
+  }, []);
 
   const togglePresentationMode = useCallback(() => {
     setIsPresentationMode((prev) => !prev);
   }, []);
 
-  const toggleLiveMode = useCallback(() => {
-    setIsLiveMode((prev) => {
+  // 2D / 3D Perspective Digital Twin Mode
+  const [is3DMode, setIs3DMode] = useState<boolean>(false);
+
+  const toggle3DMode = useCallback(() => {
+    setIs3DMode((prev) => {
       const next = !prev;
-      addToast(`Live Ingestion Mode: ${next ? 'STREAMING ACTIVE' : 'PAUSED'}`, next ? 'success' : 'warning');
+      if (mapInstance) {
+        if (next) {
+          mapInstance.easeTo({
+            pitch: 55,
+            bearing: -20,
+            duration: 1200,
+          });
+          addToast('Switched to 3D Perspective Digital Twin view', 'info');
+        } else {
+          mapInstance.easeTo({
+            pitch: 0,
+            bearing: 0,
+            duration: 1000,
+          });
+          addToast('Switched to 2D Tactical Plan view', 'info');
+        }
+      }
       return next;
     });
-  }, [addToast]);
+  }, [mapInstance, addToast]);
 
-  // AI Assistant Chat function
-  const sendChatMessage = useCallback((text: string) => {
-    if (!text.trim()) return;
+  // AI Assistant Chat
+  const sendChatMessage = useCallback(
+    async (text: string) => {
+      const userMsg: AIAssistantMessage = {
+        id: `user-${Date.now()}`,
+        sender: 'user',
+        text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
 
-    const userMsg: AIAssistantMessage = {
-      id: `msg-user-${Date.now()}`,
-      sender: 'user',
-      text,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-    };
+      setChatMessages((prev) => [...prev, userMsg]);
+      setIsAITyping(true);
 
-    setChatMessages((prev) => [...prev, userMsg]);
-    setIsAITyping(true);
+      try {
+        const res = await fetch('/api/ai/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text, hotspotContext: selectedHotspot }),
+        });
 
-    setTimeout(() => {
-      const botResponse = generateAssistantResponse(text, {
-        hotspots,
-        selectedHotspot,
-      });
-
-      setChatMessages((prev) => [...prev, botResponse]);
-      setIsAITyping(false);
-    }, 450);
-  }, [hotspots, selectedHotspot]);
+        if (res.ok) {
+          const data = await res.json();
+          const aiMsg: AIAssistantMessage = {
+            id: `ai-${Date.now()}`,
+            sender: 'assistant',
+            text: data.response || 'Telemetry analysis complete. No anomalous baseline exceedance.',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            highlightFacilities: data.highlightFacilities,
+            suggestedActions: data.suggestedActions,
+          };
+          setChatMessages((prev) => [...prev, aiMsg]);
+        }
+      } catch (err) {
+        console.error('AI chat query error:', err);
+      } finally {
+        setIsAITyping(false);
+      }
+    },
+    [selectedHotspot]
+  );
 
   return (
     <IntelligenceContext.Provider
       value={{
-        selectedHotspot,
-        selectHotspot,
-        focusActiveIncident,
         hotspots,
         filteredHotspots,
-        activeFilter,
-        setFilter,
-        calculatedStats,
+        selectedHotspot,
         activeDrawer,
-        openDrawer,
-        closeDrawer,
-        isSettingsOpen,
-        setIsSettingsOpen,
-        isNotificationsOpen,
-        setIsNotificationsOpen,
-        isPresentationMode,
-        togglePresentationMode,
+        activeFilter,
+        activeLayers,
+        calculatedStats,
+        dataSources: DATA_SOURCES_LIST,
+        dataSourceMode,
+        ingestionMeta,
+        isLoading,
         isLiveMode,
         toggleLiveMode,
-        activeLayers,
-        toggleLayer,
+
         toasts,
-        addToast,
         removeToast,
-        mapInstance,
-        setMapInstance,
+
+        theme,
+        setTheme,
+        toggleTheme,
+        tempUnit,
+        setTempUnit,
+        formatTemp,
+        formatTempValue,
+        syncCadence,
+        setSyncCadence,
+        audioAlerts,
+        setAudioAlerts,
+        criticalFrpThreshold,
+        setMinFrpThreshold,
+
+        isPresentationMode,
+        isSettingsOpen,
+        isNotificationsOpen,
+        isDispatchOpen,
+        dispatchTarget,
+        openDispatchModal,
+        closeDispatchModal,
+        setIsSettingsOpen,
+        setIsNotificationsOpen,
+        togglePresentationMode,
+
+        selectHotspot,
+        openDrawer,
+        closeDrawer,
+        setFilter,
+        toggleLayer,
+        refreshHotspots,
         flyToCoords,
         zoomIn,
         zoomOut,
         resetMapView,
-        refreshHotspots,
-        dataSourceMode,
+        focusActiveIncident,
+        addToast,
+        playAlertSound,
+
+        mapInstance,
+        setMapInstance,
+        is3DMode,
+        toggle3DMode,
+
         chatMessages,
-        sendChatMessage,
         isAITyping,
-        theme,
-        setTheme,
-        toggleTheme,
+        sendChatMessage,
       }}
     >
       {children}

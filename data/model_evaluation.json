@@ -1,0 +1,252 @@
+{
+  "model_name": "CatBoost",
+  "version": "FLAREX-StageB-CatBoost-v2.4",
+  "training_date": "2026-09-15",
+  "dataset_summary": {
+    "total_incident_records": 520,
+    "total_ground_truth_labels": 520,
+    "unique_incidents": 520,
+    "orphan_records": 0,
+    "class_distribution": {
+      "industrial_fire": 140,
+      "wildfire": 125,
+      "agricultural_burn": 110,
+      "mining_fire": 80,
+      "other_unknown": 65
+    },
+    "train_samples": 416,
+    "holdout_test_samples": 104,
+    "cross_validation_strategy": "5-Fold Stratified Group-Safe Holdout"
+  },
+  "leakage_protections": {
+    "provenance_fields_excluded": [
+      "incident_name",
+      "reference_source",
+      "reference_url",
+      "firms_match",
+      "firms_nearby_match",
+      "firms_nearby_status",
+      "firms_deep_match",
+      "firms_deep_status",
+      "firms_deep_api_successes",
+      "firms_deep_api_failures",
+      "firms_evidence_level",
+      "firms_evidence_status",
+      "firms_evidence_source",
+      "historical_firms_status",
+      "historical_firms_api_successes",
+      "historical_firms_api_failures"
+    ],
+    "post_event_metrics_excluded": [
+      "fire_duration_days",
+      "spread_rate_km_day",
+      "thermal_area_km2"
+    ],
+    "future_temporal_leakage_prevented": "Strictly historical pre-event windows (T_obs < T_event)"
+  },
+  "model_comparison_table": [
+    {
+      "Model": "Logistic Regression (Baseline)",
+      "CV Macro F1": 100.0,
+      "CV Acc": 100.0,
+      "Holdout Macro F1": 100.0,
+      "Holdout Accuracy": 100.0,
+      "Industrial Fire Precision": 100.0,
+      "Industrial Fire Recall": 100.0,
+      "Industrial Fire F1": 100.0
+    },
+    {
+      "Model": "Random Forest",
+      "CV Macro F1": 100.0,
+      "CV Acc": 100.0,
+      "Holdout Macro F1": 100.0,
+      "Holdout Accuracy": 100.0,
+      "Industrial Fire Precision": 100.0,
+      "Industrial Fire Recall": 100.0,
+      "Industrial Fire F1": 100.0
+    },
+    {
+      "Model": "HistGradientBoosting (LightGBM)",
+      "CV Macro F1": 99.2,
+      "CV Acc": 99.28,
+      "Holdout Macro F1": 100.0,
+      "Holdout Accuracy": 100.0,
+      "Industrial Fire Precision": 100.0,
+      "Industrial Fire Recall": 100.0,
+      "Industrial Fire F1": 100.0
+    },
+    {
+      "Model": "Gradient Boosting",
+      "CV Macro F1": 100.0,
+      "CV Acc": 100.0,
+      "Holdout Macro F1": 100.0,
+      "Holdout Accuracy": 100.0,
+      "Industrial Fire Precision": 100.0,
+      "Industrial Fire Recall": 100.0,
+      "Industrial Fire F1": 100.0
+    },
+    {
+      "Model": "CatBoost",
+      "CV Macro F1": 100.0,
+      "CV Acc": 100.0,
+      "Holdout Macro F1": 100.0,
+      "Holdout Accuracy": 100.0,
+      "Industrial Fire Precision": 100.0,
+      "Industrial Fire Recall": 100.0,
+      "Industrial Fire F1": 100.0
+    }
+  ],
+  "holdout_metrics": {
+    "accuracy": 100.0,
+    "macro_f1": 100.0,
+    "macro_precision": 100.0,
+    "macro_recall": 100.0,
+    "weighted_f1": 100.0,
+    "industrial_fire": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0,
+      "support": 28
+    },
+    "per_class": {
+      "industrial_fire": {
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1": 100.0,
+        "support": 28
+      },
+      "wildfire": {
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1": 100.0,
+        "support": 25
+      },
+      "agricultural_burn": {
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1": 100.0,
+        "support": 22
+      },
+      "mining_fire": {
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1": 100.0,
+        "support": 16
+      },
+      "other_unknown": {
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1": 100.0,
+        "support": 13
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "industrial_fire",
+        "wildfire",
+        "agricultural_burn",
+        "mining_fire",
+        "other_unknown"
+      ],
+      "matrix": [
+        [
+          28,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          25,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          22,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          16,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          13
+        ]
+      ]
+    }
+  },
+  "top_features": [
+    {
+      "feature": "num__historical_fire_count_365d",
+      "importance": 14.40376
+    },
+    {
+      "feature": "num__chemical_facility_distance_km",
+      "importance": 10.92938
+    },
+    {
+      "feature": "num__industrial_distance_km",
+      "importance": 9.31149
+    },
+    {
+      "feature": "num__historical_fire_count_90d",
+      "importance": 6.46702
+    },
+    {
+      "feature": "cat__nearby_facility_type_Municipal Infrastructure",
+      "importance": 5.29125
+    },
+    {
+      "feature": "num__elevation_m",
+      "importance": 5.27589
+    },
+    {
+      "feature": "num__ndvi",
+      "importance": 4.80036
+    },
+    {
+      "feature": "num__oil_gas_facility_distance_km",
+      "importance": 4.72079
+    },
+    {
+      "feature": "num__latitude",
+      "importance": 4.40314
+    },
+    {
+      "feature": "num__industrial_landuse_distance_km",
+      "importance": 4.17878
+    },
+    {
+      "feature": "cat__nearby_facility_type_Rural Agro Storage",
+      "importance": 4.17209
+    },
+    {
+      "feature": "num__forest_cover_pct",
+      "importance": 4.05605
+    },
+    {
+      "feature": "num__vegetation_density",
+      "importance": 3.52379
+    },
+    {
+      "feature": "num__frp_mw",
+      "importance": 2.66896
+    },
+    {
+      "feature": "num__mine_distance_km",
+      "importance": 2.21418
+    }
+  ]
+}

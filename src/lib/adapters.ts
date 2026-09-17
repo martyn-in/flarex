@@ -1,7 +1,7 @@
 import { Hotspot, ExplainabilityReason, ClassificationProbabilities, LandCoverType, AbnormalityStatus, SeverityLevel } from '@/types';
 import { ThermalEventRecord } from '@/services/firms';
 
-export function mapThermalEventToHotspot(event: ThermalEventRecord): Hotspot {
+export function mapThermalEventToHotspot(event: ThermalEventRecord | any): Hotspot {
   // Convert brightness Kelvin (e.g. 412.5 K) to Celsius
   const tempC = Math.round(event.brightness_t4 > 200 ? event.brightness_t4 - 273.15 : event.brightness_t4);
 
@@ -54,13 +54,13 @@ export function mapThermalEventToHotspot(event: ThermalEventRecord): Hotspot {
   const isSpike = event.baseline_ratio >= 2.0;
 
   const history = [
-    { date: '23 Aug', frp: Math.round(baseFrp * 0.92 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '24 Aug', frp: Math.round(baseFrp * 1.02 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '25 Aug', frp: Math.round(baseFrp * 0.98 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '26 Aug', frp: Math.round(baseFrp * 1.05 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '27 Aug', frp: Math.round(baseFrp * 0.95 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '28 Aug', frp: Math.round((isSpike ? baseFrp * 1.4 : baseFrp * 1.01) * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
-    { date: '29 Aug', frp: event.frp, baseline: Math.round(baseFrp * 10) / 10, isSpike },
+    { date: '25 Aug', frp: Math.round(baseFrp * 0.94 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '26 Aug', frp: Math.round(baseFrp * 1.02 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '27 Aug', frp: Math.round(baseFrp * 0.98 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '28 Aug', frp: Math.round(baseFrp * 1.04 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '29 Aug', frp: Math.round(baseFrp * 0.96 * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '30 Aug', frp: Math.round((isSpike ? baseFrp * 1.5 : baseFrp * 1.01) * 10) / 10, baseline: Math.round(baseFrp * 10) / 10 },
+    { date: '31 Aug', frp: event.frp, baseline: Math.round(baseFrp * 10) / 10, isSpike },
   ];
 
   return {
@@ -115,3 +115,5 @@ export function mapThermalEventToHotspot(event: ThermalEventRecord): Hotspot {
     daynight: event.daynight as 'D' | 'N',
   };
 }
+
+export const dbRowToHotspot = mapThermalEventToHotspot;

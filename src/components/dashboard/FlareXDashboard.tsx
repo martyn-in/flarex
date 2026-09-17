@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Flame,
   Radio,
@@ -31,6 +31,7 @@ import DataSourcesDrawer from '@/components/drawers/DataSourcesDrawer';
 import ReportsDrawer from '@/components/drawers/ReportsDrawer';
 import SettingsModal from '@/components/modals/SettingsModal';
 import NotificationsPopover from '@/components/modals/NotificationsPopover';
+import DispatchModal from '@/components/modals/DispatchModal';
 import { ToastContainer } from '@/components/ToastContainer';
 
 interface FlareXDashboardProps {
@@ -54,11 +55,13 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     resetMapView,
     addToast,
     calculatedStats,
+    dataSourceMode,
+    ingestionMeta,
   } = useIntelligence();
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Grouped Navigation Items (Clean Professional Taxonomy without AI Assistant)
+  // 1. Sidebar Navigation Menu Items
   const menu = [
     {
       section: 'MONITORING',
@@ -66,58 +69,39 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         {
           name: 'Dashboard',
           icon: Layers,
-          active: !activeDrawer && !isSettingsOpen && activeFilter === null,
           action: () => {
             closeDrawer();
-            setIsSettingsOpen(false);
             setFilter(null);
             resetMapView();
           },
+          active: activeDrawer === null && activeFilter === null,
         },
         {
           name: 'Industrial Fires',
           icon: Flame,
-          badge: `${calculatedStats.industrialFires}`,
-          badgeColor: 'bg-red-500',
-          active: activeDrawer === 'incidents' || activeFilter === 'industrial_fires',
           action: () => {
-            if (activeDrawer === 'incidents') {
-              closeDrawer();
-            } else {
-              setFilter('industrial_fires');
-              openDrawer('incidents');
-            }
+            closeDrawer();
+            setFilter('industrial_fires');
           },
+          badge: calculatedStats.industrialFires > 0 ? `${calculatedStats.industrialFires}` : undefined,
+          badgeColor: 'bg-red-500',
+          active: activeFilter === 'industrial_fires',
         },
         {
           name: 'Persistent Sources',
           icon: Activity,
-          badge: `${calculatedStats.persistentSources}`,
+          action: () => openDrawer('persistents'),
+          badge: calculatedStats.persistentSources > 0 ? `${calculatedStats.persistentSources}` : undefined,
           badgeColor: 'bg-orange-500',
-          active: activeDrawer === 'persistent_sources' || activeFilter === 'persistent_sources',
-          action: () => {
-            if (activeDrawer === 'persistent_sources') {
-              closeDrawer();
-            } else {
-              setFilter('persistent_sources');
-              openDrawer('persistent_sources');
-            }
-          },
+          active: activeDrawer === 'persistents',
         },
         {
           name: 'Alert Center',
           icon: ShieldAlert,
-          badge: `${calculatedStats.criticalAlerts}`,
-          badgeColor: 'bg-red-500',
-          active: activeDrawer === 'alerts' || activeFilter === 'critical',
-          action: () => {
-            if (activeDrawer === 'alerts') {
-              closeDrawer();
-            } else {
-              setFilter('critical');
-              openDrawer('alerts');
-            }
-          },
+          action: () => openDrawer('alerts'),
+          badge: calculatedStats.criticalAlerts > 0 ? `${calculatedStats.criticalAlerts}` : undefined,
+          badgeColor: 'bg-red-600',
+          active: activeDrawer === 'alerts',
         },
       ],
     },
@@ -127,20 +111,14 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         {
           name: 'Analytics',
           icon: ChartNoAxesCombined,
+          action: () => openDrawer('analytics'),
           active: activeDrawer === 'analytics',
-          action: () => {
-            if (activeDrawer === 'analytics') closeDrawer();
-            else openDrawer('analytics');
-          },
         },
         {
           name: 'Data & Model',
           icon: Database,
-          active: activeDrawer === 'datasources' || activeDrawer === 'data',
-          action: () => {
-            if (activeDrawer === 'datasources' || activeDrawer === 'data') closeDrawer();
-            else openDrawer('datasources');
-          },
+          action: () => openDrawer('datasources'),
+          active: activeDrawer === 'datasources',
         },
       ],
     },
@@ -150,92 +128,55 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         {
           name: 'Reports',
           icon: FileText,
+          action: () => openDrawer('reports'),
           active: activeDrawer === 'reports',
-          action: () => {
-            if (activeDrawer === 'reports') closeDrawer();
-            else openDrawer('reports');
-          },
         },
         {
           name: 'Settings',
           icon: Settings,
-          active: isSettingsOpen || activeDrawer === 'settings',
-          action: () => {
-            if (isSettingsOpen || activeDrawer === 'settings') {
-              closeDrawer();
-              setIsSettingsOpen(false);
-            } else {
-              closeDrawer();
-              setIsSettingsOpen(true);
-            }
-          },
+          action: () => setIsSettingsOpen(true),
+          active: isSettingsOpen,
         },
       ],
     },
   ];
 
-  // 4 Top Stats (Calculated Dynamically!)
+  // 2. High-Impact Stats Cards
   const stats = [
     {
-      label: 'Thermal Events',
-      value: calculatedStats.totalEvents,
-      desc: 'Pan-India Active Feeds',
+      label: 'THERMAL EVENTS',
+      value: `${calculatedStats.totalEvents}`,
+      change: `${calculatedStats.totalEvents} Active Feeds`,
+      changeType: 'neutral',
       icon: Radio,
-      className: 'radio-glow',
-      isActive: activeFilter === null,
       action: () => {
         setFilter(null);
-        closeDrawer();
-        addToast('Showing all active thermal detections', 'info');
+        openDrawer('incidents');
       },
     },
     {
-      label: 'Industrial Fires',
-      value: calculatedStats.industrialFires,
-      desc: 'Severe Radiance Surge',
+      label: 'INDUSTRIAL FIRES',
+      value: `${calculatedStats.industrialFires}`,
+      change: 'Severe Radiance Surge',
+      changeType: 'increase',
       icon: Flame,
-      className: 'flame-glow',
-      isActive: activeFilter === 'industrial_fires',
-      action: () => {
-        if (activeFilter === 'industrial_fires') {
-          setFilter(null);
-        } else {
-          setFilter('industrial_fires');
-          addToast(`Filtered to ${calculatedStats.industrialFires} Confirmed Industrial Fires`, 'error');
-        }
-      },
+      action: () => setFilter('industrial_fires'),
     },
     {
-      label: 'Persistent Sources',
-      value: calculatedStats.persistentSources,
-      desc: 'Recurring Operational Flares',
+      label: 'PERSISTENT SOURCES',
+      value: `${calculatedStats.persistentSources}`,
+      change: 'Recurring Operational Flares',
+      changeType: 'neutral',
       icon: Activity,
-      className: 'activity-glow',
-      isActive: activeFilter === 'persistent_sources',
-      action: () => {
-        if (activeFilter === 'persistent_sources') {
-          setFilter(null);
-        } else {
-          setFilter('persistent_sources');
-          addToast(`Filtered to ${calculatedStats.persistentSources} Persistent Sources`, 'info');
-        }
-      },
+      action: () => openDrawer('persistents'),
     },
     {
-      label: 'Critical Alerts',
-      value: calculatedStats.criticalAlerts,
-      desc: '> 2.0x Historical Baseline',
+      label: 'CRITICAL ALERTS',
+      value: `${calculatedStats.criticalAlerts}`,
+      change: '> 2.0x Historical Baseline',
+      changeType: 'decrease',
       icon: ShieldAlert,
-      className: 'alert-glow',
-      isActive: activeFilter === 'critical',
-      action: () => {
-        if (activeFilter === 'critical') {
-          setFilter(null);
-        } else {
-          setFilter('critical');
-          addToast(`Filtered to ${calculatedStats.criticalAlerts} Critical Baseline Surges`, 'error');
-        }
-      },
+      action: () => openDrawer('alerts'),
     },
   ];
 
@@ -263,7 +204,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   };
 
   return (
-    <main className="app-shell flex h-screen w-full overflow-hidden">
+    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#fff9f5] text-[#431407]">
       {/* 1. SIDEBAR */}
       <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
         <div>
@@ -280,7 +221,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
                 resetMapView();
               }
             }}
-            title={onReturnToLanding ? "Return to Landing Intro" : "Reset to National Overview"}
+            title="Return to Cinematic Landing"
           >
             <div className="brand-icon">
               <Flame size={22} />
@@ -324,17 +265,6 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
 
         {/* Sidebar Footer */}
         <div className="sidebar-footer">
-          {onReturnToLanding && (
-            <button
-              type="button"
-              onClick={onReturnToLanding}
-              className="w-full mb-3 py-2 px-3 rounded-xl secondary-button text-[11px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-            >
-              <Globe size={14} className="text-[#ea580c]" />
-              <span>3D Earth Globe Intro</span>
-            </button>
-          )}
-
           <div className="sidebar-status-card">
             <span className="status-badge-dot" />
             <div>
@@ -346,23 +276,36 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       </aside>
 
       {/* 2. MAIN CONTENT (MAP & COMMAND CENTER) */}
-      <section className="main-content flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <section className="main-content flex-1 flex flex-col min-w-0 overflow-y-auto p-4 gap-3">
         {/* TOP COMMAND BAR */}
-        <header className="main-header flex items-center justify-between">
+        <header className="main-header flex items-center justify-between pb-1">
           <div className="header-title">
             <span className="header-kicker">GEOSPATIAL INTELLIGENCE PLATFORM</span>
             <h1>Thermal Anomaly Intelligence</h1>
           </div>
 
           <div className="header-actions">
+            {/* Cinematic Landing Link */}
+            {onReturnToLanding && (
+              <button
+                type="button"
+                onClick={onReturnToLanding}
+                className="icon-button hover:text-[#ea580c] transition-colors"
+                title="Return to Cinematic Landing"
+              >
+                <Globe size={18} />
+              </button>
+            )}
+
             {/* Real Search Box */}
-            <form onSubmit={handleSearchSubmit} className="search-box glass-card">
-              <Search size={16} className="shrink-0" />
+            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 px-3 py-2 rounded-xl border bg-white border-[#fed7aa] focus-within:border-[#ea580c] transition-colors w-[260px]">
+              <Search size={15} className="shrink-0 text-[#7c2d12]" />
               <input
                 type="text"
                 placeholder="Search facility, SEZ, or Event ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-0 outline-none text-[11.5px] font-medium text-[#431407] placeholder-[#9a3412]"
               />
             </form>
 
@@ -370,77 +313,127 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className={`icon-button glass-card ${isNotificationsOpen ? 'bg-white/10' : ''}`}
+              className={`icon-button ${isNotificationsOpen ? 'bg-white/10' : ''}`}
               title="Active Critical Alerts"
             >
               <Bell size={18} />
               {calculatedStats.criticalAlerts > 0 && <span className="notification-dot" />}
             </button>
 
-            {/* LIVE Pill */}
+            {/* Real Data Status Pill */}
             <div
-              className="live-pill cursor-pointer"
-              onClick={() => addToast('Live Satellite Feed active: VIIRS NOAA-20/21 & MODIS', 'success')}
-              title="Live Satellite Streaming"
+              className={`cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-mono font-extrabold border transition-all ${
+                dataSourceMode === 'LIVE_NRT'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  : dataSourceMode === 'CACHED'
+                  ? 'bg-amber-50 text-amber-900 border-amber-300'
+                  : 'bg-orange-50 text-orange-900 border-orange-300'
+              }`}
+              onClick={() =>
+                addToast(
+                  `Provider: ${ingestionMeta.provider} | Status: ${dataSourceMode} | Acquired: ${ingestionMeta.acquisitionTime.replace('T', ' ').slice(0, 19)} UTC (Age: ${ingestionMeta.dataAgeMinutes}m)`,
+                  dataSourceMode === 'LIVE_NRT' ? 'success' : 'info'
+                )
+              }
+              title="Click for full satellite pipeline telemetry & latency"
             >
-              <span className="live-dot" />
-              LIVE NRT
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  dataSourceMode === 'LIVE_NRT'
+                    ? 'bg-emerald-500 animate-ping'
+                    : dataSourceMode === 'CACHED'
+                    ? 'bg-amber-500'
+                    : 'bg-orange-500'
+                }`}
+              />
+              {dataSourceMode === 'LIVE_NRT'
+                ? 'LIVE NRT'
+                : dataSourceMode === 'CACHED'
+                ? `CACHED (${ingestionMeta.dataAgeMinutes}m)`
+                : 'DEMO DATA'}
             </div>
           </div>
         </header>
 
-        {/* 3. DYNAMIC KPI STATS GRID */}
-        <section className="stats-grid">
+        {/* 3. DYNAMIC KPI STATS GRID - EXECUTIVE ALIGNED */}
+        <section className="grid grid-cols-4 gap-3">
           {stats.map((stat) => {
             const Icon = stat.icon;
+            const isAlert = stat.label === 'CRITICAL ALERTS';
+            const isFire = stat.label === 'INDUSTRIAL FIRES';
+            const isPersistent = stat.label === 'PERSISTENT SOURCES';
+
             return (
               <article
                 key={stat.label}
                 onClick={stat.action}
-                className={`stat-card glass-card cursor-pointer ${stat.isActive ? 'active-filter' : ''}`}
+                className="p-3.5 rounded-2xl border bg-white border-[#fed7aa] hover:border-[#ea580c] hover:bg-[#fffbf8] transition-all cursor-pointer flex items-center justify-between group shadow-xs select-none"
               >
-                <div className={`stat-icon ${stat.className}`}>
-                  <Icon size={20} />
+                <div className="flex flex-col min-w-0 pr-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7c2d12] truncate">
+                    {stat.label}
+                  </span>
+                  <div className="flex items-baseline gap-1 my-0.5">
+                    <span
+                      className={`text-[26px] font-black font-mono leading-tight ${
+                        isAlert ? 'text-red-600' : isFire ? 'text-[#ea580c]' : isPersistent ? 'text-purple-700' : 'text-[#431407]'
+                      }`}
+                    >
+                      {stat.value}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-semibold truncate text-[#9a3412]">
+                    {stat.change}
+                  </span>
                 </div>
-                <div className="stat-info">
-                  <p>{stat.label}</p>
-                  <h3>{stat.value}</h3>
-                  <small>{stat.desc}</small>
+
+                <div
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
+                    isAlert
+                      ? 'bg-red-50 border-red-200 text-red-600'
+                      : isFire
+                      ? 'bg-orange-50 border-orange-200 text-[#ea580c]'
+                      : isPersistent
+                      ? 'bg-purple-50 border-purple-200 text-purple-700'
+                      : 'bg-[#fff7ed] border-[#fed7aa] text-[#ea580c]'
+                  }`}
+                >
+                  <Icon size={20} />
                 </div>
               </article>
             );
           })}
         </section>
 
-        {/* 4. MAP SECTION (PAN-INDIA SATELLITE ENGINE) */}
-        <section className="flex-1 flex flex-col min-h-[420px] w-full">
-          <article className="map-card glass-card flex-1 flex flex-col">
-            <div className="map-header">
+        {/* 4. GEOSPATIAL MAP SECTION */}
+        <section className="map-wrapper flex-1 flex flex-col min-h-[480px]">
+          <article className="map-card flex-1 flex flex-col bg-white border border-[#fed7aa] rounded-2xl p-3">
+            <div className="map-header flex items-center justify-between pb-2 mb-2 border-b border-[#fed7aa]/60">
               <div>
-                <span className="map-kicker">GEOSPATIAL INFRASTRUCTURE CORRIDORS</span>
-                <h2>Pan-India Thermal Heat &amp; Anomaly Map</h2>
+                <span className="section-kicker text-[9.5px] font-extrabold text-[#ea580c] uppercase tracking-wider block">GEOSPATIAL INFRASTRUCTURE CORRIDORS</span>
+                <h3 className="text-[14px] font-extrabold text-[#431407]">Pan-India Thermal Heat &amp; Anomaly Map</h3>
               </div>
-              <div className="map-actions">
+              <div className="map-header-actions flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => openDrawer('datasources')}
-                  className="secondary-button !text-[11px]"
+                  className="px-2.5 py-1.5 rounded-xl border border-[#fed7aa] bg-[#fff7ed] hover:bg-[#ffedd5] text-[#7c2d12] hover:text-[#431407] font-bold text-[11px] transition-colors cursor-pointer"
                 >
                   Data Sources
                 </button>
                 <button
                   type="button"
                   onClick={resetMapView}
-                  className="secondary-button"
+                  className="px-2.5 py-1.5 rounded-xl border border-[#fed7aa] bg-[#fff7ed] hover:bg-[#ffedd5] text-[#7c2d12] hover:text-[#431407] font-bold text-[11px] transition-colors cursor-pointer flex items-center gap-1"
                   title="Reset Camera View to Full India Extent"
                 >
-                  Full Map
-                  <ArrowUpRight size={15} />
+                  <span>Full Map</span>
+                  <ArrowUpRight size={14} />
                 </button>
               </div>
             </div>
 
-            <div className="map-area">
+            <div className="map-area flex-1 relative min-h-[420px] rounded-xl overflow-hidden">
               <FlareXMap />
             </div>
           </article>
@@ -459,6 +452,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       <ReportsDrawer />
       <SettingsModal />
       <NotificationsPopover />
+      <DispatchModal />
       <ToastContainer />
     </main>
   );

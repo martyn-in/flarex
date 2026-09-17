@@ -79,10 +79,10 @@ export default function AnalyticsPanel() {
                 <Building2 size={13} className="text-[#ea580c]" />
                 Industrial Infrastructure Heat (Fires &amp; Flares)
               </span>
-              <span className="font-mono font-bold text-[#261006]">{industrialCount} ({industrialPct}%)</span>
+              <span className="font-mono font-bold text-[#431407]">{industrialCount} ({industrialPct}%)</span>
             </div>
-            <div className="w-full h-2 rounded-full overflow-hidden bg-[#fed7aa]">
-              <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full" style={{ width: `${industrialPct}%` }} />
+            <div className="w-full h-2 rounded-full overflow-hidden bg-[#ffedd5]">
+              <div className="h-full bg-gradient-to-r from-[#ea580c] to-red-500 rounded-full" style={{ width: `${industrialPct}%` }} />
             </div>
           </div>
 
@@ -92,9 +92,9 @@ export default function AnalyticsPanel() {
                 <Trees size={13} className="text-emerald-600" />
                 Natural &amp; Biomass Burning (Wildfires &amp; Agriculture)
               </span>
-              <span className="font-mono font-bold text-[#261006]">{naturalCount} ({naturalPct}%)</span>
+              <span className="font-mono font-bold text-[#431407]">{naturalCount} ({naturalPct}%)</span>
             </div>
-            <div className="w-full h-2 rounded-full overflow-hidden bg-[#fed7aa]">
+            <div className="w-full h-2 rounded-full overflow-hidden bg-[#ffedd5]">
               <div className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full" style={{ width: `${naturalPct}%` }} />
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function AnalyticsPanel() {
             <div
               key={c.state}
               onClick={() => selectHotspot(c.hotspot, true)}
-              className="flarex-status-row !p-2.5 cursor-pointer hover:bg-[#ffedd5]"
+              className="flarex-status-row !p-2.5 cursor-pointer hover:bg-[#fff7ed]"
             >
               <div className="flex items-center gap-2">
                 <MapPin size={13} className="text-[#ea580c] shrink-0" />
@@ -128,14 +128,14 @@ export default function AnalyticsPanel() {
       </section>
 
       {/* FlareX Insight Card */}
-      <section className="insight-card mt-1">
-        <div className="insight-icon">
+      <section className="p-3 rounded-2xl border bg-[#fff7ed] border-[#fed7aa] flex items-start gap-3 mt-1">
+        <div className="w-8 h-8 rounded-xl border border-[#fed7aa] bg-white flex items-center justify-center text-[#ea580c] shrink-0 mt-0.5">
           <Flame size={17} />
         </div>
         <div>
-          <span className="insight-label">FLAREX INTELLIGENCE DIAGNOSIS</span>
-          <h4>Persistent industrial flares dominate, but severe localized surges detected.</h4>
-          <p>
+          <span className="text-[9.5px] font-bold text-[#ea580c] tracking-wider uppercase block">FLAREX INTELLIGENCE DIAGNOSIS</span>
+          <h4 className="text-[12px] font-bold text-[#431407] mt-0.5">Persistent industrial flares dominate, but severe localized surges detected.</h4>
+          <p className="text-[11px] text-[#7c2d12] mt-1">
             {calculatedStats.industrialFires} critical industrial fires identified with radiative intensity exceeding 3.0× nominal baseline.
           </p>
         </div>

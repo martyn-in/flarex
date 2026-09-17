@@ -6,7 +6,7 @@ export async function GET() {
     const db = getDb();
     const eventCount = (db.prepare(`SELECT count(*) as c FROM thermal_events`).get() as { c: number }).c;
     const alertCount = (db.prepare(`SELECT count(*) as c FROM alerts WHERE status = 'ACTIVE'`).get() as { c: number }).c;
-    const lastSync = (db.prepare(`SELECT * FROM firms_sync_log ORDER BY sync_time DESC LIMIT 1`).get() as any) || null;
+    const lastSync = (db.prepare(`SELECT * FROM ingestion_runs ORDER BY sync_time DESC LIMIT 1`).get() as any) || null;
 
     return NextResponse.json({
       status: 'operational',
@@ -22,6 +22,7 @@ export async function GET() {
         activeCriticalAlerts: alertCount,
         lastSyncTime: lastSync ? lastSync.sync_time : 'Real-time baseline active',
         syncStatus: lastSync ? lastSync.status : 'ONLINE',
+        latencyMs: lastSync ? lastSync.latency_ms : 0,
       },
     });
   } catch (error: any) {
