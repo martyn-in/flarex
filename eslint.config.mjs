@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     "tests/**",
     "scripts/**",
     "data/**",
+    "all_in_one_bundle/**",
+    "kaggle_dataset/**",
+    "kaggle_kernel/**",
   ]),
   {
     rules: {

@@ -96,13 +96,28 @@ export interface StageBExplanation {
   description: string;
 }
 
+/**
+ * UNKNOWN_THRESHOLD: If max class probability < this value, classification is flagged as
+ * 'other_unknown' and unknownFlag=true. Analysts should verify before escalating.
+ *
+ * HEURISTIC PROTOTYPE VALUE for SIH 26162. Not statistically calibrated.
+ * A lower value catches more uncertain cases; a higher value is more permissive.
+ */
+export const UNKNOWN_THRESHOLD = 0.55;
+
 export interface StageBPredictionOutput {
   classification: FireTypeClass;
-  confidence: number; // 0.0 to 1.0
+  /** Model Score (0.0–1.0). NOT a calibrated probability. Labelled as modelScore, not
+   * calibrated_probability, because the model has not been through isotonic regression or Platt scaling. */
+  confidence: number;
+  modelScore: number;   // same value as confidence; use this field when displaying to avoid implying calibration
   classProbabilities: Record<FireTypeClass, number>;
   modelVersion: string;
   evidence: StageBExplanation[];
   leakageProtectionsVerified: boolean;
+  /** unknownFlag=true when maxClassProbability < UNKNOWN_THRESHOLD.
+   * Triggers 'Model confidence insufficient — analyst verification recommended' in UI. */
+  unknownFlag: boolean;
 }
 
 interface ScalerStat {
@@ -403,12 +418,19 @@ export function predictFireType(input: StageBFeatureInput): StageBPredictionOutp
     });
   }
 
+  // Unknown / Abstention: if max class probability below threshold, flag for analyst verification
+  const unknownFlag = maxProb < UNKNOWN_THRESHOLD;
+  const finalClassification: FireTypeClass = unknownFlag ? 'other_unknown' : primaryClass;
+
   return {
-    classification: primaryClass,
+    classification: finalClassification,
     confidence: maxProb,
+    modelScore: maxProb, // same value; use modelScore in UI to avoid implying calibration
     classProbabilities,
     modelVersion: artifact.model_version,
     evidence,
     leakageProtectionsVerified: true,
+    unknownFlag,
   };
 }
+

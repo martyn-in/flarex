@@ -113,7 +113,24 @@ export function mapThermalEventToHotspot(event: ThermalEventRecord | any): Hotsp
     satellite: event.satellite,
     instrument: event.instrument,
     daynight: event.daynight as 'D' | 'N',
+    // Behaviour Intelligence Fields — computed from DB columns or derived from existing data
+    behaviourStatus: (event.behaviour_status as any) || (
+      event.abnormality_status === 'NORMAL' ? 'NORMAL' :
+      event.abnormality_status === 'CRITICAL_FIRE' ? 'EXTREME' :
+      event.baseline_ratio >= 3.0 ? 'EXTREME' :
+      event.baseline_ratio >= 2.0 ? 'ABNORMAL' :
+      event.baseline_ratio >= 1.4 ? 'ELEVATED' : 'NORMAL'
+    ),
+    thermalAbnormalityScore: event.thermal_abnormality_score ?? Math.min(100, Math.round((event.baseline_ratio - 1) * 30)),
+    robustZScore: event.robust_z_score ?? parseFloat(((event.frp - event.baseline_frp) / Math.max(2, event.baseline_frp * 0.08)).toFixed(2)),
+    surgeRatio: event.surge_ratio ?? event.baseline_ratio,
+    historicalPercentile: event.historical_percentile ?? (event.baseline_ratio >= 3.0 ? 99 : event.baseline_ratio >= 2.0 ? 88 : 55),
+    madFrp30d: event.mad_frp_30d ?? parseFloat((event.baseline_frp * 0.08).toFixed(1)),
+    suppressAlert: event.abnormality_status === 'NORMAL',
+    unknownFlag: event.unknown_flag === 1 || event.unknown_flag === true || false,
+    modelScore: event.classification_confidence || event.confidence || 90,
   };
 }
+
 
 export const dbRowToHotspot = mapThermalEventToHotspot;

@@ -24,6 +24,11 @@ import {
   StageBFeatureInput,
   StageBPredictionOutput,
 } from './fireClassifier';
+import {
+  analyzeFacilityThermalBehaviour,
+  ThermalAbnormalityAnalysis,
+} from './facilityBehaviourEngine';
+
 
 export interface RawHotspotInput {
   id: string;
@@ -88,6 +93,7 @@ export interface PipelineClassificationResult {
   stageAPersistence: StageAPersistenceResult;
   stageBClassification?: StageBPredictionOutput;
   primaryConfidence: number; // 0.0 to 1.0
+  modelScore: number; // same as primaryConfidence — labelled as modelScore to avoid implying calibration
   classProbabilities: {
     industrialFire: number;
     persistentSource: number;
@@ -99,8 +105,11 @@ export interface PipelineClassificationResult {
   operationalRiskScore: number; // 0 - 100
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   baselineRatio: number;
+  // Facility Behaviour Intelligence (Phase 1-2 novelty)
+  behaviourAnalysis: ThermalAbnormalityAnalysis;
+  unknownFlag: boolean;  // true when model confidence insufficient
   evidence: Array<{
-    category: 'persistence' | 'ml_classifier' | 'facility' | 'landcover' | 'intensity' | 'risk';
+    category: 'persistence' | 'ml_classifier' | 'facility' | 'landcover' | 'intensity' | 'risk' | 'behaviour';
     text: string;
     verified: boolean;
   }>;
@@ -201,8 +210,19 @@ export function processThermalAnomalyPipeline(
 
   const stageAResult = evaluateStageAPersistence(rollingFeatures);
 
+  // 2b. Facility Thermal Behaviour Analysis (Phase 1-2 novelty)
+  // Extract pre-event FRP observations for fingerprint computation
+  const preEventFrpValues = context.historicalObservations
+    .filter((obs) => new Date(obs.datetime).getTime() < new Date(hotspot.timestamp).getTime())
+    .map((obs) => obs.frp);
+  const behaviourAnalysis = analyzeFacilityThermalBehaviour(
+    hotspot.frp,
+    preEventFrpValues,
+    hotspot.timestamp
+  );
+
   const evidenceList: Array<{
-    category: 'persistence' | 'ml_classifier' | 'facility' | 'landcover' | 'intensity' | 'risk';
+    category: 'persistence' | 'ml_classifier' | 'facility' | 'landcover' | 'intensity' | 'risk' | 'behaviour';
     text: string;
     verified: boolean;
   }> = [];
@@ -234,6 +254,11 @@ export function processThermalAnomalyPipeline(
     verified: true,
   });
 
+  // Add behaviour intelligence evidence bullets
+  for (const bullet of behaviourAnalysis.behaviourExplanation) {
+    evidenceList.push({ category: 'behaviour', text: bullet, verified: true });
+  }
+
   // Check if classified as Persistent Industrial Thermal Source
   if (stageAResult.isPersistentSource) {
     const risk = calculateOperationalRiskScore(
@@ -252,6 +277,7 @@ export function processThermalAnomalyPipeline(
       persistenceScore: stageAResult.persistenceScore,
       stageAPersistence: stageAResult,
       primaryConfidence: stageAResult.persistenceScore,
+      modelScore: stageAResult.persistenceScore,
       classProbabilities: {
         industrialFire: 0.05,
         persistentSource: stageAResult.persistenceScore,
@@ -263,6 +289,8 @@ export function processThermalAnomalyPipeline(
       operationalRiskScore: risk.score,
       riskLevel: risk.level,
       baselineRatio: stageAResult.frpSurgeRatio,
+      behaviourAnalysis,
+      unknownFlag: false,
       evidence: evidenceList,
       explanationSummary: stageAResult.explanationSummary,
       modelVersion: 'FLAREX-StageA-Spatiotemporal-v2.1',
@@ -374,10 +402,17 @@ export function processThermalAnomalyPipeline(
     riskLevel: risk.level,
     baselineRatio: stageAResult.frpSurgeRatio,
     evidence: evidenceList,
+    behaviourAnalysis,
+    unknownFlag: stageBResult.unknownFlag,
     explanationSummary:
-      finalClass === 'Industrial Fire'
-        ? `EMERGENCY: Confirmed industrial fire signature (${(stageBResult.confidence * 100).toFixed(0)}% model confidence) with ${stageAResult.frpSurgeRatio.toFixed(1)}× thermal surge within ${Math.round(context.nearestFacilityDistanceKm * 1000)} m of ${context.nearestFacilityName}.`
-        : `Detected ${finalClass} (${(stageBResult.confidence * 100).toFixed(0)}% confidence). ${stageBResult.evidence[0]?.description || ''}`,
+      stageBResult.unknownFlag
+        ? `Model confidence insufficient (${(stageBResult.confidence * 100).toFixed(0)}% model score < 55% threshold) — analyst verification recommended. Potential ${finalClass} near ${context.nearestFacilityName}.`
+        : finalClass === 'Industrial Fire'
+        ? `EMERGENCY: Industrial fire signature detected (${(stageBResult.confidence * 100).toFixed(0)}% model score, ${behaviourAnalysis.behaviourStatus} behaviour, ${stageAResult.frpSurgeRatio.toFixed(1)}× surge) within ${Math.round(context.nearestFacilityDistanceKm * 1000)} m of ${context.nearestFacilityName}.`
+        : `Detected ${finalClass} (${(stageBResult.confidence * 100).toFixed(0)}% model score, behaviour: ${behaviourAnalysis.behaviourStatus}). ${stageBResult.evidence[0]?.description || ''}`,
     modelVersion: stageBResult.modelVersion,
+    modelScore: stageBResult.modelScore,
   };
 }
+
+

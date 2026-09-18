@@ -1,18 +1,23 @@
-import { Hotspot, IndustrialFacility, DataSourceStatus, AIAssistantMessage } from '@/types';
+import { Hotspot, IndustrialFacility, DataSourceStatus, AIAssistantMessage, BehaviourStatus } from '@/types';
 
 export type { Hotspot, IndustrialFacility, DataSourceStatus, AIAssistantMessage };
 
 export const SYSTEM_OPERATIONAL_STATS = {
-  activeHotspots: 10,
+  activeHotspots: 11,   // includes JMN-ABN twin
   criticalAlerts: 4,
   persistentSources: 5,
   industrialFires: 2,
-  averageConfidence: 93,
+  averageConfidence: 92,
   systemHealth: 99.2,
-  totalFrp: 870.4,
-  avgAnomaly: 7.2,
+  totalFrp: 1252.4,    // updated to include 382 MW JMN-ABN
+  avgAnomaly: 6.8,
   lastSync: '18:57 IST',
   latency: '1.8s',
+  // Behaviour Intelligence Stats (Phase 1–2 novelty)
+  abnormalIndustrialEvents: 3,      // ABNORMAL or EXTREME at industrial sites
+  persistentSourcesSuppressed: 3,   // NORMAL persistent industrial sources suppressed
+  requiresVerification: 1,          // unknownFlag=true
+  averageAbnormalityScore: 42,      // mean thermalAbnormalityScore across all events
 };
 
 export interface ReportItem {
@@ -134,7 +139,23 @@ export const INDUSTRIAL_FACILITIES: IndustrialFacility[] = [
   },
 ];
 
+// Helper to build the history envelope data for charts
+function buildHistoryWithEnvelope(
+  points: Array<{ date: string; frp: number; baseline: number; isSpike?: boolean }>,
+  madFrp: number
+): Array<{ date: string; frp: number; baseline: number; isSpike?: boolean; isEnvelopeUpper: number; isEnvelopeLower: number; p95: number }> {
+  return points.map((p) => ({
+    ...p,
+    isEnvelopeUpper: parseFloat((p.baseline + 1.4826 * madFrp).toFixed(1)),
+    isEnvelopeLower: parseFloat(Math.max(0, p.baseline - 1.4826 * madFrp).toFixed(1)),
+    p95: parseFloat((p.baseline * 1.8).toFixed(1)), // heuristic P95 line for visualization
+  }));
+}
+
 export const HOTSPOTS_DATA: Hotspot[] = [
+  // ============================================================
+  // EVENT 1: DAHEJ — Industrial Fire (EXTREME abnormal, CRITICAL)
+  // ============================================================
   {
     id: 'FLX-DHJ-001',
     eventId: 'FL-102',
@@ -147,6 +168,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'CRITICAL_FIRE',
     classification: 'Industrial Fire',
     confidence: 94,
+    modelScore: 94,
     probabilities: {
       industrialFire: 94,
       gasFlare: 3,
@@ -157,11 +179,21 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 380.0,
     baselineFrp: 105.0,
+    baselineFrp90d: 103.0,
     baselineRatio: 3.6,
     temperature: 139,
     brightnessT4: 412.5,
     brightnessT5: 334.1,
     anomalyScore: 9.6,
+    // Behaviour Intelligence
+    behaviourStatus: 'EXTREME',
+    thermalAbnormalityScore: 89,
+    robustZScore: 9.1,
+    surgeRatio: 3.62,
+    historicalPercentile: 99,
+    madFrp30d: 6.8,
+    suppressAlert: false,
+    unknownFlag: false,
     persistenceScore: 10,
     persistenceDays: '3 / 30 days',
     landCover: 'Industrial / Built-up',
@@ -178,7 +210,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 98.0, baseline: 105.0 },
       { date: '24 Aug', frp: 104.0, baseline: 105.0 },
       { date: '25 Aug', frp: 102.0, baseline: 105.0 },
@@ -186,7 +218,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 106.0, baseline: 105.0 },
       { date: '28 Aug', frp: 112.0, baseline: 105.0 },
       { date: '29 Aug', frp: 380.0, baseline: 105.0, isSpike: true },
-    ],
+    ], 6.8),
     nearestFacility: {
       name: 'ONGC Dahej Petrochemical Refinery',
       category: 'Industrial Fire',
@@ -199,16 +231,26 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { text: '65 m from ONGC Dahej Petrochemical Refinery', type: 'facility', verified: true },
       { text: 'Industrial / Built-up land cover (ESA WorldCover 10m)', type: 'landcover', verified: true },
       { text: 'Extreme thermal radiance: 380.0 MW (Skin temp: 139°C)', type: 'intensity', verified: true },
-      { text: '3.6× above 30-day historical baseline (105.0 MW typical)', type: 'baseline', verified: true },
+      { text: '3.62× above 30-day historical baseline (105.0 MW median)', type: 'baseline', verified: true },
       { text: 'Low recurrence (3/30 days — sudden catastrophic onset)', type: 'recurrence', verified: true },
       { text: 'Population proximity: 450 m from Dahej coastal settlement', type: 'facility', verified: true },
       { text: 'Zero adjacent forest or agricultural burning footprint', type: 'exclusion', verified: true },
+      // Behaviour Intelligence bullets
+      { text: '30-day median FRP: 105.0 MW (6 pre-event observations, T_history < T_event)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 9.1 — extreme outlier far beyond facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Historical percentile: 99th — above all recorded facility observations', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 89/100 — EXTREME behaviour detected', type: 'behaviour', verified: true },
+      { text: 'Escalation recommended: thermal behaviour inconsistent with facility fingerprint', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 09:41:20 IST',
     satellite: 'VIIRS NOAA-20 (375m NRT)',
     instrument: 'VIIRS',
     daynight: 'D',
   },
+
+  // ============================================================
+  // EVENT 2: KORBA — Industrial Fire (ABNORMAL, HIGH)
+  // ============================================================
   {
     id: 'FLX-KRB-002',
     eventId: 'FL-109',
@@ -221,6 +263,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'ABNORMAL',
     classification: 'Industrial Fire',
     confidence: 89,
+    modelScore: 89,
     probabilities: {
       industrialFire: 89,
       gasFlare: 6,
@@ -231,11 +274,20 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 122.0,
     baselineFrp: 45.0,
+    baselineFrp90d: 44.0,
     baselineRatio: 2.7,
     temperature: 105,
     brightnessT4: 378.4,
     brightnessT5: 312.8,
     anomalyScore: 8.8,
+    behaviourStatus: 'ABNORMAL',
+    thermalAbnormalityScore: 62,
+    robustZScore: 5.4,
+    surgeRatio: 2.71,
+    historicalPercentile: 92,
+    madFrp30d: 7.2,
+    suppressAlert: false,
+    unknownFlag: false,
     persistenceScore: 72,
     persistenceDays: '22 / 30 days',
     landCover: 'Industrial / Built-up',
@@ -252,7 +304,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 44.0, baseline: 45.0 },
       { date: '24 Aug', frp: 46.0, baseline: 45.0 },
       { date: '25 Aug', frp: 45.0, baseline: 45.0 },
@@ -260,7 +312,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 46.0, baseline: 45.0 },
       { date: '28 Aug', frp: 78.0, baseline: 45.0 },
       { date: '29 Aug', frp: 122.0, baseline: 45.0, isSpike: true },
-    ],
+    ], 7.2),
     nearestFacility: {
       name: 'Korba Super Thermal Power Plant 04',
       category: 'Industrial Fire',
@@ -273,14 +325,21 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { text: '210 m from Korba Super Thermal Power Plant 04', type: 'facility', verified: true },
       { text: 'Industrial power generation landuse zone', type: 'landcover', verified: true },
       { text: 'Radiative power: 122.0 MW (Elevated furnace/boiler exhaust)', type: 'intensity', verified: true },
-      { text: '2.7× above nominal baseline (45.0 MW typical)', type: 'baseline', verified: true },
+      { text: '2.71× above nominal baseline (45.0 MW median)', type: 'baseline', verified: true },
       { text: 'Abnormal thermal surge on persistent generator unit', type: 'recurrence', verified: true },
+      { text: '30-day median FRP: 45.0 MW (7 pre-event observations)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 5.4 — significantly outside facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 62/100 — ABNORMAL behaviour detected', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 09:38:15 IST',
     satellite: 'VIIRS NOAA-20 (375m NRT)',
     instrument: 'VIIRS',
     daynight: 'D',
   },
+
+  // ============================================================
+  // EVENT 3: BOKARO — Mining/Furnace (ABNORMAL, HIGH)
+  // ============================================================
   {
     id: 'FLX-BKR-003',
     eventId: 'FL-117',
@@ -293,6 +352,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'ABNORMAL',
     classification: 'Mining / Furnace Activity',
     confidence: 82,
+    modelScore: 82,
     probabilities: {
       industrialFire: 18,
       gasFlare: 4,
@@ -303,11 +363,20 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 88.0,
     baselineFrp: 38.0,
+    baselineFrp90d: 37.0,
     baselineRatio: 2.3,
     temperature: 95,
     brightnessT4: 368.7,
     brightnessT5: 308.6,
     anomalyScore: 7.6,
+    behaviourStatus: 'ABNORMAL',
+    thermalAbnormalityScore: 54,
+    robustZScore: 4.1,
+    surgeRatio: 2.32,
+    historicalPercentile: 88,
+    madFrp30d: 5.9,
+    suppressAlert: false,
+    unknownFlag: false,
     persistenceScore: 91,
     persistenceDays: '27 / 30 days',
     landCover: 'Industrial / Built-up',
@@ -324,7 +393,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 36.0, baseline: 38.0 },
       { date: '24 Aug', frp: 38.0, baseline: 38.0 },
       { date: '25 Aug', frp: 39.0, baseline: 38.0 },
@@ -332,7 +401,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 40.0, baseline: 38.0 },
       { date: '28 Aug', frp: 62.0, baseline: 38.0 },
       { date: '29 Aug', frp: 88.0, baseline: 38.0, isSpike: true },
-    ],
+    ], 5.9),
     nearestFacility: {
       name: 'Bokaro Integrated Steel Plant 02',
       category: 'Mining / Furnace Activity',
@@ -345,14 +414,23 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { text: '120 m from Bokaro Integrated Steel Plant 02', type: 'facility', verified: true },
       { text: 'Heavy metallurgical manufacturing landuse', type: 'landcover', verified: true },
       { text: 'FRP Radiance: 88.0 MW (Elevated blast furnace tapping)', type: 'intensity', verified: true },
-      { text: '2.3× above historical baseline (38.0 MW typical)', type: 'baseline', verified: true },
+      { text: '2.32× above historical baseline (38.0 MW median)', type: 'baseline', verified: true },
       { text: '27/30 days persistence — active steel production cycle', type: 'recurrence', verified: true },
+      { text: '30-day median FRP: 38.0 MW (7 pre-event observations)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 4.1 — outside normal facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 54/100 — ABNORMAL behaviour detected', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 02:15:20 IST',
     satellite: 'VIIRS NOAA-21 (375m NRT)',
     instrument: 'VIIRS',
     daynight: 'N',
   },
+
+  // ============================================================
+  // EVENT 4 (CASE A): JAMNAGAR NORMAL — THE CENTRAL JUDGE DEMO CASE
+  // Gas Flare — NORMAL behaviour. Alert SUPPRESSED.
+  // Comparison: same facility, different behaviour → see EVENT 4B below
+  // ============================================================
   {
     id: 'FLX-JMN-004',
     eventId: 'FL-201',
@@ -365,6 +443,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'NORMAL',
     classification: 'Gas Flare',
     confidence: 96,
+    modelScore: 96,
     probabilities: {
       industrialFire: 2,
       gasFlare: 96,
@@ -375,11 +454,21 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 112.0,
     baselineFrp: 108.0,
+    baselineFrp90d: 107.0,
     baselineRatio: 1.04,
     temperature: 69,
     brightnessT4: 342.4,
     brightnessT5: 298.2,
     anomalyScore: 2.8,
+    // NORMAL behaviour — the key demonstration
+    behaviourStatus: 'NORMAL',
+    thermalAbnormalityScore: 12,
+    robustZScore: 0.18,
+    surgeRatio: 1.04,
+    historicalPercentile: 54,
+    madFrp30d: 8.2,
+    suppressAlert: true,
+    unknownFlag: false,
     persistenceScore: 96,
     persistenceDays: '28 / 30 days',
     landCover: 'Industrial / Built-up',
@@ -396,7 +485,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 106.0, baseline: 108.0 },
       { date: '24 Aug', frp: 108.0, baseline: 108.0 },
       { date: '25 Aug', frp: 107.0, baseline: 108.0 },
@@ -404,7 +493,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 109.0, baseline: 108.0 },
       { date: '28 Aug', frp: 111.0, baseline: 108.0 },
       { date: '29 Aug', frp: 112.0, baseline: 108.0 },
-    ],
+    ], 8.2),
     nearestFacility: {
       name: 'Reliance Jamnagar Refining Flare Unit A',
       category: 'Gas Flare',
@@ -414,17 +503,123 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       hazardRating: 'Moderate',
     },
     aiReasons: [
-      { text: '45 m from Jamnagar Refinery Flare Unit A', type: 'facility', verified: true },
-      { text: 'Refinery flare stack buffer perimeter', type: 'landcover', verified: true },
-      { text: 'Current FRP: 112.0 MW vs 108.0 MW baseline (1.04× baseline)', type: 'baseline', verified: true },
-      { text: 'Extremely high 28/30 days persistence — routine continuous flaring', type: 'recurrence', verified: true },
-      { text: 'Normal operational flare status — no emergency alert required', type: 'intensity', verified: true },
+      { text: '45 m from Jamnagar Refinery Flare Unit A (same facility as FL-201B)', type: 'facility', verified: true },
+      { text: 'Industrial / Built-up land cover (ESA WorldCover 10m)', type: 'landcover', verified: true },
+      { text: 'Current FRP: 112.0 MW vs 108.0 MW 30-day baseline (1.04× surge)', type: 'baseline', verified: true },
+      { text: 'High persistence: 28/30 days active — routine continuous gas flaring', type: 'recurrence', verified: true },
+      { text: '30-day median FRP: 108.0 MW (MAD: 8.2 MW, from 7 pre-event observations)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 0.18 — within facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Historical percentile: 54th — typical observation for this facility', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 12/100 — NORMAL behaviour', type: 'behaviour', verified: true },
+      { text: 'Alert suppressed: persistent industrial thermal source operating within expected parameters', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 02:11:45 IST',
     satellite: 'VIIRS NOAA-21 (375m NRT)',
     instrument: 'VIIRS',
     daynight: 'N',
   },
+
+  // ============================================================
+  // EVENT 4B (CASE B): JAMNAGAR ABNORMAL — THE TWIN DEMO CASE
+  // SAME facility, SAME coordinates, SAME land cover, SAME OSM tag.
+  // Only the thermal behaviour changes.
+  // Physical source: Industrial Thermal Event / possible fire.
+  // Behaviour: EXTREME — ESCALATE FOR VERIFICATION.
+  // ============================================================
+  {
+    id: 'FLX-JMN-ABN',
+    eventId: 'FL-201B',
+    name: 'Reliance Jamnagar Refinery — Abnormal Thermal Event',
+    location: 'Jamnagar Mega Refinery Flare Stack, Gujarat',
+    state: 'Gujarat',
+    district: 'Jamnagar',
+    // IDENTICAL coordinates — same location, same facility
+    coordinates: [69.8654, 22.3789],
+    severity: 'critical',
+    status: 'CRITICAL_FIRE',
+    classification: 'Industrial Fire',
+    confidence: 88,
+    modelScore: 88,
+    probabilities: {
+      industrialFire: 88,
+      gasFlare: 6,
+      wildfire: 1,
+      agriculturalBurn: 0,
+      mining: 2,
+      unknown: 3,
+    },
+    frp: 382.0,
+    baselineFrp: 108.0,  // same historical baseline as NORMAL case
+    baselineFrp90d: 107.0,
+    baselineRatio: 3.54,
+    temperature: 137,
+    brightnessT4: 410.2,
+    brightnessT5: 331.8,
+    anomalyScore: 9.5,
+    // EXTREME behaviour — the key demonstration contrast
+    behaviourStatus: 'EXTREME',
+    thermalAbnormalityScore: 87,
+    robustZScore: 8.4,
+    surgeRatio: 3.54,
+    historicalPercentile: 99,
+    madFrp30d: 8.2, // same MAD as normal case — same facility fingerprint
+    suppressAlert: false,
+    unknownFlag: false,
+    // Judge demo marker — identifies this as the abnormal twin
+    isJudgeDemoAbnormal: true,
+    persistenceScore: 10,
+    persistenceDays: '2 / 30 days',  // sudden low-recurrence spike
+    landCover: 'Industrial / Built-up',
+    distanceToForestMeters: 22000,
+    distanceToAgriMeters: 12000,
+    populationContext: {
+      distanceMeters: 3800,
+      densityCategory: 'Sparse / Industrial Buffer',
+      populationExposedEstimate: 300,
+    },
+    sentinelImagery: {
+      tileId: 'T42QYF-20260902',
+      cloudCoverPct: 1.2,
+      acquisitionDate: '2026-09-02',
+      visualAvailable: true,
+    },
+    history: buildHistoryWithEnvelope([
+      { date: '27 Aug', frp: 107.0, baseline: 108.0 },
+      { date: '28 Aug', frp: 110.0, baseline: 108.0 },
+      { date: '29 Aug', frp: 112.0, baseline: 108.0 },
+      { date: '30 Aug', frp: 109.0, baseline: 108.0 },
+      { date: '31 Aug', frp: 108.0, baseline: 108.0 },
+      { date: '01 Sep', frp: 111.0, baseline: 108.0 },
+      { date: '02 Sep', frp: 382.0, baseline: 108.0, isSpike: true },
+    ], 8.2),
+    nearestFacility: {
+      name: 'Reliance Jamnagar Refining Flare Unit A',
+      category: 'Industrial Thermal Event',
+      type: 'Mega Oil Refinery & Petrochemical',
+      distance: '45 m',
+      distanceMeters: 45,
+      hazardRating: 'Critical',
+    },
+    aiReasons: [
+      { text: '45 m from Jamnagar Refinery Flare Unit A (SAME facility as FL-201, normal operation)', type: 'facility', verified: true },
+      { text: 'Industrial / Built-up land cover — IDENTICAL to normal operation case', type: 'landcover', verified: true },
+      { text: 'Current FRP: 382.0 MW — 3.54× above historical baseline of 108.0 MW', type: 'baseline', verified: true },
+      { text: 'Low recurrence: 2/30 days — sudden emergence inconsistent with continuous flaring', type: 'recurrence', verified: true },
+      { text: '30-day median FRP: 108.0 MW (SAME facility fingerprint as normal case, MAD: 8.2 MW)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 8.4 — extreme outlier, far beyond facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Historical percentile: >99th — above all recorded facility observations', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 87/100 — EXTREME behaviour detected', type: 'behaviour', verified: true },
+      { text: 'Escalation recommended: same facility, different behaviour — thermal event requires verification', type: 'behaviour', verified: true },
+    ],
+    timestamp: '2026-09-02 11:22:10 IST',
+    satellite: 'VIIRS NOAA-20 (375m NRT)',
+    instrument: 'VIIRS',
+    daynight: 'D',
+  },
+
+  // ============================================================
+  // EVENT 5: SIMLIPAL — Wildfire (CRITICAL)
+  // ============================================================
   {
     id: 'FLX-SMP-007',
     eventId: 'FL-301',
@@ -437,6 +632,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'CRITICAL_FIRE',
     classification: 'Wildfire',
     confidence: 96,
+    modelScore: 96,
     probabilities: {
       industrialFire: 1,
       gasFlare: 0,
@@ -447,11 +643,20 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 140.0,
     baselineFrp: 12.0,
+    baselineFrp90d: 11.0,
     baselineRatio: 11.6,
     temperature: 91,
     brightnessT4: 364.5,
     brightnessT5: 298.0,
     anomalyScore: 9.2,
+    behaviourStatus: 'EXTREME',
+    thermalAbnormalityScore: 91,
+    robustZScore: 12.8,
+    surgeRatio: 11.67,
+    historicalPercentile: 100,
+    madFrp30d: 2.1,
+    suppressAlert: false,
+    unknownFlag: false,
     persistenceScore: 5,
     persistenceDays: '1 / 30 days',
     landCover: 'Dense Forest / Woodland',
@@ -468,7 +673,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 10.0, baseline: 12.0 },
       { date: '24 Aug', frp: 12.0, baseline: 12.0 },
       { date: '25 Aug', frp: 11.0, baseline: 12.0 },
@@ -476,7 +681,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 12.0, baseline: 12.0 },
       { date: '28 Aug', frp: 35.0, baseline: 12.0 },
       { date: '29 Aug', frp: 140.0, baseline: 12.0, isSpike: true },
-    ],
+    ], 2.1),
     nearestFacility: {
       name: 'Baripada Rural Fringe (Non-Industrial)',
       category: 'Wildfire',
@@ -487,16 +692,21 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     aiReasons: [
       { text: 'Dense Forest / Woodland land cover (ESA WorldCover 10m)', type: 'landcover', verified: true },
-      { text: '18.4 km from nearest industrial infrastructure (remote biosphere)', type: 'facility', verified: true },
+      { text: '18.4 km from nearest industrial infrastructure (remote biosphere reserve)', type: 'facility', verified: true },
       { text: 'Multi-pixel spatial expansion characteristic of forest fire front', type: 'intensity', verified: true },
-      { text: 'Zero historical industrial thermal baseline', type: 'baseline', verified: true },
+      { text: 'Zero historical industrial thermal baseline in forest biosphere context', type: 'baseline', verified: true },
       { text: 'High thermal intensity: 140.0 MW across tree canopy', type: 'intensity', verified: true },
+      { text: 'Thermal abnormality score: 91/100 — EXTREME behaviour (no industrial fingerprint)', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 09:20:10 IST',
     satellite: 'VIIRS NOAA-20 (375m NRT)',
     instrument: 'VIIRS',
     daynight: 'D',
   },
+
+  // ============================================================
+  // EVENT 6: SANGRUR — Agricultural Burning (NORMAL seasonal)
+  // ============================================================
   {
     id: 'FLX-PUN-008',
     eventId: 'FL-302',
@@ -509,6 +719,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     status: 'NORMAL',
     classification: 'Agricultural Burning',
     confidence: 90,
+    modelScore: 90,
     probabilities: {
       industrialFire: 1,
       gasFlare: 0,
@@ -519,11 +730,20 @@ export const HOTSPOTS_DATA: Hotspot[] = [
     },
     frp: 32.0,
     baselineFrp: 14.0,
+    baselineFrp90d: 13.0,
     baselineRatio: 2.3,
     temperature: 61,
     brightnessT4: 334.2,
     brightnessT5: 294.0,
     anomalyScore: 4.2,
+    behaviourStatus: 'ELEVATED',
+    thermalAbnormalityScore: 38,
+    robustZScore: 2.1,
+    surgeRatio: 2.29,
+    historicalPercentile: 72,
+    madFrp30d: 4.8,
+    suppressAlert: true,
+    unknownFlag: false,
     persistenceScore: 8,
     persistenceDays: '2 / 30 days',
     landCover: 'Cropland / Agriculture',
@@ -540,7 +760,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       acquisitionDate: '2026-08-29',
       visualAvailable: true,
     },
-    history: [
+    history: buildHistoryWithEnvelope([
       { date: '23 Aug', frp: 12.0, baseline: 14.0 },
       { date: '24 Aug', frp: 14.0, baseline: 14.0 },
       { date: '25 Aug', frp: 15.0, baseline: 14.0 },
@@ -548,7 +768,7 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { date: '27 Aug', frp: 18.0, baseline: 14.0 },
       { date: '28 Aug', frp: 24.0, baseline: 14.0 },
       { date: '29 Aug', frp: 32.0, baseline: 14.0 },
-    ],
+    ], 4.8),
     nearestFacility: {
       name: 'Rural Agricultural Belt (Non-Industrial)',
       category: 'Agricultural Burning',
@@ -562,10 +782,100 @@ export const HOTSPOTS_DATA: Hotspot[] = [
       { text: '14.2 km from nearest SEZ / industrial corridor', type: 'facility', verified: true },
       { text: 'Low temporal persistence (2/30 days — seasonal stubble clearing)', type: 'recurrence', verified: true },
       { text: 'Moderate thermal radiative power: 32.0 MW', type: 'intensity', verified: true },
+      { text: 'Thermal abnormality score: 38/100 — ELEVATED (seasonal agricultural pattern)', type: 'behaviour', verified: true },
     ],
     timestamp: '2026-08-29 08:30:00 IST',
     satellite: 'MODIS Terra (1km NRT)',
     instrument: 'MODIS',
+    daynight: 'D',
+  },
+
+  // ============================================================
+  // EVENT 7: JHARIA — Mining Fire (NORMAL persistent)
+  // ============================================================
+  {
+    id: 'FLX-JHR-005',
+    eventId: 'FL-401',
+    name: 'Jharia Coalfield Open-Cast Mining Zone',
+    location: 'Jharia Coalfield Thermal Complex, Jharkhand',
+    state: 'Jharkhand',
+    district: 'Dhanbad',
+    coordinates: [86.4172, 23.7503],
+    severity: 'low',
+    status: 'NORMAL',
+    classification: 'Mining / Furnace Activity',
+    confidence: 85,
+    modelScore: 85,
+    probabilities: {
+      industrialFire: 8,
+      gasFlare: 2,
+      wildfire: 0,
+      agriculturalBurn: 0,
+      mining: 85,
+      unknown: 5,
+    },
+    frp: 58.0,
+    baselineFrp: 55.0,
+    baselineFrp90d: 54.0,
+    baselineRatio: 1.05,
+    temperature: 78,
+    brightnessT4: 351.3,
+    brightnessT5: 301.8,
+    anomalyScore: 2.1,
+    behaviourStatus: 'NORMAL',
+    thermalAbnormalityScore: 8,
+    robustZScore: 0.14,
+    surgeRatio: 1.05,
+    historicalPercentile: 51,
+    madFrp30d: 9.4,
+    suppressAlert: true,
+    unknownFlag: false,
+    persistenceScore: 94,
+    persistenceDays: '29 / 30 days',
+    landCover: 'Mining / Bare Soil',
+    distanceToForestMeters: 6200,
+    distanceToAgriMeters: 4100,
+    populationContext: {
+      distanceMeters: 3200,
+      densityCategory: 'Town / Settlement',
+      populationExposedEstimate: 2800,
+    },
+    sentinelImagery: {
+      tileId: 'T45QXD-20260829',
+      cloudCoverPct: 1.6,
+      acquisitionDate: '2026-08-29',
+      visualAvailable: true,
+    },
+    history: buildHistoryWithEnvelope([
+      { date: '23 Aug', frp: 53.0, baseline: 55.0 },
+      { date: '24 Aug', frp: 56.0, baseline: 55.0 },
+      { date: '25 Aug', frp: 54.0, baseline: 55.0 },
+      { date: '26 Aug', frp: 57.0, baseline: 55.0 },
+      { date: '27 Aug', frp: 55.0, baseline: 55.0 },
+      { date: '28 Aug', frp: 56.0, baseline: 55.0 },
+      { date: '29 Aug', frp: 58.0, baseline: 55.0 },
+    ], 9.4),
+    nearestFacility: {
+      name: 'Jharia Open Cast Coal Mine Block 4',
+      category: 'Mining / Furnace Activity',
+      type: 'Coal Extraction & Processing',
+      distance: '180 m',
+      distanceMeters: 180,
+      hazardRating: 'Critical',
+    },
+    aiReasons: [
+      { text: '180 m from Jharia Open Cast Coal Mine Block 4', type: 'facility', verified: true },
+      { text: 'Mining / Bare Soil land cover — open-cast colliery zone', type: 'landcover', verified: true },
+      { text: 'Current FRP: 58.0 MW within normal operating range (baseline: 55.0 MW)', type: 'baseline', verified: true },
+      { text: 'Very high persistence: 29/30 days — chronic subsurface coal combustion', type: 'recurrence', verified: true },
+      { text: '30-day median FRP: 55.0 MW (7 pre-event observations)', type: 'fingerprint', verified: true },
+      { text: 'Robust z-score: 0.14 — entirely within facility operating envelope', type: 'behaviour', verified: true },
+      { text: 'Thermal abnormality score: 8/100 — NORMAL behaviour', type: 'behaviour', verified: true },
+      { text: 'Alert suppressed: known persistent mining thermal source operating normally', type: 'behaviour', verified: true },
+    ],
+    timestamp: '2026-08-29 10:45:00 IST',
+    satellite: 'VIIRS NOAA-20 (375m NRT)',
+    instrument: 'VIIRS',
     daynight: 'D',
   },
 ];
@@ -577,7 +887,7 @@ export const DATA_SOURCES_LIST: DataSourceStatus[] = [
     status: 'Online',
     latency: '1.8s',
     description: 'VIIRS NOAA-20/21 (375m) & MODIS (1km) Active Fire NRT Ingestion (Primary Heat Anomaly)',
-    recordsCount: 10,
+    recordsCount: 11,
     lastSync: '18:57 IST',
   },
   {
@@ -603,7 +913,7 @@ export const DATA_SOURCES_LIST: DataSourceStatus[] = [
     type: 'Optical Verification',
     status: 'Available',
     latency: '120ms',
-    description: '10m high-resolution multispectral imagery for post-detection visual damage verification',
+    description: '10m high-resolution multispectral imagery for post-detection visual damage verification (demo metadata)',
     recordsCount: 8,
     lastSync: 'On Demand',
   },
@@ -617,12 +927,12 @@ export const DATA_SOURCES_LIST: DataSourceStatus[] = [
     lastSync: 'Continuous',
   },
   {
-    name: 'FlameX ML Classifier v1.2',
+    name: 'FLAREX Behaviour Intelligence v2.4',
     type: 'AI Inference',
     status: 'Online',
     latency: '8.4ms',
-    description: 'Multi-feature XGBoost & Spatial Ensemble with explainability generation',
-    recordsCount: 10,
+    description: 'Facility-aware thermal fingerprint + robust abnormality detection + CatBoost-derived surrogate classifier',
+    recordsCount: 11,
     lastSync: 'Real-time',
   },
 ];
@@ -631,7 +941,7 @@ export const INITIAL_AI_MESSAGES: AIAssistantMessage[] = [
   {
     id: 'ai-init-1',
     sender: 'assistant',
-    text: 'FlareX Thermal Intelligence Assistant online. Ready to analyze multi-spectral satellite observations, industrial boundaries, and baseline anomalies.',
+    text: 'FLAREX Facility Thermal Intelligence online. I track what normal heat looks like for each industrial facility — and detect when that behaviour changes. Ask me about any event.',
     timestamp: '18:57',
   },
 ];
