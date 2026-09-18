@@ -12,7 +12,10 @@ export interface DataSourcesDrawerProps {
 
 export default function DataSourcesDrawer({ open, onClose }: DataSourcesDrawerProps) {
   const context = useIntelligence();
-  const isOpen = open !== undefined ? open : context.activeDrawer === 'datasources';
+  const isOpen =
+    open !== undefined
+      ? open
+      : context.activeDrawer === 'datasources';
   const handleClose = onClose || context.closeDrawer;
 
   return (

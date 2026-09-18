@@ -16,6 +16,7 @@ import {
   ChartNoAxesCombined,
   Database,
   Globe,
+  BrainCircuit,
 } from 'lucide-react';
 
 import { useIntelligence } from '@/context/IntelligenceContext';
@@ -29,6 +30,7 @@ import AlertCenterDrawer from '@/components/drawers/AlertCenterDrawer';
 import AnalyticsDrawer from '@/components/drawers/AnalyticsDrawer';
 import DataSourcesDrawer from '@/components/drawers/DataSourcesDrawer';
 import ReportsDrawer from '@/components/drawers/ReportsDrawer';
+import AIModelDrawer from '@/components/drawers/AIModelDrawer';
 import SettingsModal from '@/components/modals/SettingsModal';
 import NotificationsPopover from '@/components/modals/NotificationsPopover';
 import DispatchModal from '@/components/modals/DispatchModal';
@@ -77,6 +79,14 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           active: activeDrawer === null && activeFilter === null,
         },
         {
+          name: 'Active Incidents',
+          icon: Radio,
+          action: () => openDrawer('incidents'),
+          badge: calculatedStats.totalEvents > 0 ? `${calculatedStats.totalEvents}` : undefined,
+          badgeColor: 'bg-orange-500',
+          active: activeDrawer === 'incidents',
+        },
+        {
           name: 'Industrial Fires',
           icon: Flame,
           action: () => {
@@ -119,6 +129,12 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           icon: Database,
           action: () => openDrawer('datasources'),
           active: activeDrawer === 'datasources',
+        },
+        {
+          name: 'AI Assistant',
+          icon: BrainCircuit,
+          action: () => openDrawer('ai'),
+          active: activeDrawer === 'ai',
         },
       ],
     },
@@ -450,6 +466,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       <AnalyticsDrawer />
       <DataSourcesDrawer />
       <ReportsDrawer />
+      <AIModelDrawer />
       <SettingsModal />
       <NotificationsPopover />
       <DispatchModal />

@@ -9,10 +9,12 @@ export interface PersistentSourcesDrawerProps {
   open?: boolean;
   onClose?: () => void;
 }
-
 export default function PersistentSourcesDrawer({ open, onClose }: PersistentSourcesDrawerProps) {
   const context = useIntelligence();
-  const isOpen = open !== undefined ? open : context.activeDrawer === 'persistent_sources';
+  const isOpen =
+    open !== undefined
+      ? open
+      : context.activeDrawer === 'persistent_sources' || context.activeDrawer === 'persistents';
   const handleClose = onClose || context.closeDrawer;
 
   return (
