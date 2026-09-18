@@ -291,7 +291,7 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             <span className="status-badge-dot" />
             <div>
               <p className="status-title">INTELLIGENCE ACTIVE</p>
-              <p className="status-desc">NASA FIRMS + OSM + ESA WorldCover</p>
+              <p className="status-desc">NASA FIRMS + OSM + ESA WorldCover + Sentinel-2</p>
             </div>
           </div>
         </div>

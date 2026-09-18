@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Plus, Minus, RotateCcw, Crosshair, Layers } from 'lucide-react';
+import { MapLegend } from './MapLegend';
 import { useIntelligence } from '../context/IntelligenceContext';
 import { INDUSTRIAL_FACILITIES } from '../data/mockData';
 import { Hotspot } from '../types';
@@ -374,6 +375,9 @@ export const FlareXMap: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Map Legend */}
+      <MapLegend />
 
       {/* Live Map Telemetry Badge */}
       <div className="live-map-indicator">

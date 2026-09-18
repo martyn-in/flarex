@@ -1,14 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Flame, MapPin, AlertTriangle } from 'lucide-react';
+import { Search, Flame, MapPin, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useIntelligence } from '@/context/IntelligenceContext';
 import { Hotspot } from '@/types';
+
+const CLASS_DEFS = [
+  { label: 'Industrial Fire',     color: '#dc2626', dot: 'bg-red-500' },
+  { label: 'Gas Flare',           color: '#ea580c', dot: 'bg-orange-500' },
+  { label: 'Wildfire',            color: '#16a34a', dot: 'bg-green-600' },
+  { label: 'Agricultural Burning',color: '#ca8a04', dot: 'bg-yellow-600' },
+  { label: 'Mining/Furnace',      color: '#9333ea', dot: 'bg-purple-500' },
+] as const;
+
+type ClassName = typeof CLASS_DEFS[number]['label'] | 'All' | 'Fires' | 'Abnormal' | 'Critical';
 
 export default function IncidentsPanel() {
   const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp, theme } = useIntelligence();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'All' | 'Fires' | 'Abnormal' | 'Critical'>('All');
+  const [classFilter, setClassFilter] = useState<string | null>(null);
+  const [classExpanded, setClassExpanded] = useState(true);
 
   const isDark = theme === 'dark';
 
@@ -19,6 +31,9 @@ export default function IncidentsPanel() {
       h.location.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
+
+    // Class filter takes priority over tab filter
+    if (classFilter) return h.classification === classFilter;
 
     if (filterType === 'Fires') return h.classification === 'Industrial Fire';
     if (filterType === 'Abnormal') return h.status === 'ABNORMAL' || h.baselineRatio >= 1.8;
@@ -82,6 +97,84 @@ export default function IncidentsPanel() {
             </button>
           );
         })}
+      </div>
+
+      {/* Classification Breakdown */}
+      <div
+        className={`rounded-2xl border overflow-hidden ${
+          isDark ? 'border-white/10 bg-white/[0.03]' : 'border-[#cfe0f0] bg-white'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setClassExpanded((v) => !v)}
+          className={`w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+            isDark ? 'text-slate-300 hover:text-white' : 'text-[#4e6b8c] hover:text-[#0c2340]'
+          }`}
+        >
+          <span>Classification</span>
+          {classExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        </button>
+
+        {classExpanded && (
+          <div className="px-3 pb-3 flex flex-col gap-1.5">
+            {/* All classes reset */}
+            <button
+              type="button"
+              onClick={() => { setClassFilter(null); }}
+              className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-[10px] font-semibold border transition-all cursor-pointer ${
+                classFilter === null
+                  ? 'bg-[#ff5533] border-[#ff7a45] text-white shadow-[0_0_8px_rgba(255,85,45,0.35)]'
+                  : isDark
+                  ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
+                  : 'bg-white border-[#cfe0f0] text-[#4e6b8c] hover:bg-[#f0f5fa] hover:text-[#0c2340]'
+              }`}
+            >
+              <span>All Classes</span>
+              <span className="font-mono text-[9px] opacity-80">({hotspots.length})</span>
+            </button>
+
+            {CLASS_DEFS.map((cls) => {
+              const count = hotspots.filter((h) => h.classification === cls.label).length;
+              const isActive = classFilter === cls.label;
+              return (
+                <button
+                  key={cls.label}
+                  type="button"
+                  onClick={() => {
+                    setClassFilter(isActive ? null : cls.label);
+                    setFilterType('All');
+                  }}
+                  className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-[10px] font-semibold border transition-all cursor-pointer ${
+                    isActive
+                      ? 'border-transparent text-white'
+                      : isDark
+                      ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
+                      : 'bg-white border-[#cfe0f0] text-[#4e6b8c] hover:bg-[#f0f5fa] hover:text-[#0c2340]'
+                  }`}
+                  style={isActive ? { background: cls.color, borderColor: cls.color, boxShadow: `0 0 10px ${cls.color}55` } : {}}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: cls.color,
+                        border: '1.5px solid rgba(255,255,255,0.4)',
+                        boxShadow: `0 0 5px ${cls.color}99`,
+                        display: 'inline-block',
+                        flexShrink: 0,
+                      }}
+                    />
+                    {cls.label}
+                  </span>
+                  <span className="font-mono text-[9px] opacity-80">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Incidents Table / List */}
