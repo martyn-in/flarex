@@ -296,8 +296,14 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (activeFilter === 'frequent') {
       return hotspots.filter(isPersistentSource);
     }
+    // class_<ClassName> filter — from the 5-class dashboard tiles
+    if (activeFilter.startsWith('class_')) {
+      const className = activeFilter.slice('class_'.length);
+      return hotspots.filter((h) => h.classification === className);
+    }
     return hotspots;
   }, [hotspots, activeFilter]);
+
 
   // Load Settings from Server
   useEffect(() => {

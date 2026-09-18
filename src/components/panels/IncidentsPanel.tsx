@@ -16,7 +16,7 @@ const CLASS_DEFS = [
 type ClassName = typeof CLASS_DEFS[number]['label'] | 'All' | 'Fires' | 'Abnormal' | 'Critical';
 
 export default function IncidentsPanel() {
-  const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp, theme } = useIntelligence();
+  const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp, theme, flyToCoords } = useIntelligence();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'All' | 'Fires' | 'Abnormal' | 'Critical'>('All');
   const [classFilter, setClassFilter] = useState<string | null>(null);
@@ -142,8 +142,20 @@ export default function IncidentsPanel() {
                   key={cls.label}
                   type="button"
                   onClick={() => {
-                    setClassFilter(isActive ? null : cls.label);
+                    const next = isActive ? null : cls.label;
+                    setClassFilter(next);
                     setFilterType('All');
+                    if (next) {
+                      const matches = hotspots.filter((h) => h.classification === cls.label);
+                      if (matches.length > 0) {
+                        // Fly to centroid of matched hotspots
+                        const avgLng = matches.reduce((s, h) => s + h.coordinates[0], 0) / matches.length;
+                        const avgLat = matches.reduce((s, h) => s + h.coordinates[1], 0) / matches.length;
+                        const zoom = matches.length === 1 ? 10 : matches.length <= 5 ? 7 : 5;
+                        flyToCoords([avgLng, avgLat], zoom, 30);
+                        addToast(`Focused: ${matches.length} ${cls.label} event${matches.length > 1 ? 's' : ''}`, 'info');
+                      }
+                    }
                   }}
                   className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-[10px] font-semibold border transition-all cursor-pointer ${
                     isActive
