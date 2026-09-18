@@ -42,13 +42,7 @@ interface FlareXDashboardProps {
   onReturnToLanding?: () => void;
 }
 
-const CLASS_DEFS_DASH = [
-  { label: 'Industrial Fire',      color: '#dc2626', bg: 'rgba(220,38,38,0.12)',  border: 'rgba(220,38,38,0.3)',  textGlow: 'drop-shadow-[0_0_6px_rgba(220,38,38,0.5)]'  },
-  { label: 'Gas Flare',            color: '#ea580c', bg: 'rgba(234,88,12,0.12)',  border: 'rgba(234,88,12,0.3)',  textGlow: 'drop-shadow-[0_0_6px_rgba(234,88,12,0.5)]'  },
-  { label: 'Wildfire',             color: '#16a34a', bg: 'rgba(22,163,74,0.12)',  border: 'rgba(22,163,74,0.3)',  textGlow: 'drop-shadow-[0_0_6px_rgba(22,163,74,0.5)]'  },
-  { label: 'Agricultural Burning', color: '#ca8a04', bg: 'rgba(202,138,4,0.12)', border: 'rgba(202,138,4,0.3)',  textGlow: 'drop-shadow-[0_0_6px_rgba(202,138,4,0.5)]'  },
-  { label: 'Mining/Furnace',       color: '#9333ea', bg: 'rgba(147,51,234,0.12)',border: 'rgba(147,51,234,0.3)', textGlow: 'drop-shadow-[0_0_6px_rgba(147,51,234,0.5)]' },
-] as const;
+
 
 export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   const {
@@ -71,7 +65,6 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     ingestionMeta,
     theme,
     toggleTheme,
-    flyToCoords,
   } = useIntelligence();
 
   const isDark = theme === 'dark';
@@ -356,18 +349,18 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             </button>
 
             {/* Real Search Box */}
-            <form onSubmit={handleSearchSubmit} className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors w-[250px] ${
+            <form onSubmit={handleSearchSubmit} className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors shrink min-w-0 ${
               isDark
                 ? 'bg-black/40 border-[rgba(255,106,61,0.2)] focus-within:border-[#ff5533]'
                 : 'bg-white border-[#cfe0f0] focus-within:border-[#0284c7]'
-            }`}>
-              <Search size={15} className={`shrink-0 ${isDark ? 'text-[#a3928c]' : 'text-[#627d9c]'}`} />
+            }`} style={{ width: 'clamp(140px, 16vw, 230px)' }}>
+              <Search size={14} className={`shrink-0 ${isDark ? 'text-[#a3928c]' : 'text-[#627d9c]'}`} />
               <input
                 type="text"
-                placeholder="Search facility, SEZ, or Event ID..."
+                placeholder="Search facility or Event ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full bg-transparent border-0 outline-none text-[11.5px] font-medium ${
+                className={`w-full bg-transparent border-0 outline-none text-[11px] font-medium min-w-0 ${
                   isDark ? 'text-white placeholder-[#7d6e68]' : 'text-[#0c2340] placeholder-slate-400'
                 }`}
               />
@@ -480,72 +473,6 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
                 >
                   <Icon size={20} />
                 </div>
-              </article>
-            );
-          })}
-        </section>
-
-        {/* 3b. 5-CLASS THERMAL BREAKDOWN ROW */}
-        <section className="grid grid-cols-5 gap-2">
-          {CLASS_DEFS_DASH.map((cls) => {
-            const count = hotspots.filter((h) => h.classification === cls.label).length;
-            const isActive = activeFilter === `class_${cls.label}`;
-            return (
-              <article
-                key={cls.label}
-                onClick={() => {
-                  const matches = hotspots.filter((h) => h.classification === cls.label);
-                  if (isActive) {
-                    setFilter(null);
-                    resetMapView();
-                  } else {
-                    setFilter(`class_${cls.label}`);
-                    if (matches.length > 0) {
-                      const avgLng = matches.reduce((s, h) => s + h.coordinates[0], 0) / matches.length;
-                      const avgLat = matches.reduce((s, h) => s + h.coordinates[1], 0) / matches.length;
-                      const zoom = matches.length === 1 ? 10 : matches.length <= 5 ? 7 : 5;
-                      flyToCoords([avgLng, avgLat], zoom, 30);
-                      addToast(`Map focused: ${count} ${cls.label} anomal${count !== 1 ? 'ies' : 'y'}`, 'info');
-                    } else {
-                      addToast(`No active ${cls.label} events detected`, 'warning');
-                    }
-                  }
-                }}
-                className="relative p-3 rounded-2xl border cursor-pointer select-none transition-all group overflow-hidden"
-                style={{
-                  background: isActive ? cls.bg : isDark ? 'rgba(20,10,7,0.75)' : 'rgba(255,255,255,0.9)',
-                  borderColor: isActive ? cls.color : isDark ? 'rgba(255,106,61,0.15)' : '#cfe0f0',
-                  boxShadow: isActive ? `0 0 16px ${cls.bg}` : undefined,
-                }}
-              >
-                {/* Colored top accent bar */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl transition-opacity"
-                  style={{ background: cls.color, opacity: isActive ? 1 : 0.3 }}
-                />
-                <div className="flex flex-col gap-1">
-                  <span
-                    className="text-[22px] font-black font-mono leading-none"
-                    style={{ color: cls.color, filter: isActive ? `drop-shadow(0 0 8px ${cls.color}88)` : undefined }}
-                  >
-                    {count}
-                  </span>
-                  <span
-                    className="text-[9px] font-bold uppercase tracking-widest leading-tight"
-                    style={{ color: isDark ? 'rgba(255,220,200,0.7)' : '#4e6b8c' }}
-                  >
-                    {cls.label}
-                  </span>
-                </div>
-                {/* Dot indicator */}
-                <span
-                  className="absolute bottom-2.5 right-2.5 w-2 h-2 rounded-full transition-all"
-                  style={{
-                    background: cls.color,
-                    boxShadow: isActive ? `0 0 8px ${cls.color}` : undefined,
-                    opacity: count > 0 ? 1 : 0.25,
-                  }}
-                />
               </article>
             );
           })}

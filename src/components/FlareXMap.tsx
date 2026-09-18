@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Plus, Minus, RotateCcw, Crosshair, Layers } from 'lucide-react';
-import { MapLegend } from './MapLegend';
 import { useIntelligence } from '../context/IntelligenceContext';
 import { INDUSTRIAL_FACILITIES } from '../data/mockData';
 import { Hotspot } from '../types';
@@ -93,8 +92,8 @@ export const FlareXMap: React.FC = () => {
               <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}22; pointer-events: none; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
               <div style="position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}33; pointer-events: none;"></div>
               <div style="position: relative; width: 14px; height: 14px; border-radius: 50%; background: ${dotColor}; border: 2px solid #ffffff; box-shadow: ${glowShadow}; z-index: 20;"></div>
-              <div style="position: absolute; top: -34px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; background: rgba(14, 7, 5, 0.95); color: #fef8f6; font-size: 10.5px; font-weight: 800; border: 1px solid rgba(255, 106, 61, 0.4); white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.6); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 6px;">
-                <span>${spot.name.split(' ')[0]}</span>
+              <div style="position: absolute; top: -42px; left: 50%; transform: translateX(-50%); padding: 5px 10px; border-radius: 8px; background: rgba(14, 7, 5, 0.97); color: #fef8f6; font-size: 10.5px; font-weight: 800; border: 1px solid ${dotColor}88; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.7); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 6px;">
+                <span>${spot.location}</span>
                 <span style="color: ${dotColor}; font-family: monospace; font-weight: 900;">${spot.frp}MW</span>
                 <span style="color: #ff9977; font-size: 9px; font-weight: 700;">(${spot.baselineRatio}×)</span>
               </div>
@@ -102,11 +101,25 @@ export const FlareXMap: React.FC = () => {
           `;
         } else {
           el.innerHTML = `
-            <div style="position: relative; display: flex; align-items: center; justify-content: center;" class="group">
+            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
               ${isCritical ? `<div style="position: absolute; width: 20px; height: 20px; border-radius: 50%; background: ${dotColor}; opacity: 0.5; animation: livePulse 1.4s infinite; pointer-events: none;"></div>` : ''}
-              <div style="width: 11px; height: 11px; border-radius: 50%; background: ${dotColor}; border: 1.5px solid #ffffff; box-shadow: ${glowShadow}; transition: transform 0.15s ease; z-index: 10;"></div>
+              <div class="flarex-dot" style="width: 11px; height: 11px; border-radius: 50%; background: ${dotColor}; border: 1.5px solid #ffffff; box-shadow: ${glowShadow}; transition: transform 0.15s ease; z-index: 10;"></div>
+              <div class="flarex-tip" style="display:none; position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 4px 9px; border-radius: 7px; background: rgba(10,5,3,0.96); color: #fef8f6; font-size: 10px; font-weight: 700; border: 1px solid ${dotColor}88; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.65); z-index: 40; pointer-events: none; gap: 5px; align-items: center;">
+                <span style="color:${dotColor};">●</span> <span>${spot.location}</span> <span style="color:${dotColor};font-family:monospace;">${spot.frp}MW</span>
+              </div>
             </div>
           `;
+          // Show/hide tooltip on hover via JS (Tailwind group-hover won't work in innerHTML)
+          const tip = el.querySelector('.flarex-tip') as HTMLElement | null;
+          const dot = el.querySelector('.flarex-dot') as HTMLElement | null;
+          el.addEventListener('mouseenter', () => {
+            if (tip) tip.style.display = 'flex';
+            if (dot) dot.style.transform = 'scale(1.5)';
+          });
+          el.addEventListener('mouseleave', () => {
+            if (tip) tip.style.display = 'none';
+            if (dot) dot.style.transform = 'scale(1)';
+          });
         }
 
         el.addEventListener('click', (e) => {
@@ -375,9 +388,6 @@ export const FlareXMap: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Map Legend */}
-      <MapLegend />
 
       {/* Live Map Telemetry Badge */}
       <div className="live-map-indicator">

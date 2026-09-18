@@ -16,7 +16,7 @@ const CLASS_DEFS = [
 type ClassName = typeof CLASS_DEFS[number]['label'] | 'All' | 'Fires' | 'Abnormal' | 'Critical';
 
 export default function IncidentsPanel() {
-  const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp, theme, flyToCoords } = useIntelligence();
+  const { hotspots, selectedHotspot, selectHotspot, addToast, formatTemp, theme, flyToCoords, fitBoundsToHotspots } = useIntelligence();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'All' | 'Fires' | 'Abnormal' | 'Critical'>('All');
   const [classFilter, setClassFilter] = useState<string | null>(null);
@@ -148,11 +148,7 @@ export default function IncidentsPanel() {
                     if (next) {
                       const matches = hotspots.filter((h) => h.classification === cls.label);
                       if (matches.length > 0) {
-                        // Fly to centroid of matched hotspots
-                        const avgLng = matches.reduce((s, h) => s + h.coordinates[0], 0) / matches.length;
-                        const avgLat = matches.reduce((s, h) => s + h.coordinates[1], 0) / matches.length;
-                        const zoom = matches.length === 1 ? 10 : matches.length <= 5 ? 7 : 5;
-                        flyToCoords([avgLng, avgLat], zoom, 30);
+                        fitBoundsToHotspots(matches);
                         addToast(`Focused: ${matches.length} ${cls.label} event${matches.length > 1 ? 's' : ''}`, 'info');
                       }
                     }

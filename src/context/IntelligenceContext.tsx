@@ -114,6 +114,7 @@ interface IntelligenceContextType {
   toggleLayer: (layer: keyof MapLayersState) => void;
   refreshHotspots: () => Promise<void>;
   flyToCoords: (coords: [number, number], zoom?: number, pitch?: number) => void;
+  fitBoundsToHotspots: (spots: import('@/types').Hotspot[]) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   resetMapView: () => void;
@@ -484,9 +485,35 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
           zoom,
           pitch,
           essential: true,
-          duration: 1400,
+          duration: 1200,
         });
       }
+    },
+    [mapInstance]
+  );
+
+  const fitBoundsToHotspots = useCallback(
+    (spots: Hotspot[]) => {
+      if (!mapInstance || spots.length === 0) return;
+      if (spots.length === 1) {
+        mapInstance.flyTo({ center: spots[0].coordinates, zoom: 11, pitch: 35, essential: true, duration: 1200 });
+        return;
+      }
+      let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+      spots.forEach((h) => {
+        const [lng, lat] = h.coordinates;
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+      });
+      // Pad 10%
+      const lngPad = (maxLng - minLng) * 0.1 || 0.5;
+      const latPad = (maxLat - minLat) * 0.1 || 0.5;
+      mapInstance.fitBounds(
+        [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+        { padding: 60, duration: 1300, pitch: 20, essential: true }
+      );
     },
     [mapInstance]
   );
@@ -669,6 +696,7 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
         toggleLayer,
         refreshHotspots,
         flyToCoords,
+        fitBoundsToHotspots,
         zoomIn,
         zoomOut,
         resetMapView,
