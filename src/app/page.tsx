@@ -30,7 +30,7 @@ export default function Home() {
           onExplore={handleExplore}
         />
       ) : (
-        <div className="w-full min-h-screen animate-fadeIn">
+        <div className="w-full h-screen overflow-hidden">
           <FlareXDashboard onReturnToLanding={() => setInDashboard(false)} />
         </div>
       )}

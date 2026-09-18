@@ -178,7 +178,7 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [isAITyping, setIsAITyping] = useState<boolean>(false);
 
   // Settings State
-  const [theme, setThemeState] = useState<'dark' | 'light'>('light');
+  const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
   const [tempUnit, setTempUnitState] = useState<'C' | 'F'>('C');
   const [syncCadence, setSyncCadenceState] = useState<string>('30s');
   const [audioAlerts, setAudioAlertsState] = useState<boolean>(true);
@@ -333,7 +333,7 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('flarex_theme');
-      const activeTheme = saved === 'dark' || saved === 'light' ? saved : 'light';
+      const activeTheme = saved === 'dark' || saved === 'light' ? saved : 'dark';
       setThemeState(activeTheme);
       document.documentElement.setAttribute('data-theme', activeTheme);
       document.documentElement.classList.toggle('dark', activeTheme === 'dark');

@@ -44,6 +44,8 @@ export default function FlareXFeatureDrawer({
     };
   }, [open, onClose]);
 
+  if (!open) return null;
+
   return (
     <>
       <div

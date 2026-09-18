@@ -92,10 +92,10 @@ export const FlareXMap: React.FC = () => {
               <div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}22; pointer-events: none; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
               <div style="position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid ${dotColor}; background: ${dotColor}33; pointer-events: none;"></div>
               <div style="position: relative; width: 14px; height: 14px; border-radius: 50%; background: ${dotColor}; border: 2px solid #ffffff; box-shadow: ${glowShadow}; z-index: 20;"></div>
-              <div style="position: absolute; top: -34px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; background: #ffffff; color: #431407; font-size: 10.5px; font-weight: 800; border: 1px solid #fed7aa; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 6px;">
+              <div style="position: absolute; top: -34px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; background: rgba(14, 7, 5, 0.95); color: #fef8f6; font-size: 10.5px; font-weight: 800; border: 1px solid rgba(255, 106, 61, 0.4); white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.6); z-index: 30; pointer-events: none; display: flex; align-items: center; gap: 6px;">
                 <span>${spot.name.split(' ')[0]}</span>
                 <span style="color: ${dotColor}; font-family: monospace; font-weight: 900;">${spot.frp}MW</span>
-                <span style="color: #7c2d12; font-size: 9px; font-weight: 700;">(${spot.baselineRatio}×)</span>
+                <span style="color: #ff9977; font-size: 9px; font-weight: 700;">(${spot.baselineRatio}×)</span>
               </div>
             </div>
           `;
@@ -138,7 +138,7 @@ export const FlareXMap: React.FC = () => {
       el.className = 'relative flex items-center justify-center cursor-pointer pointer-events-auto';
 
       el.innerHTML = `
-        <div style="padding: 3px 7px; border-radius: 7px; background: rgba(255, 255, 255, 0.95); border: 1px solid #fed7aa; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 9px; font-weight: 800; color: #431407; display: flex; align-items: center; gap: 4px; transition: transform 0.15s ease; backdrop-filter: blur(8px);">
+        <div style="padding: 3px 7px; border-radius: 7px; background: rgba(14, 7, 5, 0.9); border: 1px solid rgba(255, 106, 61, 0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.5); font-size: 9px; font-weight: 800; color: #fef8f6; display: flex; align-items: center; gap: 4px; transition: transform 0.15s ease; backdrop-filter: blur(8px);">
           <span style="width: 5px; height: 5px; border-radius: 50%; background: #ea580c;"></span>
           <span>${facility.name.split(' ')[0]}</span>
         </div>
@@ -200,7 +200,7 @@ export const FlareXMap: React.FC = () => {
               id: 'background',
               type: 'background',
               paint: {
-                'background-color': '#fff9f5',
+                'background-color': '#060302',
               },
             },
             {
@@ -306,32 +306,32 @@ export const FlareXMap: React.FC = () => {
   }, [activeLayers, mapLoaded, updateFacilityMarkers]);
 
   return (
-    <div className="map-wrapper relative w-full h-full min-h-[460px] overflow-hidden bg-[#fff9f5] rounded-2xl">
+    <div className="map-wrapper relative w-full h-full min-h-[460px] overflow-hidden bg-[#060302] rounded-2xl">
       {isWebGLAvailable ? (
         <div ref={mapContainerRef} className="w-full h-full min-h-[460px]" />
       ) : (
         /* Non-WebGL Canvas/SVG Vector Radar Fallback */
-        <div className="w-full h-full relative bg-[#fff7ed] flex items-center justify-center p-6 select-none overflow-hidden">
+        <div className="w-full h-full relative bg-[#0a0504] flex items-center justify-center p-6 select-none overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-            <div className="w-[500px] h-[500px] rounded-full border border-[#fed7aa]" />
-            <div className="w-[340px] h-[340px] rounded-full border border-[#fed7aa]" />
-            <div className="w-[180px] h-[180px] rounded-full border border-[#fed7aa]" />
+            <div className="w-[500px] h-[500px] rounded-full border border-[rgba(255,106,61,0.2)]" />
+            <div className="w-[340px] h-[340px] rounded-full border border-[rgba(255,106,61,0.2)]" />
+            <div className="w-[180px] h-[180px] rounded-full border border-[rgba(255,106,61,0.2)]" />
           </div>
 
-          <div className="relative w-full max-w-2xl h-[420px] rounded-2xl border border-[#fed7aa] bg-white p-4 flex flex-col justify-between shadow-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-[#fed7aa]">
+          <div className="relative w-full max-w-2xl h-[420px] rounded-2xl border border-[rgba(255,106,61,0.25)] bg-[rgba(20,10,7,0.95)] p-4 flex flex-col justify-between shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-[rgba(255,106,61,0.2)]">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[12px] font-bold text-[#431407]">
+                <span className="text-[12px] font-bold text-white">
                   Non-WebGL Interactive Radar View (Pan-India)
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-[#ea580c] font-bold">
+              <span className="text-[10px] font-mono text-[#ff7a45] font-bold">
                 {filteredHotspots.length} Active Feeds
               </span>
             </div>
 
-            <div className="relative flex-1 w-full my-2 bg-[#fffbf8] rounded-xl border border-[#fed7aa]/60 overflow-hidden">
+            <div className="relative flex-1 w-full my-2 bg-[#120604] rounded-xl border border-[rgba(255,106,61,0.18)] overflow-hidden">
               {filteredHotspots.map((spot) => {
                 const leftPct = ((spot.coordinates[0] - 68) / (97 - 68)) * 80 + 10;
                 const topPct = 100 - (((spot.coordinates[1] - 8) / (36 - 8)) * 80 + 10);
@@ -352,13 +352,13 @@ export const FlareXMap: React.FC = () => {
                       <div
                         className={`w-3.5 h-3.5 rounded-full border-2 border-white shadow-xs transition-transform group-hover:scale-125 ${
                           isSelected
-                            ? 'bg-[#ea580c] ring-2 ring-[#ea580c]'
+                            ? 'bg-[#ff5533] ring-2 ring-[#ff7a45]'
                             : isCritical
                             ? 'bg-red-600'
-                            : 'bg-[#ea580c]'
+                            : 'bg-[#ff5533]'
                         }`}
                       />
-                      <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:flex px-2 py-1 rounded-lg bg-white border border-[#fed7aa] shadow-lg text-[10px] font-bold text-[#431407] whitespace-nowrap z-30">
+                      <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:flex px-2 py-1 rounded-lg bg-[#140a07] border border-[rgba(255,106,61,0.3)] shadow-lg text-[10px] font-bold text-white whitespace-nowrap z-30">
                         {spot.name.split(' ')[0]} ({spot.frp} MW)
                       </div>
                     </div>

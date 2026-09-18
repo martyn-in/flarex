@@ -17,6 +17,8 @@ import {
   Database,
   Globe,
   BrainCircuit,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 import { useIntelligence } from '@/context/IntelligenceContext';
@@ -59,8 +61,11 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
     calculatedStats,
     dataSourceMode,
     ingestionMeta,
+    theme,
+    toggleTheme,
   } = useIntelligence();
 
+  const isDark = theme === 'dark';
   const [searchQuery, setSearchQuery] = useState('');
 
   // 1. Sidebar Navigation Menu Items
@@ -220,7 +225,8 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   };
 
   return (
-    <main className="app-shell flex h-screen w-full overflow-hidden bg-[#fff9f5] text-[#431407]">
+    <>
+      <main className="app-shell">
       {/* 1. SIDEBAR */}
       <aside className="sidebar glass-panel shrink-0 flex flex-col justify-between">
         <div>
@@ -313,15 +319,48 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               </button>
             )}
 
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={() => {
+                toggleTheme();
+                addToast(
+                  theme === 'dark'
+                    ? 'Switched to Arctic Light Mode'
+                    : 'Switched to Dark Flame Theme',
+                  'info'
+                );
+              }}
+              className="icon-button cursor-pointer"
+              title={
+                theme === 'dark'
+                  ? 'Switch to Arctic Light Mode'
+                  : 'Switch to Dark Flame Theme'
+              }
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? (
+                <Sun size={18} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+              ) : (
+                <Moon size={18} className="text-[#0284c7]" />
+              )}
+            </button>
+
             {/* Real Search Box */}
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 px-3 py-2 rounded-xl border bg-white border-[#fed7aa] focus-within:border-[#ea580c] transition-colors w-[260px]">
-              <Search size={15} className="shrink-0 text-[#7c2d12]" />
+            <form onSubmit={handleSearchSubmit} className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors w-[250px] ${
+              isDark
+                ? 'bg-black/40 border-[rgba(255,106,61,0.2)] focus-within:border-[#ff5533]'
+                : 'bg-white border-[#cfe0f0] focus-within:border-[#0284c7]'
+            }`}>
+              <Search size={15} className={`shrink-0 ${isDark ? 'text-[#a3928c]' : 'text-[#627d9c]'}`} />
               <input
                 type="text"
                 placeholder="Search facility, SEZ, or Event ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent border-0 outline-none text-[11.5px] font-medium text-[#431407] placeholder-[#9a3412]"
+                className={`w-full bg-transparent border-0 outline-none text-[11.5px] font-medium ${
+                  isDark ? 'text-white placeholder-[#7d6e68]' : 'text-[#0c2340] placeholder-slate-400'
+                }`}
               />
             </form>
 
@@ -340,10 +379,10 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
             <div
               className={`cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-mono font-extrabold border transition-all ${
                 dataSourceMode === 'LIVE_NRT'
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                   : dataSourceMode === 'CACHED'
-                  ? 'bg-amber-50 text-amber-900 border-amber-300'
-                  : 'bg-orange-50 text-orange-900 border-orange-300'
+                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                  : 'bg-orange-500/15 text-orange-300 border-orange-500/30'
               }`}
               onClick={() =>
                 addToast(
@@ -356,10 +395,10 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               <span
                 className={`w-2 h-2 rounded-full ${
                   dataSourceMode === 'LIVE_NRT'
-                    ? 'bg-emerald-500 animate-ping'
+                    ? 'bg-emerald-400 animate-ping'
                     : dataSourceMode === 'CACHED'
-                    ? 'bg-amber-500'
-                    : 'bg-orange-500'
+                    ? 'bg-amber-400'
+                    : 'bg-orange-400'
                 }`}
               />
               {dataSourceMode === 'LIVE_NRT'
@@ -383,22 +422,38 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
               <article
                 key={stat.label}
                 onClick={stat.action}
-                className="p-3.5 rounded-2xl border bg-white border-[#fed7aa] hover:border-[#ea580c] hover:bg-[#fffbf8] transition-all cursor-pointer flex items-center justify-between group shadow-xs select-none"
+                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group shadow-xs select-none ${
+                  isDark
+                    ? 'bg-[rgba(20,10,7,0.85)] border-[rgba(255,106,61,0.18)] hover:border-[#ff5533] hover:bg-[rgba(28,14,10,0.95)]'
+                    : 'bg-white border-[#cfe0f0] hover:border-[#0284c7] hover:bg-[#f8fbfe]'
+                }`}
               >
                 <div className="flex flex-col min-w-0 pr-2">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7c2d12] truncate">
+                  <span className={`text-[10px] font-extrabold uppercase tracking-wider truncate ${
+                    isDark ? 'text-[#d1b8af]' : 'text-[#4e6b8c]'
+                  }`}>
                     {stat.label}
                   </span>
                   <div className="flex items-baseline gap-1 my-0.5">
                     <span
                       className={`text-[26px] font-black font-mono leading-tight ${
-                        isAlert ? 'text-red-600' : isFire ? 'text-[#ea580c]' : isPersistent ? 'text-purple-700' : 'text-[#431407]'
+                        isAlert
+                          ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.35)]'
+                          : isFire
+                          ? 'text-[#ff5533] drop-shadow-[0_0_8px_rgba(255,85,45,0.35)]'
+                          : isPersistent
+                          ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.35)]'
+                          : isDark
+                          ? 'text-white'
+                          : 'text-[#0c2340]'
                       }`}
                     >
                       {stat.value}
                     </span>
                   </div>
-                  <span className="text-[10px] font-semibold truncate text-[#9a3412]">
+                  <span className={`text-[10px] font-semibold truncate ${
+                    isDark ? 'text-[#a3928c]' : 'text-[#627d9c]'
+                  }`}>
                     {stat.change}
                   </span>
                 </div>
@@ -406,12 +461,12 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
                 <div
                   className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
                     isAlert
-                      ? 'bg-red-50 border-red-200 text-red-600'
+                      ? isDark ? 'bg-red-500/20 border-red-500/40 text-red-400' : 'bg-red-50 border-red-200 text-red-600'
                       : isFire
-                      ? 'bg-orange-50 border-orange-200 text-[#ea580c]'
+                      ? isDark ? 'bg-orange-500/20 border-orange-500/40 text-orange-400' : 'bg-orange-50 border-orange-200 text-[#ea580c]'
                       : isPersistent
-                      ? 'bg-purple-50 border-purple-200 text-purple-700'
-                      : 'bg-[#fff7ed] border-[#fed7aa] text-[#ea580c]'
+                      ? isDark ? 'bg-purple-500/20 border-purple-500/40 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700'
+                      : isDark ? 'bg-white/5 border-white/10 text-[#d1b8af]' : 'bg-[#e8f0f8] border-[#cfe0f0] text-[#0c2340]'
                   }`}
                 >
                   <Icon size={20} />
@@ -423,24 +478,44 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
 
         {/* 4. GEOSPATIAL MAP SECTION */}
         <section className="map-wrapper flex-1 flex flex-col min-h-[480px]">
-          <article className="map-card flex-1 flex flex-col bg-white border border-[#fed7aa] rounded-2xl p-3">
-            <div className="map-header flex items-center justify-between pb-2 mb-2 border-b border-[#fed7aa]/60">
+          <article className={`map-card flex-1 flex flex-col rounded-2xl p-3 border ${
+            isDark
+              ? 'bg-[rgba(14,7,5,0.92)] border-[rgba(255,106,61,0.2)]'
+              : 'bg-white border-[#cfe0f0]'
+          }`}>
+            <div className={`map-header flex items-center justify-between pb-2 mb-2 border-b ${
+              isDark ? 'border-[rgba(255,106,61,0.15)]' : 'border-[#cfe0f0]'
+            }`}>
               <div>
-                <span className="section-kicker text-[9.5px] font-extrabold text-[#ea580c] uppercase tracking-wider block">GEOSPATIAL INFRASTRUCTURE CORRIDORS</span>
-                <h3 className="text-[14px] font-extrabold text-[#431407]">Pan-India Thermal Heat &amp; Anomaly Map</h3>
+                <span className={`section-kicker text-[9.5px] font-extrabold uppercase tracking-wider block ${
+                  isDark ? 'text-[#ff7a45]' : 'text-[#0284c7]'
+                }`}>
+                  GEOSPATIAL INFRASTRUCTURE CORRIDORS
+                </span>
+                <h3 className={`text-[14px] font-extrabold ${isDark ? 'text-white' : 'text-[#0c2340]'}`}>
+                  Pan-India Thermal Heat &amp; Anomaly Map
+                </h3>
               </div>
               <div className="map-header-actions flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => openDrawer('datasources')}
-                  className="px-2.5 py-1.5 rounded-xl border border-[#fed7aa] bg-[#fff7ed] hover:bg-[#ffedd5] text-[#7c2d12] hover:text-[#431407] font-bold text-[11px] transition-colors cursor-pointer"
+                  className={`px-2.5 py-1.5 rounded-xl border font-bold text-[11px] transition-colors cursor-pointer ${
+                    isDark
+                      ? 'border-[rgba(255,106,61,0.25)] bg-[rgba(255,106,61,0.1)] text-[#ff9977] hover:bg-[rgba(255,106,61,0.2)]'
+                      : 'border-[#cfe0f0] bg-[#e8f0f8] text-[#0c2340] hover:bg-[#d0e2f2]'
+                  }`}
                 >
                   Data Sources
                 </button>
                 <button
                   type="button"
                   onClick={resetMapView}
-                  className="px-2.5 py-1.5 rounded-xl border border-[#fed7aa] bg-[#fff7ed] hover:bg-[#ffedd5] text-[#7c2d12] hover:text-[#431407] font-bold text-[11px] transition-colors cursor-pointer flex items-center gap-1"
+                  className={`px-2.5 py-1.5 rounded-xl border font-bold text-[11px] transition-colors cursor-pointer flex items-center gap-1 ${
+                    isDark
+                      ? 'border-[rgba(255,106,61,0.25)] bg-[rgba(255,106,61,0.1)] text-[#ff9977] hover:bg-[rgba(255,106,61,0.2)]'
+                      : 'border-[#cfe0f0] bg-[#e8f0f8] text-[#0c2340] hover:bg-[#d0e2f2]'
+                  }`}
                   title="Reset Camera View to Full India Extent"
                 >
                   <span>Full Map</span>
@@ -458,20 +533,21 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
 
       {/* 5. RIGHT EVENT INVESTIGATION PANEL (SHOWCASE SCREEN) */}
       <RightIncidentPanel />
-
-      {/* 6. INTERACTIVE DRAWERS, MODALS & TOAST OVERLAYS */}
-      <IncidentListDrawer />
-      <PersistentSourcesDrawer />
-      <AlertCenterDrawer />
-      <AnalyticsDrawer />
-      <DataSourcesDrawer />
-      <ReportsDrawer />
-      <AIModelDrawer />
-      <SettingsModal />
-      <NotificationsPopover />
-      <DispatchModal />
-      <ToastContainer />
     </main>
+
+    {/* 6. INTERACTIVE DRAWERS, MODALS & TOAST OVERLAYS */}
+    <IncidentListDrawer />
+    <PersistentSourcesDrawer />
+    <AlertCenterDrawer />
+    <AnalyticsDrawer />
+    <DataSourcesDrawer />
+    <ReportsDrawer />
+    <AIModelDrawer />
+    <SettingsModal />
+    <NotificationsPopover />
+    <DispatchModal />
+    <ToastContainer />
+  </>
   );
 }
 
