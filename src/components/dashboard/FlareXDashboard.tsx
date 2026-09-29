@@ -70,7 +70,9 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
   const isDark = theme === 'dark';
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Sidebar Navigation Menu Items
+  const isIndustrialFilter = activeFilter === 'industrial_fires' || activeFilter === 'Industrial Fire' || activeFilter === 'class_Industrial Fire';
+
+  // 1. Sidebar Navigation Menu Items (strictly mutually exclusive)
   const menu = [
     {
       section: 'MONITORING',
@@ -80,45 +82,63 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
           icon: Layers,
           action: () => {
             closeDrawer();
+            setIsSettingsOpen(false);
             setFilter(null);
             resetMapView();
           },
-          active: activeDrawer === null && activeFilter === null,
+          active: activeDrawer === null && !isIndustrialFilter && !isSettingsOpen,
         },
         {
           name: 'Active Incidents',
           icon: Radio,
-          action: () => openDrawer('incidents'),
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('incidents');
+          },
           badge: calculatedStats.totalEvents > 0 ? `${calculatedStats.totalEvents}` : undefined,
           badgeColor: 'bg-orange-500',
-          active: activeDrawer === 'incidents',
+          active: activeDrawer === 'incidents' && !isSettingsOpen,
         },
         {
           name: 'Industrial Fires',
           icon: Flame,
           action: () => {
-            closeDrawer();
-            setFilter('industrial_fires');
+            setIsSettingsOpen(false);
+            if (activeDrawer === null && isIndustrialFilter) {
+              setFilter(null);
+            } else {
+              closeDrawer();
+              setFilter('industrial_fires');
+            }
           },
           badge: calculatedStats.industrialFires > 0 ? `${calculatedStats.industrialFires}` : undefined,
           badgeColor: 'bg-red-500',
-          active: activeFilter === 'industrial_fires',
+          active: activeDrawer === null && isIndustrialFilter && !isSettingsOpen,
         },
         {
           name: 'Persistent Sources',
           icon: Activity,
-          action: () => openDrawer('persistents'),
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('persistents');
+          },
           badge: calculatedStats.persistentSources > 0 ? `${calculatedStats.persistentSources}` : undefined,
           badgeColor: 'bg-orange-500',
-          active: activeDrawer === 'persistents',
+          active: activeDrawer === 'persistents' && !isSettingsOpen,
         },
         {
           name: 'Alert Center',
           icon: ShieldAlert,
-          action: () => openDrawer('alerts'),
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('alerts');
+          },
           badge: calculatedStats.criticalAlerts > 0 ? `${calculatedStats.criticalAlerts}` : undefined,
           badgeColor: 'bg-red-600',
-          active: activeDrawer === 'alerts',
+          active: activeDrawer === 'alerts' && !isSettingsOpen,
         },
       ],
     },
@@ -128,20 +148,32 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         {
           name: 'Analytics',
           icon: ChartNoAxesCombined,
-          action: () => openDrawer('analytics'),
-          active: activeDrawer === 'analytics',
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('analytics');
+          },
+          active: activeDrawer === 'analytics' && !isSettingsOpen,
         },
         {
           name: 'Data & Model',
           icon: Database,
-          action: () => openDrawer('datasources'),
-          active: activeDrawer === 'datasources',
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('datasources');
+          },
+          active: activeDrawer === 'datasources' && !isSettingsOpen,
         },
         {
           name: 'AI Assistant',
           icon: BrainCircuit,
-          action: () => openDrawer('ai'),
-          active: activeDrawer === 'ai',
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('ai');
+          },
+          active: activeDrawer === 'ai' && !isSettingsOpen,
         },
       ],
     },
@@ -151,13 +183,20 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
         {
           name: 'Reports',
           icon: FileText,
-          action: () => openDrawer('reports'),
-          active: activeDrawer === 'reports',
+          action: () => {
+            setIsSettingsOpen(false);
+            setFilter(null);
+            openDrawer('reports');
+          },
+          active: activeDrawer === 'reports' && !isSettingsOpen,
         },
         {
           name: 'Settings',
           icon: Settings,
-          action: () => setIsSettingsOpen(true),
+          action: () => {
+            closeDrawer();
+            setIsSettingsOpen(true);
+          },
           active: isSettingsOpen,
         },
       ],
@@ -183,7 +222,10 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       change: 'Severe Radiance Surge',
       changeType: 'increase',
       icon: Flame,
-      action: () => setFilter('industrial_fires'),
+      action: () => {
+        closeDrawer();
+        setFilter('industrial_fires');
+      },
     },
     {
       label: 'PERSISTENT SOURCES',
@@ -191,7 +233,10 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       change: 'Recurring Operational Flares',
       changeType: 'neutral',
       icon: Activity,
-      action: () => openDrawer('persistents'),
+      action: () => {
+        setFilter(null);
+        openDrawer('persistents');
+      },
     },
     {
       label: 'CRITICAL ALERTS',
@@ -199,7 +244,10 @@ export function FlareXDashboard({ onReturnToLanding }: FlareXDashboardProps) {
       change: '> 2.0x Historical Baseline',
       changeType: 'decrease',
       icon: ShieldAlert,
-      action: () => openDrawer('alerts'),
+      action: () => {
+        setFilter(null);
+        openDrawer('alerts');
+      },
     },
   ];
 

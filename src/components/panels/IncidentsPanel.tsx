@@ -13,6 +13,18 @@ const CLASS_DEFS = [
   { label: 'Mining/Furnace',      color: '#9333ea', dot: 'bg-purple-500' },
 ] as const;
 
+export const matchClassification = (hClass: string, label: string) => {
+  if (label === 'Mining/Furnace' || label === 'Mining / Furnace Activity') {
+    return (
+      hClass === 'Mining/Furnace' ||
+      hClass === 'Mining / Furnace Activity' ||
+      hClass?.toLowerCase().includes('mining') ||
+      hClass?.toLowerCase().includes('furnace')
+    );
+  }
+  return hClass === label;
+};
+
 type ClassName = typeof CLASS_DEFS[number]['label'] | 'All' | 'Fires' | 'Abnormal' | 'Critical';
 
 export default function IncidentsPanel() {
@@ -33,7 +45,7 @@ export default function IncidentsPanel() {
     if (!matchesSearch) return false;
 
     // Class filter takes priority over tab filter
-    if (classFilter) return h.classification === classFilter;
+    if (classFilter) return matchClassification(h.classification, classFilter);
 
     if (filterType === 'Fires') return h.classification === 'Industrial Fire';
     if (filterType === 'Abnormal') return h.status === 'ABNORMAL' || h.baselineRatio >= 1.8;
@@ -135,7 +147,7 @@ export default function IncidentsPanel() {
             </button>
 
             {CLASS_DEFS.map((cls) => {
-              const count = hotspots.filter((h) => h.classification === cls.label).length;
+              const count = hotspots.filter((h) => matchClassification(h.classification, cls.label)).length;
               const isActive = classFilter === cls.label;
               return (
                 <button
@@ -146,7 +158,7 @@ export default function IncidentsPanel() {
                     setClassFilter(next);
                     setFilterType('All');
                     if (next) {
-                      const matches = hotspots.filter((h) => h.classification === cls.label);
+                      const matches = hotspots.filter((h) => matchClassification(h.classification, cls.label));
                       if (matches.length > 0) {
                         fitBoundsToHotspots(matches);
                         addToast(`Focused: ${matches.length} ${cls.label} event${matches.length > 1 ? 's' : ''}`, 'info');

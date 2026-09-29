@@ -288,16 +288,40 @@ export const IntelligenceProvider: React.FC<{ children: ReactNode }> = ({ childr
   // Filtered hotspots computation
   const filteredHotspots = useMemo<Hotspot[]>(() => {
     if (!activeFilter) return hotspots;
-    if (activeFilter === 'industrial_fires') {
+    if (activeFilter === 'industrial_fires' || activeFilter === 'Industrial Fire' || activeFilter === 'class_Industrial Fire') {
       return hotspots.filter((h) => h.classification === 'Industrial Fire');
     }
-    if (activeFilter === 'wildfires') {
+    if (activeFilter === 'wildfires' || activeFilter === 'Wildfire' || activeFilter === 'class_Wildfire') {
       return hotspots.filter((h) => h.classification === 'Wildfire');
     }
-    if (activeFilter === 'frequent') {
+    if (activeFilter === 'Gas Flare' || activeFilter === 'class_Gas Flare') {
+      return hotspots.filter((h) => h.classification === 'Gas Flare');
+    }
+    if (activeFilter === 'Agricultural Burning' || activeFilter === 'class_Agricultural Burning') {
+      return hotspots.filter((h) => h.classification === 'Agricultural Burning');
+    }
+    if (
+      activeFilter === 'Mining/Furnace' ||
+      activeFilter === 'class_Mining/Furnace' ||
+      activeFilter === 'Mining / Furnace Activity'
+    ) {
+      return hotspots.filter(
+        (h) =>
+          h.classification === 'Mining / Furnace Activity' ||
+          (h.classification as string)?.toLowerCase().includes('mining') ||
+          (h.classification as string)?.toLowerCase().includes('furnace')
+      );
+    }
+    if (activeFilter === 'frequent' || activeFilter === 'persistent' || activeFilter === 'persistent_sources') {
       return hotspots.filter(isPersistentSource);
     }
-    // class_<ClassName> filter — from the 5-class dashboard tiles
+    if (activeFilter === 'critical') {
+      return hotspots.filter((h) => h.severity === 'critical' || h.status === 'CRITICAL_FIRE');
+    }
+    if (activeFilter === 'high') {
+      return hotspots.filter((h) => h.severity === 'high' || h.status === 'ABNORMAL');
+    }
+    // class_<ClassName> fallback
     if (activeFilter.startsWith('class_')) {
       const className = activeFilter.slice('class_'.length);
       return hotspots.filter((h) => h.classification === className);

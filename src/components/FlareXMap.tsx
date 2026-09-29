@@ -7,6 +7,7 @@ import { Plus, Minus, RotateCcw, Crosshair, Layers } from 'lucide-react';
 import { useIntelligence } from '../context/IntelligenceContext';
 import { INDUSTRIAL_FACILITIES } from '../data/mockData';
 import { Hotspot } from '../types';
+import { MapClassificationLegend } from './map/MapClassificationLegend';
 
 function checkWebGLSupport(): boolean {
   if (typeof window === 'undefined') return false;
@@ -394,6 +395,9 @@ export const FlareXMap: React.FC = () => {
         <span className="live-dot" />
         <span>FLAREX SATELLITE RADAR • PAN-INDIA</span>
       </div>
+
+      {/* Interactive Classification Legend & Filters (Top Right) */}
+      <MapClassificationLegend />
 
       {/* Floating Map Controls */}
       <div className="map-controls">
