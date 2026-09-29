@@ -138,16 +138,16 @@ export const MapClassificationLegend: React.FC = () => {
       }`}
     >
       <div
-        className={`rounded-2xl p-2.5 border shadow-2xl flex flex-col gap-1.5 backdrop-blur-md transition-colors ${
+        className={`rounded-2xl p-2.5 border flex flex-col gap-1.5 backdrop-blur-md transition-all duration-200 ${
           isDark
-            ? 'bg-[rgba(14,7,5,0.92)] border-[rgba(255,106,61,0.25)] text-white shadow-[0_8px_32px_rgba(0,0,0,0.65)]'
-            : 'bg-white/95 border-[#cfe0f0] text-[#0c2340] shadow-[0_8px_24px_rgba(12,35,64,0.12)]'
+            ? 'bg-[rgba(10,5,3,0.38)] hover:bg-[rgba(14,7,5,0.7)] border-[rgba(255,106,61,0.25)] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
+            : 'bg-[rgba(255,255,255,0.45)] hover:bg-[rgba(255,255,255,0.8)] border-[#cfe0f0]/70 text-[#0c2340] shadow-[0_8px_24px_rgba(12,35,64,0.1)]'
         }`}
       >
         {/* Subtle Header with Collapse Toggle */}
         <div
           className={`flex items-center justify-between pb-1 px-1 border-b cursor-pointer ${
-            isDark ? 'border-white/10 text-slate-400' : 'border-[#e2e8f0] text-[#4e6b8c]'
+            isDark ? 'border-white/10 text-slate-300' : 'border-[#0c2340]/10 text-[#0c2340]/80'
           }`}
           onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? 'Click to expand classification legend' : 'Click to collapse'}
@@ -174,8 +174,8 @@ export const MapClassificationLegend: React.FC = () => {
             onClick={() => setIsCollapsed(false)}
             className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl text-[10.5px] font-bold border transition-colors cursor-pointer ${
               isDark
-                ? 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-200'
-                : 'bg-[#f0f6fc] border-[#cfe0f0] hover:bg-[#e0f2fe] text-[#0c2340]'
+                ? 'bg-black/30 border-white/10 hover:bg-black/50 text-slate-200'
+                : 'bg-white/40 border-[#cfe0f0]/60 hover:bg-white/70 text-[#0c2340]'
             }`}
           >
             <div className="flex items-center gap-1">
@@ -198,10 +198,10 @@ export const MapClassificationLegend: React.FC = () => {
               onClick={handleResetAll}
               className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-[11px] font-bold border transition-all duration-150 cursor-pointer ${
                 isAllActive
-                  ? 'bg-gradient-to-r from-[#ff5533] to-[#ea580c] border-[#ff7a45] text-white shadow-[0_0_12px_rgba(255,85,45,0.45)]'
+                  ? 'bg-gradient-to-r from-[#ff5533]/90 to-[#ea580c]/90 border-[#ff7a45] text-white shadow-[0_0_12px_rgba(255,85,45,0.4)] backdrop-blur-xs'
                   : isDark
-                  ? 'bg-white/[0.04] border-white/10 text-slate-300 hover:bg-white/[0.08] hover:text-white'
-                  : 'bg-white border-[#cfe0f0] text-[#1e3a5f] hover:bg-[#f0f6fc] hover:border-[#93c5fd] hover:text-[#0c2340]'
+                  ? 'bg-black/30 border-white/10 text-slate-300 hover:bg-black/50 hover:text-white backdrop-blur-xs'
+                  : 'bg-white/40 border-[#cfe0f0]/60 text-[#0c2340] hover:bg-white/75 hover:border-[#93c5fd] backdrop-blur-xs'
               }`}
             >
               <span>All Classes</span>
@@ -228,13 +228,13 @@ export const MapClassificationLegend: React.FC = () => {
                     isActive
                       ? 'text-white font-bold shadow-md'
                       : isDark
-                      ? 'bg-white/[0.04] border-white/10 text-slate-300 hover:bg-white/[0.08] hover:text-white'
-                      : 'bg-white border-[#cfe0f0] text-[#1e3a5f] hover:bg-[#f0f6fc] hover:border-[#93c5fd] hover:text-[#0c2340]'
+                      ? 'bg-black/30 border-white/10 text-slate-200 hover:bg-black/50 hover:text-white backdrop-blur-xs'
+                      : 'bg-white/40 border-[#cfe0f0]/60 text-[#0c2340] hover:bg-white/75 hover:border-[#93c5fd] backdrop-blur-xs'
                   }`}
                   style={
                     isActive
                       ? {
-                          background: `linear-gradient(135deg, ${item.color}, ${item.dotColor})`,
+                          background: `linear-gradient(135deg, ${item.color}e6, ${item.dotColor}e6)`,
                           borderColor: item.dotColor,
                           boxShadow: `0 0 14px ${item.glow}`,
                         }
